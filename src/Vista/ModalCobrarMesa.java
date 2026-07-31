@@ -121,6 +121,25 @@ public class ModalCobrarMesa extends JDialog {
         btnCerrar.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnCerrar.addActionListener(e -> dispose());
 
+        JButton btnMarcarPreparado = new JButton("🟡 Marcar PREPARADO");
+        btnMarcarPreparado.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnMarcarPreparado.setBackground(new Color(245, 158, 11));
+        btnMarcarPreparado.setForeground(Color.WHITE);
+        btnMarcarPreparado.setPreferredSize(new Dimension(190, 48));
+        btnMarcarPreparado.setFocusPainted(false);
+        btnMarcarPreparado.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnMarcarPreparado.addActionListener(e -> {
+            for (Pedido r : listaRondas) {
+                pedDao.marcarPreparado(r.getId());
+            }
+            ToastNotification.exito(parentFrame, etiquetaMesa + ": ¡Marcado como PREPARADO!");
+            dispose();
+            if (sistemaInstance != null) {
+                sistemaInstance.refrescarVistaMesas();
+            }
+        });
+
+        pFooter.add(btnMarcarPreparado);
         pFooter.add(btnCobrarTodo);
         pFooter.add(btnSplitEqual);
         pFooter.add(btnCerrar);

@@ -4330,114 +4330,11 @@ public final class Sistema extends javax.swing.JFrame {
                         for (java.awt.event.ActionListener al : boton.getActionListeners()) {
                             boton.removeActionListener(al);
                         }
-
-                        // 🖱️ Menú clic derecho O pulsación larga (táctil) en mesa
-                        final boolean[] fueLongPress = new boolean[]{false};
-                        boton.addMouseListener(new java.awt.event.MouseAdapter() {
-                            private javax.swing.Timer longPressTimer;
-
-                            private void mostrarMenuMesa(java.awt.Component comp, int x, int y) {
-                                if (verificar <= 0) return;
-                                javax.swing.JPopupMenu popupMesa = new javax.swing.JPopupMenu();
-
-                                javax.swing.JMenuItem itemMarcarPreparado = new javax.swing.JMenuItem("🟡 Marcar como Preparado");
-                                itemMarcarPreparado.addActionListener(ev -> {
-                                    pedDao.marcarPreparado(verificar);
-                                    PanelMesas.removeAll();
-                                    panelMesas(id_sala, cant);
-                                    ToastNotification.exito(Sistema.this, etiqueta + ": ¡Pedido marcado como PREPARADO!");
-                                });
-
-                                javax.swing.JMenuItem itemVerPedido = new javax.swing.JMenuItem(
-                                        "Ver Pedido / Agregar Platos");
-                                itemVerPedido.addActionListener(ev -> {
-                                    LimpiarTable();
-                                    verPedido(verificar);
-                                    verPedidoDetalle(verificar);
-                                    btnFinalizar.setEnabled(true);
-                                    jTabbedPane1.setSelectedIndex(4);
-                                });
-
-                                javax.swing.JMenuItem itemCobrar = new javax.swing.JMenuItem(
-                                        "Ir Directo a Cobrar");
-                                itemCobrar.addActionListener(ev -> {
-                                    LimpiarTable();
-                                    verPedido(verificar);
-                                    verPedidoDetalle(verificar);
-                                    btnFinalizar.setEnabled(true);
-                                    jTabbedPane1.setSelectedIndex(4);
-                                    btnFinalizar.doClick();
-                                });
-
-                                javax.swing.JMenuItem itemPidientoCuenta = new javax.swing.JMenuItem(
-                                        "Marcar: Pidió la Cuenta");
-                                itemPidientoCuenta.addActionListener(ev -> {
-                                    boton.setBackground(new java.awt.Color(120, 53, 15)); // Amber oscuro
-                                    boton.setForeground(new java.awt.Color(252, 211, 77)); // Amber claro
-                                    boton.setBorder(new RoundedBorder(16, new java.awt.Color(245, 158, 11),
-                                            new java.awt.Insets(10, 10, 10, 10)));
-                                    boton.setToolTipText("Pidió la cuenta");
-                                    try {
-                                        boton.setText("<html><center>" + etiqueta
-                                                + "<br><font color='#FCD34D'>PIDIÓ CUENTA</font></center></html>");
-                                    } catch (Exception ex) {
-                                    }
-                                    ToastNotification.advertencia(Sistema.this,
-                                            etiqueta + ": ¡Cliente pidió la cuenta!");
-                                });
-
-                                javax.swing.JMenuItem itemLiberar = new javax.swing.JMenuItem("🧹 Liberar Mesa");
-                                itemLiberar.addActionListener(ev -> {
-                                    int conf = JOptionPane.showConfirmDialog(Sistema.this,
-                                            "¿Liberar " + etiqueta + " sin cobrar?", "Confirmar",
-                                            JOptionPane.YES_NO_OPTION);
-                                    if (conf == JOptionPane.YES_OPTION) {
-                                        pedDao.actualizarEstado(verificar, "ANULADO");
-                                        PanelMesas.removeAll();
-                                        panelMesas(id_sala, cant);
-                                        ToastNotification.exito(Sistema.this, etiqueta + " liberada.");
-                                    }
-                                });
-
-                                popupMesa.add(itemMarcarPreparado);
-                                popupMesa.add(itemVerPedido);
-                                popupMesa.add(itemCobrar);
-                                popupMesa.addSeparator();
-                                popupMesa.add(itemPidientoCuenta);
-                                popupMesa.addSeparator();
-                                popupMesa.add(itemLiberar);
-                                popupMesa.show(comp, x, y);
-                            }
-
-                            @Override
-                            public void mousePressed(java.awt.event.MouseEvent evt) {
-                                fueLongPress[0] = false;
-                                if (javax.swing.SwingUtilities.isRightMouseButton(evt) && verificar > 0) {
-                                    fueLongPress[0] = true;
-                                    mostrarMenuMesa(evt.getComponent(), evt.getX(), evt.getY());
-                                } else if (javax.swing.SwingUtilities.isLeftMouseButton(evt) && verificar > 0) {
-                                    longPressTimer = new javax.swing.Timer(600, ev -> {
-                                        fueLongPress[0] = true;
-                                        mostrarMenuMesa(evt.getComponent(), evt.getX(), evt.getY());
-                                    });
-                                    longPressTimer.setRepeats(false);
-                                    longPressTimer.start();
-                                }
-                            }
-
-                            @Override
-                            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                                if (longPressTimer != null) {
-                                    longPressTimer.stop();
-                                }
-                            }
-                        });
+                        for (java.awt.event.MouseListener ml : boton.getMouseListeners()) {
+                            boton.removeMouseListener(ml);
+                        }
 
                         boton.addActionListener((ActionEvent e) -> {
-                            if (fueLongPress[0]) {
-                                fueLongPress[0] = false;
-                                return;
-                            }
                             if (verificar > 0) {
                                 ModalCobrarMesa modalCobro = new ModalCobrarMesa(Sistema.this, Sistema.this, num_mesa, id_sala, etiqueta);
                                 modalCobro.setVisible(true);
@@ -4539,6 +4436,13 @@ public final class Sistema extends javax.swing.JFrame {
         txtTempNumMesa.setText("" + numMesa);
     }
 
+    public void refrescarVistaMesas() {
+        if (salaActivaId > 0 && salaActivaCant > 0) {
+            PanelMesas.removeAll();
+            panelMesas(salaActivaId, salaActivaCant);
+        }
+    }
+
     /**
      * Refresca el estado de mesas con UNA sola query a la BD (en lugar de N).
      * Solo actúa si la pestaña de Mesas es visible. El timer se auto-pausa
@@ -4572,16 +4476,15 @@ public final class Sistema extends javax.swing.JFrame {
                         javax.swing.JButton boton = botonesRef[i];
                         if (boton == null) continue;
                         java.awt.Color bg = boton.getBackground();
-                        boolean estaOcupada = bg != null && bg.getRed() > 100 && bg.getGreen() < 50;
+                        boolean estaOcupada = bg != null && !bg.equals(new java.awt.Color(6, 78, 59));
                         if (estaOcupada != debeEstarOcupada) { cambio = true; break; }
                     }
 
                     if (cambio) {
-                        // Cambio de estado detectado → reconstruir panel (re-cablea listeners)
+                        // Cambio de estado detectado → reconstruir panel
                         PanelMesas.removeAll();
                         panelMesas(idSala, salaActivaCant);
                     }
-                    // Si no hubo cambio, no hacemos nada → cero trabajo extra
                 } catch (Exception e) { /* ignorar */ }
             }
         }.execute();
