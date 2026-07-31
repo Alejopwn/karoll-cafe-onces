@@ -2279,7 +2279,25 @@ public final class Sistema extends javax.swing.JFrame {
                 }
             });
 
+            javax.swing.JMenuItem itemPreparado = new javax.swing.JMenuItem("🟡 Marcar como PREPARADO (Cocina)");
+            itemPreparado.addActionListener(e -> {
+                if (pedDao.marcarPreparado(id_pedido)) {
+                    ToastNotification.exito(this, "Pedido #" + id_pedido + " marcado como PREPARADO.");
+                    ListarPedidos();
+                }
+            });
+
+            javax.swing.JMenuItem itemFinalizarPed = new javax.swing.JMenuItem("✅ Marcar como FINALIZADO / COBRADO");
+            itemFinalizarPed.addActionListener(e -> {
+                if (pedDao.actualizarEstado(id_pedido, "FINALIZADO")) {
+                    ToastNotification.exito(this, "Pedido #" + id_pedido + " finalizado.");
+                    ListarPedidos();
+                }
+            });
+
             popup.add(itemVer);
+            popup.add(itemPreparado);
+            popup.add(itemFinalizarPed);
             popup.add(itemReimprimir);
             popup.addSeparator();
             popup.add(itemAnular);
@@ -4781,6 +4799,31 @@ public final class Sistema extends javax.swing.JFrame {
             });
             System.out.println("Pedido ID: " + ped.getId() + ", Fecha: " + ped.getFecha());
         }
+        // Renderizador con color para la columna Estado en TablePedidos (Índice 6)
+        TablePedidos.getColumnModel().getColumn(6).setCellRenderer(new javax.swing.table.DefaultTableCellRenderer() {
+            @Override
+            public java.awt.Component getTableCellRendererComponent(javax.swing.JTable t, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+                java.awt.Component c = super.getTableCellRendererComponent(t, value, isSelected, hasFocus, row, col);
+                String estadoStr = String.valueOf(value);
+                setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+                setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 13));
+                if ("PREPARADO".equalsIgnoreCase(estadoStr)) {
+                    c.setBackground(new java.awt.Color(120, 53, 15)); // Amber oscuro
+                    c.setForeground(new java.awt.Color(252, 211, 77)); // Amber claro
+                } else if ("FINALIZADO".equalsIgnoreCase(estadoStr)) {
+                    c.setBackground(new java.awt.Color(6, 78, 59)); // Verde oscuro
+                    c.setForeground(new java.awt.Color(52, 211, 153)); // Verde claro
+                } else if ("ANULADO".equalsIgnoreCase(estadoStr)) {
+                    c.setBackground(new java.awt.Color(51, 65, 85)); // Slate 700
+                    c.setForeground(new java.awt.Color(148, 163, 184)); // Slate 400
+                } else {
+                    c.setBackground(new java.awt.Color(127, 29, 29)); // Rojo oscuro
+                    c.setForeground(new java.awt.Color(252, 165, 165)); // Rojo claro
+                }
+                return c;
+            }
+        });
+
         // Ocultar columnas auxiliares de pago
         TablePedidos.getColumnModel().getColumn(7).setMinWidth(0);
         TablePedidos.getColumnModel().getColumn(7).setMaxWidth(0);
@@ -5068,6 +5111,7 @@ public final class Sistema extends javax.swing.JFrame {
         String[][] chips = {
                 { "Todos", "TODOS" },
                 { "Pendientes", "PENDIENTE" },
+                { "Preparados", "PREPARADO" },
                 { "Pagados", "FINALIZADO" },
                 { "Anulados", "ANULADO" }
         };
