@@ -46,6 +46,12 @@ public class Conexion {
                     System.out.println("Columna 'pago_transaccion' agregada a la tabla 'pedidos'.");
                 }
             }
+            if (!columnaExiste(conn, "pedidos", "pago_tarjeta")) {
+                try (java.sql.Statement stmt = conn.createStatement()) {
+                    stmt.execute("ALTER TABLE pedidos ADD COLUMN pago_tarjeta REAL DEFAULT 0.0");
+                    System.out.println("Columna 'pago_tarjeta' agregada a la tabla 'pedidos'.");
+                }
+            }
             // Verificar tablas de inventario
             try (java.sql.Statement stmt = conn.createStatement()) {
                 stmt.execute("CREATE TABLE IF NOT EXISTS inventario ("

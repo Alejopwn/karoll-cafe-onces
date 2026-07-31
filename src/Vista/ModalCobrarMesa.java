@@ -5,15 +5,14 @@ import Modelo.Pedido;
 import Modelo.PedidosDao;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 /**
  * Modal dinámico para cobrar una mesa con soporte para:
- * 1. Todo Junto
+ * 1. Todo Junto (Acumulado de todas las rondas)
  * 2. Partes Iguales
  * 3. Por Rondas
  * 4. Cada Quien lo Suyo (Por Persona)
@@ -52,7 +51,7 @@ public class ModalCobrarMesa extends JDialog {
     }
 
     private void initUI() {
-        setSize(780, 560);
+        setSize(820, 580);
         setLocationRelativeTo(parentFrame);
         setLayout(new BorderLayout(10, 10));
         getContentPane().setBackground(new Color(15, 23, 42));
@@ -62,11 +61,11 @@ public class ModalCobrarMesa extends JDialog {
         pHeader.setOpaque(false);
         pHeader.setBorder(BorderFactory.createEmptyBorder(15, 20, 10, 20));
 
-        JLabel lblTitle = new JLabel("🍽️ " + etiquetaMesa);
+        JLabel lblTitle = new JLabel("🍽️ " + etiquetaMesa + " (" + listaRondas.size() + " ronda" + (listaRondas.size() > 1 ? "s" : "") + ")");
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 22));
         lblTitle.setForeground(Color.WHITE);
 
-        JLabel lblTotal = new JLabel(String.format("Total Acumulado: $%,.2f COP", totalAcumulado));
+        JLabel lblTotal = new JLabel(String.format("Total Consolidado: $%,.2f COP", totalAcumulado));
         lblTotal.setFont(new Font("Segoe UI", Font.BOLD, 20));
         lblTotal.setForeground(new Color(52, 211, 153));
 
@@ -87,23 +86,25 @@ public class ModalCobrarMesa extends JDialog {
         pFooter.setOpaque(false);
         pFooter.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
 
-        JButton btnCobrarTodo = new JButton("💰 Cobrar Todo Junto ($" + String.format("%.0f", totalAcumulado) + ")");
+        JButton btnCobrarTodo = new JButton("💰 Cobrar Todo Junto ($" + String.format("%,.0f", totalAcumulado) + ")");
         btnCobrarTodo.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnCobrarTodo.setBackground(new Color(16, 185, 129));
         btnCobrarTodo.setForeground(Color.WHITE);
-        btnCobrarTodo.setPreferredSize(new Dimension(240, 45));
+        btnCobrarTodo.setPreferredSize(new Dimension(280, 48));
+        btnCobrarTodo.setFocusPainted(false);
+        btnCobrarTodo.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnCobrarTodo.addActionListener(e -> {
-            if (!listaRondas.isEmpty()) {
-                dispose();
-                sistemaInstance.abrirCobroPedido(listaRondas.get(0).getId());
-            }
+            dispose();
+            sistemaInstance.abrirCobroMesaAcumulado(numMesa, idSala);
         });
 
         JButton btnSplitEqual = new JButton("÷ Partes Iguales");
         btnSplitEqual.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnSplitEqual.setBackground(new Color(59, 130, 246));
         btnSplitEqual.setForeground(Color.WHITE);
-        btnSplitEqual.setPreferredSize(new Dimension(160, 45));
+        btnSplitEqual.setPreferredSize(new Dimension(170, 48));
+        btnSplitEqual.setFocusPainted(false);
+        btnSplitEqual.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnSplitEqual.addActionListener(e -> {
             if (totalAcumulado > 0) {
                 FrmSplitBillModal modalSplit = new FrmSplitBillModal((JFrame) parentFrame, numMesa, totalAcumulado);
@@ -115,7 +116,9 @@ public class ModalCobrarMesa extends JDialog {
         btnCerrar.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         btnCerrar.setBackground(new Color(71, 85, 105));
         btnCerrar.setForeground(Color.WHITE);
-        btnCerrar.setPreferredSize(new Dimension(100, 45));
+        btnCerrar.setPreferredSize(new Dimension(100, 48));
+        btnCerrar.setFocusPainted(false);
+        btnCerrar.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnCerrar.addActionListener(e -> dispose());
 
         pFooter.add(btnCobrarTodo);
@@ -129,10 +132,10 @@ public class ModalCobrarMesa extends JDialog {
         p.setOpaque(false);
         p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        String[] cols = {"Ronda ID", "Fecha / Hora", "Estado", "Total", "Acción"};
+        String[] cols = {"Ronda", "Fecha / Hora", "Estado", "Total Ronda"};
         DefaultTableModel model = new DefaultTableModel(cols, 0) {
             @Override
-            public boolean isCellEditable(int r, int c) { return c == 4; }
+            public boolean isCellEditable(int r, int c) { return false; }
         };
 
         for (int i = 0; i < listaRondas.size(); i++) {
@@ -141,22 +144,53 @@ public class ModalCobrarMesa extends JDialog {
                 "Ronda " + (i + 1) + " (#" + r.getId() + ")",
                 r.getFecha(),
                 r.getEstado(),
-                String.format("$%,.2f", r.getTotal()),
-                "Cobrar Ronda"
+                String.format("$%,.2f COP", r.getTotal())
             });
         }
 
         JTable table = new JTable(model);
-        table.setRowHeight(40);
+        table.setRowHeight(42);
         table.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        table.setBackground(new Color(30, 41, 59));
+        table.setForeground(Color.WHITE);
+        table.getTableHeader().setBackground(new Color(15, 23, 42));
+        table.getTableHeader().setForeground(new Color(226, 232, 240));
+        table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
+
+        // Renderizado con color en la columna "Estado"
+        table.getColumnModel().getColumn(2).setCellRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable t, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+                Component c = super.getTableCellRendererComponent(t, value, isSelected, hasFocus, row, col);
+                String estadoStr = String.valueOf(value);
+                setHorizontalAlignment(SwingConstants.CENTER);
+                setFont(new Font("Segoe UI", Font.BOLD, 13));
+                if ("PREPARADO".equalsIgnoreCase(estadoStr)) {
+                    c.setBackground(new Color(120, 53, 15)); // Amber oscuro
+                    c.setForeground(new Color(252, 211, 77)); // Amber claro
+                } else if ("FINALIZADO".equalsIgnoreCase(estadoStr)) {
+                    c.setBackground(new Color(6, 78, 59)); // Verde oscuro
+                    c.setForeground(new Color(52, 211, 153)); // Verde claro
+                } else {
+                    c.setBackground(new Color(127, 29, 29)); // Rojo oscuro
+                    c.setForeground(new Color(252, 165, 165)); // Rojo claro
+                }
+                return c;
+            }
+        });
+
+        TouchScrollHelper.aplicar(new JScrollPane(table));
         p.add(new JScrollPane(table), BorderLayout.CENTER);
 
-        JPanel pActions = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel pActions = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
         pActions.setOpaque(false);
+
         JButton btnNuevaRonda = new JButton("+ Agregar Nueva Ronda");
-        btnNuevaRonda.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        btnNuevaRonda.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnNuevaRonda.setBackground(new Color(245, 158, 11));
         btnNuevaRonda.setForeground(Color.WHITE);
+        btnNuevaRonda.setFocusPainted(false);
+        btnNuevaRonda.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnNuevaRonda.addActionListener(e -> {
             dispose();
             sistemaInstance.crearNuevaRondaMesa(numMesa, idSala);
@@ -172,10 +206,10 @@ public class ModalCobrarMesa extends JDialog {
         p.setOpaque(false);
         p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Control de personas
-        JPanel pTop = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
+        // Control de comensales
+        JPanel pTop = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 5));
         pTop.setOpaque(false);
-        JLabel lblNumPer = new JLabel("Número de Comensales:");
+        JLabel lblNumPer = new JLabel("Comensales:");
         lblNumPer.setForeground(Color.WHITE);
         lblNumPer.setFont(new Font("Segoe UI", Font.BOLD, 14));
 
@@ -186,11 +220,11 @@ public class ModalCobrarMesa extends JDialog {
         pTop.add(lblNumPer);
         pTop.add(spinner);
 
-        // Tabla de asignación
-        String[] cols = {"Producto", "Cantidad", "Precio Unitario", "Asignado a"};
+        // Tabla de productos acumulados
+        String[] cols = {"Producto Consolidado", "Cantidad Total", "Precio Unitario", "Subtotal"};
         DefaultTableModel model = new DefaultTableModel(cols, 0) {
             @Override
-            public boolean isCellEditable(int r, int c) { return c == 3; }
+            public boolean isCellEditable(int r, int c) { return false; }
         };
 
         for (DetallePedido d : detallesAcumulados) {
@@ -198,14 +232,20 @@ public class ModalCobrarMesa extends JDialog {
                 d.getNombre(),
                 d.getCantidad(),
                 String.format("$%,.2f", d.getPrecio()),
-                "Persona 1"
+                String.format("$%,.2f COP", d.getCantidad() * d.getPrecio())
             });
         }
 
         JTable table = new JTable(model);
-        table.setRowHeight(38);
+        table.setRowHeight(40);
         table.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        table.setBackground(new Color(30, 41, 59));
+        table.setForeground(Color.WHITE);
+        table.getTableHeader().setBackground(new Color(15, 23, 42));
+        table.getTableHeader().setForeground(new Color(226, 232, 240));
+        table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
 
+        TouchScrollHelper.aplicar(new JScrollPane(table));
         p.add(pTop, BorderLayout.NORTH);
         p.add(new JScrollPane(table), BorderLayout.CENTER);
 

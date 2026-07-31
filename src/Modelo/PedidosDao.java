@@ -276,6 +276,30 @@ public class PedidosDao {
         return ped;
     }
 
+    public String[] verificarStadoInfo(int mesa, int id_sala) {
+        String[] info = new String[]{"0", ""};
+        String sql = "SELECT id, estado FROM pedidos WHERE num_mesa=? AND id_sala=? AND estado IN ('PENDIENTE', 'PREPARADO') ORDER BY id DESC LIMIT 1";
+        try (Connection con = cn.getConnection();
+             PreparedStatement ps = con != null ? con.prepareStatement(sql) : null) {
+            if (ps == null) return info;
+            ps.setInt(1, mesa);
+            ps.setInt(2, id_sala);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    info[0] = String.valueOf(rs.getInt("id"));
+                    info[1] = rs.getString("estado");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al verificar estado info de mesa: " + e.getMessage());
+        }
+        return info;
+    }
+
+    public boolean marcarPreparado(int id_pedido) {
+        return actualizarEstado(id_pedido, "PREPARADO");
+    }
+
     public boolean actualizarEstado(int id_pedido, String estado) {
         String sql = "UPDATE pedidos SET estado = ? WHERE id = ?";
         try (Connection con = cn.getConnection();
@@ -286,6 +310,23 @@ public class PedidosDao {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Error al actualizar estado del pedido: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean procesarPago(int id_pedido, String tipoPago, double efectivo, double transaccion, double tarjeta) {
+        String sql = "UPDATE pedidos SET estado = 'FINALIZADO', tipo_pago = ?, pago_efectivo = ?, pago_transaccion = ?, pago_tarjeta = ? WHERE id = ?";
+        try (Connection con = cn.getConnection();
+             PreparedStatement ps = con != null ? con.prepareStatement(sql) : null) {
+            if (ps == null) return false;
+            ps.setString(1, tipoPago);
+            ps.setDouble(2, efectivo);
+            ps.setDouble(3, transaccion);
+            ps.setDouble(4, tarjeta);
+            ps.setInt(5, id_pedido);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error al procesar pago: " + e.getMessage());
             return false;
         }
     }
@@ -482,7 +523,14 @@ public class PedidosDao {
         CierreCaja activa = cajaDao.obtenerCajaActiva();
         Integer idCierre = (activa != null) ? activa.getId() : null;
 
-        String sql = "UPDATE pedidos SET estado = ?, pago_efectivo = ?, pago_transaccion = ?, id_cierre = COALESCE(id_cierre, ?) WHERE id = ?";
+        String tipoPago = "EFECTIVO";
+        if (pago_efectivo > 0 && pago_transaccion > 0) {
+            tipoPago = "MIXTO";
+        } else if (pago_transaccion > 0) {
+            tipoPago = "TRANSACCION";
+        }
+
+        String sql = "UPDATE pedidos SET estado = ?, tipo_pago = ?, pago_efectivo = ?, pago_transaccion = ?, id_cierre = COALESCE(id_cierre, ?) WHERE id = ?";
         Connection con = null;
         try {
             con = cn.getConnection();
@@ -491,18 +539,19 @@ public class PedidosDao {
 
             try (PreparedStatement ps = con.prepareStatement(sql)) {
                 ps.setString(1, ESTADO_FINALIZADO);
-                ps.setDouble(2, pago_efectivo);
-                ps.setDouble(3, pago_transaccion);
+                ps.setString(2, tipoPago);
+                ps.setDouble(3, pago_efectivo);
+                ps.setDouble(4, pago_transaccion);
                 if (idCierre != null) {
-                    ps.setInt(4, idCierre);
+                    ps.setInt(5, idCierre);
                 } else {
-                    ps.setNull(4, java.sql.Types.INTEGER);
+                    ps.setNull(5, java.sql.Types.INTEGER);
                 }
-                ps.setInt(5, id_pedido);
+                ps.setInt(6, id_pedido);
                 ps.executeUpdate();
             }
 
-            descontarStockDePedido(id_pedido);
+            descontarStockDePedidoConConexion(con, id_pedido);
             con.commit();
             return true;
         } catch (SQLException e) {
@@ -518,15 +567,74 @@ public class PedidosDao {
         }
     }
 
+    public boolean finalizarMultiplePedidosConPago(List<Integer> idsPedidos, String tipoPago, double pago_efectivo, double pago_transaccion, double pago_tarjeta) {
+        if (idsPedidos == null || idsPedidos.isEmpty()) return false;
+        CajaDao cajaDao = new CajaDao();
+        CierreCaja activa = cajaDao.obtenerCajaActiva();
+        Integer idCierre = (activa != null) ? activa.getId() : null;
+
+        String sql = "UPDATE pedidos SET estado = ?, tipo_pago = ?, pago_efectivo = ?, pago_transaccion = ?, pago_tarjeta = ?, id_cierre = COALESCE(id_cierre, ?) WHERE id = ?";
+        Connection con = null;
+        try {
+            con = cn.getConnection();
+            if (con == null) return false;
+            con.setAutoCommit(false);
+
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
+                for (int i = 0; i < idsPedidos.size(); i++) {
+                    int idPed = idsPedidos.get(i);
+                    ps.setString(1, ESTADO_FINALIZADO);
+                    ps.setString(2, tipoPago);
+                    // Asignamos el monto registrado a la primera ronda y 0 a las demás para no duplicar en caja
+                    ps.setDouble(3, i == 0 ? pago_efectivo : 0.0);
+                    ps.setDouble(4, i == 0 ? pago_transaccion : 0.0);
+                    ps.setDouble(5, i == 0 ? pago_tarjeta : 0.0);
+                    if (idCierre != null) {
+                        ps.setInt(6, idCierre);
+                    } else {
+                        ps.setNull(6, java.sql.Types.INTEGER);
+                    }
+                    ps.setInt(7, idPed);
+                    ps.addBatch();
+                }
+                ps.executeBatch();
+            }
+
+            for (int idPed : idsPedidos) {
+                descontarStockDePedidoConConexion(con, idPed);
+            }
+            con.commit();
+            return true;
+        } catch (SQLException e) {
+            if (con != null) {
+                try { con.rollback(); } catch (SQLException ignored) {}
+            }
+            System.err.println("Error al finalizar múltiples pedidos con pago: " + e.getMessage());
+            return false;
+        } finally {
+            if (con != null) {
+                try { con.setAutoCommit(true); con.close(); } catch (SQLException ignored) {}
+            }
+        }
+    }
+
     /**
      * Descuenta del inventario los componentes consumidos por el pedido.
      */
     public void descontarStockDePedido(int id_pedido) {
+        try (Connection con = cn.getConnection()) {
+            if (con != null) {
+                descontarStockDePedidoConConexion(con, id_pedido);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al obtener conexion para descontar stock: " + e.getMessage());
+        }
+    }
+
+    private void descontarStockDePedidoConConexion(Connection con, int id_pedido) {
         String sql = "SELECT nombre, cantidad FROM detalle_pedidos WHERE id_pedido = ?";
         InventarioDao invDao = new InventarioDao();
-        try (Connection con = cn.getConnection();
-             PreparedStatement ps = con != null ? con.prepareStatement(sql) : null) {
-            if (ps == null) return;
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id_pedido);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {

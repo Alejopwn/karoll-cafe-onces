@@ -164,6 +164,10 @@ public final class Sistema extends javax.swing.JFrame {
         });
         timerReloj.start();
 
+        // 🔔 Gestor de alarmas y notificaciones en segundo plano
+        Modelo.AlarmManager alarmManager = new Modelo.AlarmManager();
+        alarmManager.iniciar(this);
+
         txtIdConfig.setVisible(false);
         txtIdHistorialPedido.setVisible(false);
         txtIdPedido.setVisible(false);
@@ -2765,7 +2769,13 @@ public final class Sistema extends javax.swing.JFrame {
                     new javax.swing.SwingWorker<Boolean, Void>() {
                         @Override
                         protected Boolean doInBackground() {
-                            boolean ok = pedDao.finalizarPedidoConPago(idPedido, ef, tr);
+                            boolean ok;
+                            String tipoPago = (ef > 0 && tr > 0) ? "MIXTO" : (tr > 0 ? "TRANSACCION" : "EFECTIVO");
+                            if (idsRondasAcumuladasCobro != null && idsRondasAcumuladasCobro.size() > 1) {
+                                ok = pedDao.finalizarMultiplePedidosConPago(idsRondasAcumuladasCobro, tipoPago, ef, tr, 0.0);
+                            } else {
+                                ok = pedDao.finalizarPedidoConPago(idPedido, ef, tr);
+                            }
                             if (ok) {
                                 SonidoPOS.reproducirCobro();
                                 SonidoPOS.anunciarVoz("Pedido finalizado con éxito.");
@@ -4232,14 +4242,13 @@ public final class Sistema extends javax.swing.JFrame {
         PanelMesas.revalidate();
         PanelMesas.repaint();
 
-        // 2. Verificar estado de mesas en hilo de fondo (1 sola conexion por mesa,
-        // secuencialmente)
-        new javax.swing.SwingWorker<int[], Void>() {
+        // 2. Verificar estado de mesas en hilo de fondo
+        new javax.swing.SwingWorker<String[][], Void>() {
             @Override
-            protected int[] doInBackground() {
-                int[] estados = new int[cantFinal];
+            protected String[][] doInBackground() {
+                String[][] estados = new String[cantFinal][2];
                 for (int i = 0; i < cantFinal; i++) {
-                    estados[i] = pedDao.verificarStado(i + 1, id_sala);
+                    estados[i] = pedDao.verificarStadoInfo(i + 1, id_sala);
                 }
                 return estados;
             }
@@ -4247,19 +4256,33 @@ public final class Sistema extends javax.swing.JFrame {
             @Override
             protected void done() {
                 try {
-                    int[] estados = get();
+                    String[][] infoEstados = get();
                     for (int i = 0; i < cantFinal; i++) {
-                        final int verificar = estados[i];
+                        final String[] info = infoEstados[i];
+                        final int verificar = Integer.parseInt(info[0]);
+                        final String estadoPed = info[1];
                         final int num_mesa = i + 1;
                         final String etiqueta = (num_mesa > cantFinal - 4) ? "DOMICILIO N\u00b0: " + num_mesa
                                 : "MESA N\u00b0: " + num_mesa;
                         JButton boton = botones[i];
+
                         if (verificar > 0) {
-                            boton.setBackground(new java.awt.Color(127, 29, 29));
-                            boton.setForeground(new java.awt.Color(252, 165, 165));
-                            boton.setBorder(new RoundedBorder(16, new java.awt.Color(220, 38, 38),
-                                    new java.awt.Insets(10, 10, 10, 10)));
-                            boton.setToolTipText("Ocupada - Click para ver pedido");
+                            if ("PREPARADO".equalsIgnoreCase(estadoPed)) {
+                                // 🟡 Estado AMARILLO (Pedido preparado / Entregado / Esperando cobro)
+                                boton.setBackground(new java.awt.Color(120, 53, 15)); // Amber oscuro
+                                boton.setForeground(new java.awt.Color(252, 211, 77)); // Amber claro
+                                boton.setBorder(new RoundedBorder(16, new java.awt.Color(245, 158, 11),
+                                        new java.awt.Insets(10, 10, 10, 10)));
+                                boton.setToolTipText("Preparado / Esperando pago - Click para ver o cobrar");
+                            } else {
+                                // 🔴 Estado ROJO (Pedido activo en cocina)
+                                boton.setBackground(new java.awt.Color(127, 29, 29));
+                                boton.setForeground(new java.awt.Color(252, 165, 165));
+                                boton.setBorder(new RoundedBorder(16, new java.awt.Color(220, 38, 38),
+                                        new java.awt.Insets(10, 10, 10, 10)));
+                                boton.setToolTipText("Ocupada en cocina - Click para ver pedido");
+                            }
+
                             // ⏱️ Cronómetro: mostrar tiempo transcurrido desde que se abrió el pedido
                             try {
                                 Modelo.Pedido p = pedDao.verPedido(verificar);
@@ -4269,13 +4292,15 @@ public final class Sistema extends javax.swing.JFrame {
                                     long minutos = (System.currentTimeMillis() - fechaApertura.getTime()) / 60000;
                                     String tiempoStr = minutos < 60 ? minutos + " min"
                                             : (minutos / 60) + "h " + (minutos % 60) + "m";
-                                    boton.setText("<html><center>" + etiqueta + "<br><font size='2' color='#FCA5A5'>⏱ "
-                                            + tiempoStr + "</font></center></html>");
+                                    String tagEstado = "PREPARADO".equalsIgnoreCase(estadoPed) ? " 🟡 PREPARADO" : "";
+                                    boton.setText("<html><center>" + etiqueta + "<br><font size='2' color='#FCD34D'>⏱ "
+                                            + tiempoStr + tagEstado + "</font></center></html>");
                                 }
                             } catch (Exception ex) {
                                 boton.setText(etiqueta);
                             }
                         } else {
+                            // 🟢 Estado VERDE (Mesa libre)
                             boton.setBackground(new java.awt.Color(6, 78, 59));
                             boton.setForeground(new java.awt.Color(52, 211, 153));
                             boton.setBorder(new RoundedBorder(16, new java.awt.Color(5, 150, 105),
@@ -4289,12 +4314,21 @@ public final class Sistema extends javax.swing.JFrame {
                         }
 
                         // 🖱️ Menú clic derecho O pulsación larga (táctil) en mesa
+                        final boolean[] fueLongPress = new boolean[]{false};
                         boton.addMouseListener(new java.awt.event.MouseAdapter() {
                             private javax.swing.Timer longPressTimer;
 
                             private void mostrarMenuMesa(java.awt.Component comp, int x, int y) {
                                 if (verificar <= 0) return;
                                 javax.swing.JPopupMenu popupMesa = new javax.swing.JPopupMenu();
+
+                                javax.swing.JMenuItem itemMarcarPreparado = new javax.swing.JMenuItem("🟡 Marcar como Preparado");
+                                itemMarcarPreparado.addActionListener(ev -> {
+                                    pedDao.marcarPreparado(verificar);
+                                    PanelMesas.removeAll();
+                                    panelMesas(id_sala, cant);
+                                    ToastNotification.exito(Sistema.this, etiqueta + ": ¡Pedido marcado como PREPARADO!");
+                                });
 
                                 javax.swing.JMenuItem itemVerPedido = new javax.swing.JMenuItem(
                                         "Ver Pedido / Agregar Platos");
@@ -4347,6 +4381,7 @@ public final class Sistema extends javax.swing.JFrame {
                                     }
                                 });
 
+                                popupMesa.add(itemMarcarPreparado);
                                 popupMesa.add(itemVerPedido);
                                 popupMesa.add(itemCobrar);
                                 popupMesa.addSeparator();
@@ -4358,10 +4393,13 @@ public final class Sistema extends javax.swing.JFrame {
 
                             @Override
                             public void mousePressed(java.awt.event.MouseEvent evt) {
+                                fueLongPress[0] = false;
                                 if (javax.swing.SwingUtilities.isRightMouseButton(evt) && verificar > 0) {
+                                    fueLongPress[0] = true;
                                     mostrarMenuMesa(evt.getComponent(), evt.getX(), evt.getY());
                                 } else if (javax.swing.SwingUtilities.isLeftMouseButton(evt) && verificar > 0) {
                                     longPressTimer = new javax.swing.Timer(600, ev -> {
+                                        fueLongPress[0] = true;
                                         mostrarMenuMesa(evt.getComponent(), evt.getX(), evt.getY());
                                     });
                                     longPressTimer.setRepeats(false);
@@ -4378,6 +4416,10 @@ public final class Sistema extends javax.swing.JFrame {
                         });
 
                         boton.addActionListener((ActionEvent e) -> {
+                            if (fueLongPress[0]) {
+                                fueLongPress[0] = false;
+                                return;
+                            }
                             if (verificar > 0) {
                                 ModalCobrarMesa modalCobro = new ModalCobrarMesa(Sistema.this, Sistema.this, num_mesa, id_sala, etiqueta);
                                 modalCobro.setVisible(true);
@@ -4421,10 +4463,51 @@ public final class Sistema extends javax.swing.JFrame {
         }.execute();
     }
 
+    private java.util.List<Integer> idsRondasAcumuladasCobro = new java.util.ArrayList<>();
+
     public void abrirCobroPedido(int idPedido) {
+        idsRondasAcumuladasCobro.clear();
+        idsRondasAcumuladasCobro.add(idPedido);
+        txtIdPedido.setText("" + idPedido);
         LimpiarTable();
         verPedido(idPedido);
         verPedidoDetalle(idPedido);
+        btnFinalizar.setEnabled(true);
+        btnPdfPedido.setEnabled(false);
+        jTabbedPane1.setSelectedIndex(4);
+    }
+
+    public void abrirCobroMesaAcumulado(int numMesa, int idSala) {
+        idsRondasAcumuladasCobro.clear();
+        java.util.List<Modelo.Pedido> rondas = pedDao.getRondasMesa(numMesa, idSala);
+        if (rondas.isEmpty()) return;
+
+        int primerId = rondas.get(0).getId();
+        txtIdPedido.setText("" + primerId);
+
+        for (Modelo.Pedido r : rondas) {
+            idsRondasAcumuladasCobro.add(r.getId());
+        }
+
+        // Cargamos el primer pedido para datos de cabecera
+        verPedido(primerId);
+
+        // Cargamos TODOS los detalles acumulados de todas las rondas en tableFinalizar
+        java.util.List<Modelo.DetallePedido> detalles = pedDao.getDetallesAcumuladosMesa(numMesa, idSala);
+        DefaultTableModel model = (DefaultTableModel) tableFinalizar.getModel();
+        model.setRowCount(0);
+        for (Modelo.DetallePedido d : detalles) {
+            model.addRow(new Object[]{
+                d.getId(),
+                d.getNombre(),
+                d.getCantidad(),
+                d.getPrecio(),
+                d.getCantidad() * d.getPrecio(),
+                d.getComentario() != null ? d.getComentario() : ""
+            });
+        }
+        colorHeader(tableFinalizar);
+        TotalPagar(tableFinalizar, totalFinalizar);
         btnFinalizar.setEnabled(true);
         btnPdfPedido.setEnabled(false);
         jTabbedPane1.setSelectedIndex(4);
@@ -5362,16 +5445,27 @@ public final class Sistema extends javax.swing.JFrame {
         sep2.setForeground(UIUtils.COLOR_BORDER_DARK);
         navBtnsPanel.add(sep2);
 
-        // Botón Notas Adhesivas
-        javax.swing.JButton btnNavNotas = UIUtils.crearBoton("Notas", new java.awt.Color(234, 179, 8));
-        btnNavNotas.setForeground(new java.awt.Color(15, 23, 42));
-        btnNavNotas.setFont(getFontBold(12f));
-        btnNavNotas.setToolTipText("Notas Adhesivas & Recordatorios del Turno");
-        btnNavNotas.addActionListener(e -> {
-            ModuloNotas mn = new ModuloNotas(this);
-            mn.abrirModalNotas();
+        // Botón Recordatorios
+        javax.swing.JButton btnNavRecordatorios = UIUtils.crearBoton("Recordatorios", new java.awt.Color(234, 179, 8));
+        btnNavRecordatorios.setForeground(new java.awt.Color(15, 23, 42));
+        btnNavRecordatorios.setFont(getFontBold(12f));
+        btnNavRecordatorios.setToolTipText("Recordatorios POS con Fecha, Hora y Prioridad");
+        btnNavRecordatorios.addActionListener(e -> {
+            ModuloRecordatorios mr = new ModuloRecordatorios();
+            mr.abrirComoVentanaModal(this);
         });
-        navBtnsPanel.add(btnNavNotas);
+        navBtnsPanel.add(btnNavRecordatorios);
+
+        // Botón Tareas Empleados
+        javax.swing.JButton btnNavTareas = UIUtils.crearBoton("Tareas", new java.awt.Color(99, 102, 241));
+        btnNavTareas.setForeground(java.awt.Color.WHITE);
+        btnNavTareas.setFont(getFontBold(12f));
+        btnNavTareas.setToolTipText("Asignación de Tareas y Checklists para Empleados");
+        btnNavTareas.addActionListener(e -> {
+            ModuloTareas mt = new ModuloTareas();
+            mt.abrirComoVentanaModal(this);
+        });
+        navBtnsPanel.add(btnNavTareas);
 
         // Botón Sonidos POS (Exclusivo Administrador)
         javax.swing.JButton btnNavSonido = UIUtils.crearBoton("Sonidos", new java.awt.Color(30, 41, 59));

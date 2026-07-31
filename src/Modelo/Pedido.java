@@ -14,8 +14,17 @@ public class Pedido {
     private String estado;
     private double pago_efectivo;
     private double pago_transaccion;
+    private double pago_tarjeta;
 
     public Pedido() {
+    }
+
+    public double getPago_tarjeta() {
+        return pago_tarjeta;
+    }
+
+    public void setPago_tarjeta(double pago_tarjeta) {
+        this.pago_tarjeta = pago_tarjeta;
     }
 
     public Pedido(int id, int id_sala, int num_mesa, String fecha, double total, String sala, String usuario, String estado) {
