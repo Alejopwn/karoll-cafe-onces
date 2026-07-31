@@ -299,6 +299,33 @@ public class PedidosDao {
         return actualizarEstado(id_pedido, "PREPARADO");
     }
 
+    /**
+     * Consulta el avance de rondas activas para una mesa.
+     * Retorna array: [0] = cantidad preparadas, [1] = cantidad total de rondas activas.
+     */
+    public int[] getAvanceRondasMesa(int numMesa, int idSala) {
+        String sql = "SELECT estado FROM pedidos WHERE num_mesa=? AND id_sala=? AND estado IN ('PENDIENTE', 'PREPARADO')";
+        int preparadas = 0;
+        int total = 0;
+        try (Connection con = cn.getConnection();
+             PreparedStatement ps = con != null ? con.prepareStatement(sql) : null) {
+            if (ps == null) return new int[]{0, 0};
+            ps.setInt(1, numMesa);
+            ps.setInt(2, idSala);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    total++;
+                    if ("PREPARADO".equalsIgnoreCase(rs.getString("estado"))) {
+                        preparadas++;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al consultar avance de rondas: " + e.getMessage());
+        }
+        return new int[]{preparadas, total};
+    }
+
     public boolean marcarTodasPreparadasMesa(int numMesa, int idSala) {
         String sql = "UPDATE pedidos SET estado = 'PREPARADO' WHERE num_mesa = ? AND id_sala = ? AND estado = 'PENDIENTE'";
         try (Connection con = cn.getConnection();

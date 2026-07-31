@@ -29,6 +29,7 @@ public class ModalCobrarMesa extends JDialog {
     private List<Pedido> listaRondas;
     private List<DetallePedido> detallesAcumulados;
     private double totalAcumulado;
+    private JTable table;
 
     public ModalCobrarMesa(Frame parent, Sistema sistemaInstance, int numMesa, int idSala, String etiquetaMesa) {
         super(parent, "Gestión de Pedidos / Cobro - " + etiquetaMesa, true);
@@ -86,25 +87,34 @@ public class ModalCobrarMesa extends JDialog {
         pFooter.setOpaque(false);
         pFooter.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
 
-        JButton btnMarcarPreparado = new JButton("🟡 Marcar como PREPARADO");
-        btnMarcarPreparado.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        btnMarcarPreparado.setBackground(new Color(245, 158, 11));
-        btnMarcarPreparado.setForeground(Color.WHITE);
-        btnMarcarPreparado.setPreferredSize(new Dimension(220, 48));
-        btnMarcarPreparado.setFocusPainted(false);
-        btnMarcarPreparado.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnMarcarPreparado.addActionListener(e -> {
-            pedDao.marcarTodasPreparadasMesa(numMesa, idSala);
-            cargarDatos();
-            initUI();
-            ToastNotification.exito(parentFrame, "¡" + etiquetaMesa + " marcada como PREPARADO!");
+        JButton btnMarcarRondaSelec = new JButton("🟡 Preparar Ronda Seleccionada");
+        btnMarcarRondaSelec.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        btnMarcarRondaSelec.setBackground(new Color(217, 119, 6));
+        btnMarcarRondaSelec.setForeground(Color.WHITE);
+        btnMarcarRondaSelec.setPreferredSize(new Dimension(230, 48));
+        btnMarcarRondaSelec.setFocusPainted(false);
+        btnMarcarRondaSelec.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnMarcarRondaSelec.setToolTipText("Marca ÚNICAMENTE la ronda seleccionada en la tabla como lista");
+        btnMarcarRondaSelec.addActionListener(e -> {
+            if (table != null && table.getSelectedRow() >= 0) {
+                int row = table.getSelectedRow();
+                if (row < listaRondas.size()) {
+                    Pedido r = listaRondas.get(row);
+                    pedDao.marcarPreparado(r.getId());
+                    cargarDatos();
+                    initUI();
+                    ToastNotification.exito(parentFrame, "¡Ronda #" + r.getId() + " marcada como PREPARADA!");
+                }
+            } else {
+                ToastNotification.advertencia(parentFrame, "Seleccione una ronda en la tabla para marcar como preparada.");
+            }
         });
 
         JButton btnCobrarTodo = new JButton("💰 Cobrar Todo Junto ($" + String.format("%,.0f", totalAcumulado) + ")");
         btnCobrarTodo.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnCobrarTodo.setBackground(new Color(16, 185, 129));
         btnCobrarTodo.setForeground(Color.WHITE);
-        btnCobrarTodo.setPreferredSize(new Dimension(280, 48));
+        btnCobrarTodo.setPreferredSize(new Dimension(260, 48));
         btnCobrarTodo.setFocusPainted(false);
         btnCobrarTodo.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnCobrarTodo.addActionListener(e -> {
@@ -116,7 +126,7 @@ public class ModalCobrarMesa extends JDialog {
         btnSplitEqual.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnSplitEqual.setBackground(new Color(59, 130, 246));
         btnSplitEqual.setForeground(Color.WHITE);
-        btnSplitEqual.setPreferredSize(new Dimension(170, 48));
+        btnSplitEqual.setPreferredSize(new Dimension(160, 48));
         btnSplitEqual.setFocusPainted(false);
         btnSplitEqual.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnSplitEqual.addActionListener(e -> {
@@ -130,12 +140,12 @@ public class ModalCobrarMesa extends JDialog {
         btnCerrar.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         btnCerrar.setBackground(new Color(71, 85, 105));
         btnCerrar.setForeground(Color.WHITE);
-        btnCerrar.setPreferredSize(new Dimension(100, 48));
+        btnCerrar.setPreferredSize(new Dimension(90, 48));
         btnCerrar.setFocusPainted(false);
         btnCerrar.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnCerrar.addActionListener(e -> dispose());
 
-        pFooter.add(btnMarcarPreparado);
+        pFooter.add(btnMarcarRondaSelec);
         pFooter.add(btnCobrarTodo);
         pFooter.add(btnSplitEqual);
         pFooter.add(btnCerrar);
@@ -163,7 +173,7 @@ public class ModalCobrarMesa extends JDialog {
             });
         }
 
-        JTable table = new JTable(model);
+        table = new JTable(model);
         table.setRowHeight(42);
         table.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         table.setBackground(new Color(30, 41, 59));

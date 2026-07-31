@@ -1279,37 +1279,88 @@ public final class Sistema extends javax.swing.JFrame {
             tableFinalizar.getColumnModel().getColumn(4).setPreferredWidth(60);
         }
 
-        jPanel25.add(jScrollPane13, new org.netbeans.lib.awtextra.AbsoluteConstraints(39, 13, 1030, 316));
+        jPanel25.add(jScrollPane13, new org.netbeans.lib.awtextra.AbsoluteConstraints(25, 15, 780, 550));
         jPanel25.add(txtIdPedido, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 390, 50, -1));
 
-        jLabel7.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(148, 163, 184));
         jLabel7.setText("Fecha y Hora:");
-        jPanel25.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 350, -1, -1));
-
-        jLabel8.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
-        jLabel8.setText("Sala:");
-        jPanel25.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 400, -1, -1));
-
-        jLabel9.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
-        jLabel9.setText("NÂ° Mesa:");
-        jPanel25.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 450, -1, -1));
+        jPanel25.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(825, 15, 230, 20));
 
         txtFechaHora.setEditable(false);
-        jPanel25.add(txtFechaHora, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 350, 240, 30));
+        txtFechaHora.setFont(new java.awt.Font("Segoe UI", 0, 13));
+        jPanel25.add(txtFechaHora, new org.netbeans.lib.awtextra.AbsoluteConstraints(825, 38, 230, 32));
+
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(148, 163, 184));
+        jLabel8.setText("Sala / Salón:");
+        jPanel25.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(825, 78, 230, 20));
 
         txtSalaFinalizar.setEditable(false);
-        jPanel25.add(txtSalaFinalizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 400, 150, 30));
+        txtSalaFinalizar.setFont(new java.awt.Font("Segoe UI", 0, 13));
+        jPanel25.add(txtSalaFinalizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(825, 100, 230, 32));
+
+        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(148, 163, 184));
+        jLabel9.setText("N° Mesa:");
+        jPanel25.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(825, 140, 230, 20));
 
         txtNumMesaFinalizar.setEditable(false);
-        jPanel25.add(txtNumMesaFinalizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 450, 240, 30));
+        txtNumMesaFinalizar.setFont(new java.awt.Font("Segoe UI", 1, 14));
+        txtNumMesaFinalizar.setForeground(new java.awt.Color(251, 191, 36));
+        jPanel25.add(txtNumMesaFinalizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(825, 162, 230, 32));
 
-        btnPdfPedido.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/pdf.png"))); // NOI18N
+        javax.swing.JLabel lblTotalTitle = new javax.swing.JLabel("TOTAL A PAGAR:");
+        lblTotalTitle.setFont(new java.awt.Font("Segoe UI", 1, 14));
+        lblTotalTitle.setForeground(new java.awt.Color(226, 232, 240));
+        jPanel25.add(lblTotalTitle, new org.netbeans.lib.awtextra.AbsoluteConstraints(825, 208, 230, 22));
+
+        totalFinalizar.setFont(new java.awt.Font("Segoe UI", 1, 24));
+        totalFinalizar.setForeground(new java.awt.Color(16, 185, 129));
+        totalFinalizar.setText("0.00");
+        jPanel25.add(totalFinalizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(825, 232, 230, 40));
+
+        btnFinalizar.setBackground(new java.awt.Color(16, 185, 129));
+        btnFinalizar.setFont(new java.awt.Font("Segoe UI", 1, 15));
+        btnFinalizar.setForeground(new java.awt.Color(255, 255, 255));
+        btnFinalizar.setText("💰 FINALIZAR Y COBRAR");
+        btnFinalizar.setFocusPainted(false);
+        btnFinalizar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jPanel25.add(btnFinalizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(825, 285, 230, 50));
+
+        btnAddPlatoFinalizar.setBackground(new java.awt.Color(37, 99, 235));
+        btnAddPlatoFinalizar.setFont(new java.awt.Font("Segoe UI", 1, 13));
+        btnAddPlatoFinalizar.setForeground(new java.awt.Color(255, 255, 255));
+        btnAddPlatoFinalizar.setText("➕ Agregar Plato");
+        btnAddPlatoFinalizar.setFocusPainted(false);
+        btnAddPlatoFinalizar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jPanel25.add(btnAddPlatoFinalizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(825, 348, 230, 42));
+
+        btnEliminarPlatoFinalizar.setBackground(new java.awt.Color(220, 38, 38));
+        btnEliminarPlatoFinalizar.setFont(new java.awt.Font("Segoe UI", 1, 13));
+        btnEliminarPlatoFinalizar.setForeground(new java.awt.Color(255, 255, 255));
+        btnEliminarPlatoFinalizar.setText("🗑️ Eliminar Plato");
+        btnEliminarPlatoFinalizar.setFocusPainted(false);
+        btnEliminarPlatoFinalizar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jPanel25.add(btnEliminarPlatoFinalizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(825, 400, 230, 42));
+
+        btnPdfPedido.setBackground(new java.awt.Color(51, 65, 85));
+        btnPdfPedido.setFont(new java.awt.Font("Segoe UI", 1, 13));
+        btnPdfPedido.setForeground(new java.awt.Color(255, 255, 255));
+        btnPdfPedido.setText("🖨️ Ticket PDF");
+        btnPdfPedido.setFocusPainted(false);
+        btnPdfPedido.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnPdfPedido.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnPdfPedidoActionPerformed(evt);
             }
         });
-        jPanel25.add(btnPdfPedido, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 440, 110, 40));
+        jPanel25.add(btnPdfPedido, new org.netbeans.lib.awtextra.AbsoluteConstraints(825, 452, 230, 42));
+
+        btnImprimir.setVisible(false);
+        jComboSalas.setVisible(false);
+        btnEfectivo.setVisible(false);
+        btnTransaccion.setVisible(false);
 
         txtIdHistorialPedido.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1317,59 +1368,6 @@ public final class Sistema extends javax.swing.JFrame {
             }
         });
         jPanel25.add(txtIdHistorialPedido, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 450, 50, -1));
-
-        btnEliminarPlatoFinalizar.setBackground(new java.awt.Color(220, 20, 60));
-        btnEliminarPlatoFinalizar.setForeground(new java.awt.Color(255, 255, 255));
-        btnEliminarPlatoFinalizar.setText("Eliminar");
-        btnEliminarPlatoFinalizar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEliminarPlatoFinalizarActionPerformed(evt);
-            }
-        });
-        jPanel25.add(btnEliminarPlatoFinalizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(920, 510, 110, 40));
-
-        btnAddPlatoFinalizar.setBackground(new java.awt.Color(46, 204, 113));
-        btnAddPlatoFinalizar.setForeground(new java.awt.Color(255, 255, 255));
-        btnAddPlatoFinalizar.setText("Agregar");
-        btnAddPlatoFinalizar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAddPlatoFinalizarActionPerformed(evt);
-            }
-        });
-        jPanel25.add(btnAddPlatoFinalizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 510, 110, 40));
-
-        btnImprimir.setText("Imprimir ");
-        btnImprimir.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnImprimirActionPerformed(evt);
-            }
-        });
-        jPanel25.add(btnImprimir, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 440, 90, 40));
-
-        jComboSalas.setModel(new javax.swing.DefaultComboBoxModel<>(
-                new String[] { "Seleccionar", "Efectivo", "Transaccion", "Transaccion-efectivo", " " }));
-        jComboSalas.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboSalasActionPerformed(evt);
-            }
-        });
-        jPanel25.add(jComboSalas, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 400, 90, 30));
-
-        btnEfectivo.setText("Efectivo");
-        btnEfectivo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEfectivoActionPerformed(evt);
-            }
-        });
-        jPanel25.add(btnEfectivo, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 510, 110, 40));
-
-        btnTransaccion.setText("Transaccion");
-        btnTransaccion.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnTransaccionActionPerformed(evt);
-            }
-        });
-        jPanel25.add(btnTransaccion, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 510, 110, 40));
 
         jTabbedPane1.addTab("Finalizar Pedido", jPanel25);
 
@@ -4285,20 +4283,25 @@ public final class Sistema extends javax.swing.JFrame {
                         JButton boton = botones[i];
 
                         if (verificar > 0) {
-                            if ("PREPARADO".equalsIgnoreCase(estadoPed)) {
-                                // 🟡 Estado AMARILLO (Pedido preparado / Entregado / Esperando cobro)
+                            int[] avance = pedDao.getAvanceRondasMesa(num_mesa, id_sala);
+                            int preparadas = avance[0];
+                            int totalRondas = avance[1];
+                            boolean todasListas = (totalRondas > 0 && preparadas == totalRondas);
+
+                            if (todasListas || "PREPARADO".equalsIgnoreCase(estadoPed)) {
+                                // 🟡 Estado AMARILLO (Todas las rondas preparadas)
                                 boton.setBackground(new java.awt.Color(120, 53, 15)); // Amber oscuro
                                 boton.setForeground(new java.awt.Color(252, 211, 77)); // Amber claro
                                 boton.setBorder(new RoundedBorder(16, new java.awt.Color(245, 158, 11),
                                         new java.awt.Insets(10, 10, 10, 10)));
-                                boton.setToolTipText("Preparado / Esperando pago - Click para ver o cobrar");
+                                boton.setToolTipText("¡Todas las rondas listas! Click para cobrar");
                             } else {
-                                // 🔴 Estado ROJO (Pedido activo en cocina)
+                                // 🔴 Estado ROJO (Rondas en cocina)
                                 boton.setBackground(new java.awt.Color(127, 29, 29));
                                 boton.setForeground(new java.awt.Color(252, 165, 165));
                                 boton.setBorder(new RoundedBorder(16, new java.awt.Color(220, 38, 38),
                                         new java.awt.Insets(10, 10, 10, 10)));
-                                boton.setToolTipText("Ocupada en cocina - Click para ver pedido");
+                                boton.setToolTipText("Ocupada en cocina - Click para ver o administrar rondas");
                             }
 
                             // ⏱️ Cronómetro: mostrar tiempo transcurrido desde que se abrió el pedido
@@ -4310,7 +4313,7 @@ public final class Sistema extends javax.swing.JFrame {
                                     long minutos = (System.currentTimeMillis() - fechaApertura.getTime()) / 60000;
                                     String tiempoStr = minutos < 60 ? minutos + " min"
                                             : (minutos / 60) + "h " + (minutos % 60) + "m";
-                                    String tagEstado = "PREPARADO".equalsIgnoreCase(estadoPed) ? " 🟡 PREPARADO" : "";
+                                    String tagEstado = todasListas ? " • 🟡 PREPARADO" : (totalRondas > 1 ? " • (" + preparadas + "/" + totalRondas + " Listas)" : "");
                                     boton.setText("<html><center>" + etiqueta + "<br><font size='2' color='#FCD34D'>⏱ "
                                             + tiempoStr + tagEstado + "</font></center></html>");
                                 }
