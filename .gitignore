@@ -1,19 +1,33 @@
+# Archivos compilados
+bin/
 build/
 dist/
+*.class
+
+# IDE y proyecto
 nbproject/private/
-out/
+nbproject/build-impl.xml
+.vscode/
 .idea/
-.backups/
-.reporte_oculto/
+out/
+*.iml
+
+# Scripts de compilación y empaquetado (específicos de esta máquina)
+compilar.bat
+crear-ejecutable.bat
+crear_exe.bat
+abrir-puerto-android.bat
+
+# Datos sensibles del negocio
+restaurante.db
 restaurante.db-shm
 restaurante.db-wal
-
-# Datos sensibles del negocio — NUNCA subir a GitHub
-restaurante.db
 notas_pos.txt
 
-# Ejecutable empaquetado con runtime Java (muy pesado, no es código fuente)
+# Ejecutable empaquetado con runtime Java
 Comuneros-POS/
 
 # Archivos generados
 html_dump.html
+.backups/
+.reporte_oculto/
