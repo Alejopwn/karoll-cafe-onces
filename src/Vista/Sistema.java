@@ -106,13 +106,16 @@ public final class Sistema extends javax.swing.JFrame {
 
         btnModificarUsua.setEnabled(false);
 
-        // Estilos modernos en botones principales (hover visual suave)
+        this.setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
+
+        // Estilos modernos en botones principales (hover visual suave + táctil 55px)
         javax.swing.JButton[] btnsPrincipales = { btnSala, btnCaja, btnInventario, btnUsuarios, btnConfig, btnPlatos,
                 btnVentas };
         for (javax.swing.JButton btn : btnsPrincipales) {
             btn.setBackground(new java.awt.Color(60, 63, 65));
             btn.setForeground(java.awt.Color.WHITE);
-            btn.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 12));
+            btn.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 14));
+            btn.setPreferredSize(new java.awt.Dimension(160, 55));
             btn.setFocusPainted(false);
             btn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
@@ -177,14 +180,20 @@ public final class Sistema extends javax.swing.JFrame {
         totalFinalizar.setForeground(new java.awt.Color(46, 204, 113));
         totalFinalizar.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 24));
 
-        // UX: Mejoras en Tablas (Hover + Zebra)
+        // UX: Mejoras en Tablas (Hover + Zebra + Táctil 48px)
         javax.swing.JTable[] tablas = { tableSala, TableUsuarios, TablePlatos, TablePedidos, tableMenu, tableFinalizar,
                 tblTemPlatos };
         for (javax.swing.JTable t : tablas) {
-            t.setRowHeight(30);
+            t.setRowHeight(48); // Altura optimizada para pantalla táctil
             t.setSelectionBackground(new java.awt.Color(41, 128, 185)); // Azul brillante al seleccionar
             t.setSelectionForeground(java.awt.Color.WHITE);
-            t.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 14));
+            t.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 15));
+            if (t.getParent() instanceof javax.swing.JViewport) {
+                javax.swing.JViewport vp = (javax.swing.JViewport) t.getParent();
+                if (vp.getParent() instanceof javax.swing.JScrollPane) {
+                    TouchScrollHelper.aplicar((javax.swing.JScrollPane) vp.getParent());
+                }
+            }
             // Hover (MouseMotionListener)
             t.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
                 int lastRow = -1;
@@ -4279,73 +4288,91 @@ public final class Sistema extends javax.swing.JFrame {
                             boton.removeActionListener(al);
                         }
 
-                        // 🖱️ Menú clic derecho en mesa
+                        // 🖱️ Menú clic derecho O pulsación larga (táctil) en mesa
                         boton.addMouseListener(new java.awt.event.MouseAdapter() {
+                            private javax.swing.Timer longPressTimer;
+
+                            private void mostrarMenuMesa(java.awt.Component comp, int x, int y) {
+                                if (verificar <= 0) return;
+                                javax.swing.JPopupMenu popupMesa = new javax.swing.JPopupMenu();
+
+                                javax.swing.JMenuItem itemVerPedido = new javax.swing.JMenuItem(
+                                        "Ver Pedido / Agregar Platos");
+                                itemVerPedido.addActionListener(ev -> {
+                                    LimpiarTable();
+                                    verPedido(verificar);
+                                    verPedidoDetalle(verificar);
+                                    btnFinalizar.setEnabled(true);
+                                    jTabbedPane1.setSelectedIndex(4);
+                                });
+
+                                javax.swing.JMenuItem itemCobrar = new javax.swing.JMenuItem(
+                                        "Ir Directo a Cobrar");
+                                itemCobrar.addActionListener(ev -> {
+                                    LimpiarTable();
+                                    verPedido(verificar);
+                                    verPedidoDetalle(verificar);
+                                    btnFinalizar.setEnabled(true);
+                                    jTabbedPane1.setSelectedIndex(4);
+                                    btnFinalizar.doClick();
+                                });
+
+                                javax.swing.JMenuItem itemPidientoCuenta = new javax.swing.JMenuItem(
+                                        "Marcar: Pidió la Cuenta");
+                                itemPidientoCuenta.addActionListener(ev -> {
+                                    boton.setBackground(new java.awt.Color(120, 53, 15)); // Amber oscuro
+                                    boton.setForeground(new java.awt.Color(252, 211, 77)); // Amber claro
+                                    boton.setBorder(new RoundedBorder(16, new java.awt.Color(245, 158, 11),
+                                            new java.awt.Insets(10, 10, 10, 10)));
+                                    boton.setToolTipText("Pidió la cuenta");
+                                    try {
+                                        boton.setText("<html><center>" + etiqueta
+                                                + "<br><font color='#FCD34D'>PIDIÓ CUENTA</font></center></html>");
+                                    } catch (Exception ex) {
+                                    }
+                                    ToastNotification.advertencia(Sistema.this,
+                                            etiqueta + ": ¡Cliente pidió la cuenta!");
+                                });
+
+                                javax.swing.JMenuItem itemLiberar = new javax.swing.JMenuItem("🧹 Liberar Mesa");
+                                itemLiberar.addActionListener(ev -> {
+                                    int conf = JOptionPane.showConfirmDialog(Sistema.this,
+                                            "¿Liberar " + etiqueta + " sin cobrar?", "Confirmar",
+                                            JOptionPane.YES_NO_OPTION);
+                                    if (conf == JOptionPane.YES_OPTION) {
+                                        pedDao.actualizarEstado(verificar, "ANULADO");
+                                        PanelMesas.removeAll();
+                                        panelMesas(id_sala, cant);
+                                        ToastNotification.exito(Sistema.this, etiqueta + " liberada.");
+                                    }
+                                });
+
+                                popupMesa.add(itemVerPedido);
+                                popupMesa.add(itemCobrar);
+                                popupMesa.addSeparator();
+                                popupMesa.add(itemPidientoCuenta);
+                                popupMesa.addSeparator();
+                                popupMesa.add(itemLiberar);
+                                popupMesa.show(comp, x, y);
+                            }
+
                             @Override
                             public void mousePressed(java.awt.event.MouseEvent evt) {
                                 if (javax.swing.SwingUtilities.isRightMouseButton(evt) && verificar > 0) {
-                                    javax.swing.JPopupMenu popupMesa = new javax.swing.JPopupMenu();
-
-                                    javax.swing.JMenuItem itemVerPedido = new javax.swing.JMenuItem(
-                                            "Ver Pedido / Agregar Platos");
-                                    itemVerPedido.addActionListener(ev -> {
-                                        LimpiarTable();
-                                        verPedido(verificar);
-                                        verPedidoDetalle(verificar);
-                                        btnFinalizar.setEnabled(true);
-                                        jTabbedPane1.setSelectedIndex(4);
+                                    mostrarMenuMesa(evt.getComponent(), evt.getX(), evt.getY());
+                                } else if (javax.swing.SwingUtilities.isLeftMouseButton(evt) && verificar > 0) {
+                                    longPressTimer = new javax.swing.Timer(600, ev -> {
+                                        mostrarMenuMesa(evt.getComponent(), evt.getX(), evt.getY());
                                     });
+                                    longPressTimer.setRepeats(false);
+                                    longPressTimer.start();
+                                }
+                            }
 
-                                    javax.swing.JMenuItem itemCobrar = new javax.swing.JMenuItem(
-                                            "Ir Directo a Cobrar");
-                                    itemCobrar.addActionListener(ev -> {
-                                        LimpiarTable();
-                                        verPedido(verificar);
-                                        verPedidoDetalle(verificar);
-                                        btnFinalizar.setEnabled(true);
-                                        jTabbedPane1.setSelectedIndex(4);
-                                        btnFinalizar.doClick();
-                                    });
-
-                                    javax.swing.JMenuItem itemPidióCuenta = new javax.swing.JMenuItem(
-                                            "Marcar: Pidió la Cuenta");
-                                    itemPidióCuenta.addActionListener(ev -> {
-                                        boton.setBackground(new java.awt.Color(120, 53, 15)); // Amber oscuro
-                                        boton.setForeground(new java.awt.Color(252, 211, 77)); // Amber claro
-                                        boton.setBorder(new RoundedBorder(16, new java.awt.Color(245, 158, 11),
-                                                new java.awt.Insets(10, 10, 10, 10)));
-                                        boton.setToolTipText("Pidió la cuenta");
-                                        try {
-                                            String textoActual = boton.getText().contains("<html>") ? etiqueta
-                                                    : boton.getText();
-                                            boton.setText("<html><center>" + etiqueta
-                                                    + "<br><font color='#FCD34D'>PIDIÓ CUENTA</font></center></html>");
-                                        } catch (Exception ex) {
-                                        }
-                                        ToastNotification.advertencia(Sistema.this,
-                                                etiqueta + ": ¡Cliente pidió la cuenta!");
-                                    });
-
-                                    javax.swing.JMenuItem itemLiberar = new javax.swing.JMenuItem("🧹 Liberar Mesa");
-                                    itemLiberar.addActionListener(ev -> {
-                                        int conf = JOptionPane.showConfirmDialog(Sistema.this,
-                                                "¿Liberar " + etiqueta + " sin cobrar?", "Confirmar",
-                                                JOptionPane.YES_NO_OPTION);
-                                        if (conf == JOptionPane.YES_OPTION) {
-                                            pedDao.actualizarEstado(verificar, "ANULADO");
-                                            PanelMesas.removeAll();
-                                            panelMesas(id_sala, cant);
-                                            ToastNotification.exito(Sistema.this, etiqueta + " liberada.");
-                                        }
-                                    });
-
-                                    popupMesa.add(itemVerPedido);
-                                    popupMesa.add(itemCobrar);
-                                    popupMesa.addSeparator();
-                                    popupMesa.add(itemPidióCuenta);
-                                    popupMesa.addSeparator();
-                                    popupMesa.add(itemLiberar);
-                                    popupMesa.show(boton, evt.getX(), evt.getY());
+                            @Override
+                            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                                if (longPressTimer != null) {
+                                    longPressTimer.stop();
                                 }
                             }
                         });
