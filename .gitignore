@@ -1,0 +1,19 @@
+build/
+dist/
+nbproject/private/
+out/
+.idea/
+.backups/
+.reporte_oculto/
+restaurante.db-shm
+restaurante.db-wal
+
+# Datos sensibles del negocio — NUNCA subir a GitHub
+restaurante.db
+notas_pos.txt
+
+# Ejecutable empaquetado con runtime Java (muy pesado, no es código fuente)
+Comuneros-POS/
+
+# Archivos generados
+html_dump.html

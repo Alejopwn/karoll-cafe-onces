@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: restaurante.Restaurante
+Class-Path: librerias/AbsoluteLayout.jar librerias/flatlaf-3.5.2.jar librerias/HikariCP-5.1.0.jar librerias/itextpdf-5.5.1.jar librerias/jbcrypt-0.4.jar librerias/mysql-connector-java-8.0.19.jar librerias/slf4j-api-2.0.13.jar librerias/sqlite-jdbc-3.46.0.0.jar
+
