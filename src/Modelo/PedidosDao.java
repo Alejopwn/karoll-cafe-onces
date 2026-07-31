@@ -80,12 +80,11 @@ public class PedidosDao {
 
     /**
      * Obtiene en UNA sola query el mapa de num_mesa -> id_pedido para todas las
-     * mesas PENDIENTES de una sala. Mucho mas eficiente que llamar a
-     * verificarStado() por cada mesa individualmente.
+     * mesas PENDIENTES o PREPARADAS de una sala.
      */
     public java.util.Map<Integer, Integer> getMesasOcupadas(int id_sala) {
         java.util.Map<Integer, Integer> mapa = new java.util.HashMap<>();
-        String sql = "SELECT num_mesa, id FROM pedidos WHERE id_sala=? AND estado='PENDIENTE'";
+        String sql = "SELECT num_mesa, id FROM pedidos WHERE id_sala=? AND estado IN ('PENDIENTE', 'PREPARADO')";
         try (Connection con = cn.getConnection();
              PreparedStatement ps = con != null ? con.prepareStatement(sql) : null) {
             if (ps == null) return mapa;
@@ -99,6 +98,65 @@ public class PedidosDao {
             System.err.println("Error al obtener mesas ocupadas: " + e.getMessage());
         }
         return mapa;
+    }
+
+    /**
+     * Obtiene todas las rondas (pedidos activos PENDIENTE/PREPARADO) de una mesa.
+     */
+    public List<Pedido> getRondasMesa(int numMesa, int idSala) {
+        List<Pedido> lista = new ArrayList<>();
+        String sql = "SELECT * FROM pedidos WHERE num_mesa=? AND id_sala=? AND estado IN ('PENDIENTE', 'PREPARADO') ORDER BY id ASC";
+        try (Connection con = cn.getConnection();
+             PreparedStatement ps = con != null ? con.prepareStatement(sql) : null) {
+            if (ps == null) return lista;
+            ps.setInt(1, numMesa);
+            ps.setInt(2, idSala);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Pedido p = new Pedido();
+                    p.setId(rs.getInt("id"));
+                    p.setId_sala(rs.getInt("id_sala"));
+                    p.setNum_mesa(rs.getInt("num_mesa"));
+                    p.setFecha(rs.getString("fecha"));
+                    p.setTotal(rs.getDouble("total"));
+                    p.setEstado(rs.getString("estado"));
+                    p.setUsuario(rs.getString("usuario"));
+                    lista.add(p);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al obtener rondas de mesa: " + e.getMessage());
+        }
+        return lista;
+    }
+
+    /**
+     * Obtiene todos los detalles de productos acumulados de todas las rondas activas de una mesa.
+     */
+    public List<DetallePedido> getDetallesAcumuladosMesa(int numMesa, int idSala) {
+        List<DetallePedido> lista = new ArrayList<>();
+        String sql = "SELECT d.* FROM detalle_pedidos d INNER JOIN pedidos p ON d.id_pedido = p.id WHERE p.num_mesa=? AND p.id_sala=? AND p.estado IN ('PENDIENTE', 'PREPARADO')";
+        try (Connection con = cn.getConnection();
+             PreparedStatement ps = con != null ? con.prepareStatement(sql) : null) {
+            if (ps == null) return lista;
+            ps.setInt(1, numMesa);
+            ps.setInt(2, idSala);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    DetallePedido det = new DetallePedido();
+                    det.setId(rs.getInt("id"));
+                    det.setNombre(rs.getString("nombre"));
+                    det.setPrecio(rs.getDouble("precio"));
+                    det.setCantidad(rs.getInt("cantidad"));
+                    det.setComentario(rs.getString("comentario"));
+                    det.setId_pedido(rs.getInt("id_pedido"));
+                    lista.add(det);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al obtener detalles acumulados de mesa: " + e.getMessage());
+        }
+        return lista;
     }
 
     /**

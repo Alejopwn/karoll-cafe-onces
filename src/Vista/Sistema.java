@@ -4379,12 +4379,8 @@ public final class Sistema extends javax.swing.JFrame {
 
                         boton.addActionListener((ActionEvent e) -> {
                             if (verificar > 0) {
-                                LimpiarTable();
-                                verPedido(verificar);
-                                verPedidoDetalle(verificar);
-                                btnFinalizar.setEnabled(true);
-                                btnPdfPedido.setEnabled(false);
-                                jTabbedPane1.setSelectedIndex(4);
+                                ModalCobrarMesa modalCobro = new ModalCobrarMesa(Sistema.this, Sistema.this, num_mesa, id_sala, etiqueta);
+                                modalCobro.setVisible(true);
                             } else {
                                 if (id_sala == 3) {
                                     txtTempIdSala.setText("" + id_sala);
@@ -4423,6 +4419,23 @@ public final class Sistema extends javax.swing.JFrame {
                 }
             }
         }.execute();
+    }
+
+    public void abrirCobroPedido(int idPedido) {
+        LimpiarTable();
+        verPedido(idPedido);
+        verPedidoDetalle(idPedido);
+        btnFinalizar.setEnabled(true);
+        btnPdfPedido.setEnabled(false);
+        jTabbedPane1.setSelectedIndex(4);
+    }
+
+    public void crearNuevaRondaMesa(int numMesa, int idSala) {
+        LimpiarTable();
+        ListarPlatos(tblTemPlatos);
+        jTabbedPane1.setSelectedIndex(3);
+        txtTempIdSala.setText("" + idSala);
+        txtTempNumMesa.setText("" + numMesa);
     }
 
     /**
