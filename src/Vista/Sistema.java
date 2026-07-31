@@ -1422,39 +1422,39 @@ public final class Sistema extends javax.swing.JFrame {
         txtTotalDiaTrans.setForeground(new java.awt.Color(56, 189, 248));
         txtTotalDiaTrans.setEditable(false);
         txtTotalDiaTrans.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jPanel6.add(txtTotalDiaTrans, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 525, 180, 40));
+        jPanel6.add(txtTotalDiaTrans, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 525, 120, 40));
 
         txtTotalDia.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         txtTotalDia.setBackground(new java.awt.Color(30, 41, 59));
         txtTotalDia.setForeground(new java.awt.Color(52, 211, 153));
         txtTotalDia.setEditable(false);
         txtTotalDia.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jPanel6.add(txtTotalDia, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 525, 180, 40));
+        jPanel6.add(txtTotalDia, new org.netbeans.lib.awtextra.AbsoluteConstraints(158, 525, 120, 40));
 
         txtPedidosDia.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         txtPedidosDia.setBackground(new java.awt.Color(30, 41, 59));
         txtPedidosDia.setForeground(new java.awt.Color(251, 191, 36));
         txtPedidosDia.setEditable(false);
         txtPedidosDia.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jPanel6.add(txtPedidosDia, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 525, 180, 40));
+        jPanel6.add(txtPedidosDia, new org.netbeans.lib.awtextra.AbsoluteConstraints(286, 525, 90, 40));
 
-        jLabel21.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel21.setFont(new java.awt.Font("Segoe UI", 1, 11)); // NOI18N
         jLabel21.setForeground(new java.awt.Color(148, 163, 184));
         jLabel21.setText("TRANSACCIONES:");
-        jPanel6.add(jLabel21, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 502, 180, 20));
+        jPanel6.add(jLabel21, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 502, 120, 20));
 
-        jLabel22.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel22.setFont(new java.awt.Font("Segoe UI", 1, 11)); // NOI18N
         jLabel22.setForeground(new java.awt.Color(148, 163, 184));
         jLabel22.setText("EFECTIVO:");
-        jPanel6.add(jLabel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 502, 180, 20));
+        jPanel6.add(jLabel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(158, 502, 120, 20));
 
-        jLabel20.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel20.setFont(new java.awt.Font("Segoe UI", 1, 11)); // NOI18N
         jLabel20.setForeground(new java.awt.Color(148, 163, 184));
         jLabel20.setText("N° PEDIDOS:");
-        jPanel6.add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 502, 180, 20));
+        jPanel6.add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(286, 502, 90, 20));
 
         btnEliminarPedido.setBackground(new java.awt.Color(220, 38, 38));
-        btnEliminarPedido.setFont(new java.awt.Font("Segoe UI", 1, 13));
+        btnEliminarPedido.setFont(new java.awt.Font("Segoe UI", 1, 12));
         btnEliminarPedido.setForeground(new java.awt.Color(255, 255, 255));
         btnEliminarPedido.setText("Eliminar Pedido");
         btnEliminarPedido.setFocusPainted(false);
@@ -1464,10 +1464,10 @@ public final class Sistema extends javax.swing.JFrame {
                 btnEliminarPedidoActionPerformed(evt);
             }
         });
-        jPanel6.add(btnEliminarPedido, new org.netbeans.lib.awtextra.AbsoluteConstraints(770, 525, 135, 40));
+        jPanel6.add(btnEliminarPedido, new org.netbeans.lib.awtextra.AbsoluteConstraints(783, 525, 125, 40));
 
         BtnImprimirDia.setBackground(new java.awt.Color(5, 150, 105));
-        BtnImprimirDia.setFont(new java.awt.Font("Segoe UI", 1, 13));
+        BtnImprimirDia.setFont(new java.awt.Font("Segoe UI", 1, 12));
         BtnImprimirDia.setForeground(new java.awt.Color(255, 255, 255));
         BtnImprimirDia.setText("Reporte del Día");
         BtnImprimirDia.setFocusPainted(false);
@@ -1477,7 +1477,7 @@ public final class Sistema extends javax.swing.JFrame {
                 BtnImprimirDiaActionPerformed(evt);
             }
         });
-        jPanel6.add(BtnImprimirDia, new org.netbeans.lib.awtextra.AbsoluteConstraints(915, 525, 135, 40));
+        jPanel6.add(BtnImprimirDia, new org.netbeans.lib.awtextra.AbsoluteConstraints(916, 525, 134, 40));
 
         jTabbedPane1.addTab("Historial Pedidos", jPanel6);
 
@@ -5100,7 +5100,7 @@ public final class Sistema extends javax.swing.JFrame {
 
         toggleBar.add(btnToggleDashboard);
         toggleBar.add(btnToggleHistorial);
-        jPanel6.add(toggleBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 320, 30));
+        jPanel6.add(toggleBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 310, 30));
 
         // 🏷️ Chips de Filtro Rápido
         javax.swing.JPanel filtroBar = new javax.swing.JPanel(null);
@@ -5114,7 +5114,7 @@ public final class Sistema extends javax.swing.JFrame {
                 { "Anulados", "ANULADO" }
         };
         int chipX = 0;
-        int[] chipWidths = {70, 85, 90, 75, 75};
+        int[] chipWidths = {75, 100, 100, 85, 85};
         for (int i = 0; i < chips.length; i++) {
             String[] chip = chips[i];
             int w = chipWidths[i];
@@ -5166,10 +5166,10 @@ public final class Sistema extends javax.swing.JFrame {
                 }.execute();
             });
             filtroBar.add(btnChip);
-            chipX += w + 6;
+            chipX += w + 8;
         }
         filtroBarHistorial = filtroBar;
-        jPanel6.add(filtroBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 12, 550, 28));
+        jPanel6.add(filtroBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 12, 560, 28));
 
         // Botón Exportar CSV
         btnExportCSV = new JButton("Exportar CSV");
@@ -5187,7 +5187,7 @@ public final class Sistema extends javax.swing.JFrame {
             }
             exportarHistorialPedidosCSV();
         });
-        jPanel6.add(btnExportCSV, new org.netbeans.lib.awtextra.AbsoluteConstraints(925, 12, 125, 28));
+        jPanel6.add(btnExportCSV, new org.netbeans.lib.awtextra.AbsoluteConstraints(920, 12, 130, 28));
 
         // 🔍 Buscador Inteligente en Tiempo Real en Historial
         txtBuscarHistorial = new javax.swing.JTextField();
@@ -5232,9 +5232,9 @@ public final class Sistema extends javax.swing.JFrame {
 
         jPanel6.add(txtBuscarHistorial, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 48, 1020, 32));
 
-        // 🔘 BOTONES ACCIONES INFERIORES PANEL PEDIDOS (Sin solapamientos)
+        // 🔘 BOTONES ACCIONES INFERIORES PANEL PEDIDOS (Perfectamente distribuidos sin colisión)
         javax.swing.JButton btnMarcarPreparadoHistorial = UIUtils.crearBoton("🟡 Preparado", new java.awt.Color(217, 119, 6));
-        btnMarcarPreparadoHistorial.setFont(getFontBold(12f));
+        btnMarcarPreparadoHistorial.setFont(getFontBold(11f));
         btnMarcarPreparadoHistorial.setToolTipText("Marcar pedido como PREPARADO en cocina (Mesa cambia a amarillo)");
         btnMarcarPreparadoHistorial.addActionListener(e -> {
             int row = TablePedidos.getSelectedRow();
@@ -5248,10 +5248,10 @@ public final class Sistema extends javax.swing.JFrame {
                 ListarPedidos();
             }
         });
-        jPanel6.add(btnMarcarPreparadoHistorial, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 525, 140, 40));
+        jPanel6.add(btnMarcarPreparadoHistorial, new org.netbeans.lib.awtextra.AbsoluteConstraints(384, 525, 120, 40));
 
         javax.swing.JButton btnCobrarHistorial = UIUtils.crearBoton("💰 Ir a Cobrar", new java.awt.Color(22, 163, 74));
-        btnCobrarHistorial.setFont(getFontBold(12f));
+        btnCobrarHistorial.setFont(getFontBold(11f));
         btnCobrarHistorial.setToolTipText("Abrir pantalla de cobro para el pedido seleccionado");
         btnCobrarHistorial.addActionListener(e -> {
             int row = TablePedidos.getSelectedRow();
@@ -5262,10 +5262,10 @@ public final class Sistema extends javax.swing.JFrame {
             int idPed = row >= 0 ? Integer.parseInt(TablePedidos.getValueAt(row, 0).toString()) : Integer.parseInt(txtIdHistorialPedido.getText());
             abrirCobroPedido(idPed);
         });
-        jPanel6.add(btnCobrarHistorial, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 525, 130, 40));
+        jPanel6.add(btnCobrarHistorial, new org.netbeans.lib.awtextra.AbsoluteConstraints(512, 525, 120, 40));
 
         btnReimprimirTicketHistorial = UIUtils.crearBoton("Reimprimir Ticket", UIUtils.COLOR_ACCENT_BLUE);
-        btnReimprimirTicketHistorial.setFont(getFontBold(12f));
+        btnReimprimirTicketHistorial.setFont(getFontBold(11f));
         btnReimprimirTicketHistorial.addActionListener(e -> {
             if (txtIdHistorialPedido.getText().isEmpty() && TablePedidos.getSelectedRow() < 0) {
                 JOptionPane.showMessageDialog(this, "Seleccione un pedido de la tabla para reimprimir el ticket.", "Atención", JOptionPane.WARNING_MESSAGE);
@@ -5279,7 +5279,7 @@ public final class Sistema extends javax.swing.JFrame {
                 ToastNotification.error(this, "Error al generar comprobante PDF.");
             }
         });
-        jPanel6.add(btnReimprimirTicketHistorial, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 525, 150, 40));
+        jPanel6.add(btnReimprimirTicketHistorial, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 525, 135, 40));
 
         inicializarFooterEstado();
     }
