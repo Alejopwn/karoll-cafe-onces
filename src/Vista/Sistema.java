@@ -5218,23 +5218,56 @@ public final class Sistema extends javax.swing.JFrame {
 
         jPanel6.add(txtBuscarHistorial, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 48, 1020, 32));
 
+        // Botón Marcar Preparado (Cocina)
+        javax.swing.JButton btnMarcarPreparadoHistorial = UIUtils.crearBoton("🟡 Marcar Preparado", new java.awt.Color(217, 119, 6));
+        btnMarcarPreparadoHistorial.setFont(getFontBold(12f));
+        btnMarcarPreparadoHistorial.setToolTipText("Marcar pedido como PREPARADO en cocina (Mesa cambia a amarillo)");
+        btnMarcarPreparadoHistorial.addActionListener(e -> {
+            int row = TablePedidos.getSelectedRow();
+            if (row < 0 && txtIdHistorialPedido.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Seleccione un pedido de la tabla.", "Atención", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            int idPed = row >= 0 ? Integer.parseInt(TablePedidos.getValueAt(row, 0).toString()) : Integer.parseInt(txtIdHistorialPedido.getText());
+            if (pedDao.marcarPreparado(idPed)) {
+                ToastNotification.exito(this, "¡Pedido #" + idPed + " marcado como PREPARADO en cocina!");
+                ListarPedidos();
+            }
+        });
+        jPanel6.add(btnMarcarPreparadoHistorial, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 525, 155, 40));
+
+        // Botón Ir a Cobrar
+        javax.swing.JButton btnCobrarHistorial = UIUtils.crearBoton("💰 Ir a Cobrar", new java.awt.Color(22, 163, 74));
+        btnCobrarHistorial.setFont(getFontBold(12f));
+        btnCobrarHistorial.setToolTipText("Abrir pantalla de cobro para el pedido seleccionado");
+        btnCobrarHistorial.addActionListener(e -> {
+            int row = TablePedidos.getSelectedRow();
+            if (row < 0 && txtIdHistorialPedido.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Seleccione un pedido de la tabla para cobrar.", "Atención", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            int idPed = row >= 0 ? Integer.parseInt(TablePedidos.getValueAt(row, 0).toString()) : Integer.parseInt(txtIdHistorialPedido.getText());
+            abrirCobroPedido(idPed);
+        });
+        jPanel6.add(btnCobrarHistorial, new org.netbeans.lib.awtextra.AbsoluteConstraints(465, 525, 145, 40));
+
         // Botón Reimprimir Ticket
         btnReimprimirTicketHistorial = UIUtils.crearBoton("Reimprimir Ticket", UIUtils.COLOR_ACCENT_BLUE);
         btnReimprimirTicketHistorial.setFont(getFontBold(12f));
         btnReimprimirTicketHistorial.addActionListener(e -> {
-            if (txtIdHistorialPedido.getText().isEmpty()) {
+            if (txtIdHistorialPedido.getText().isEmpty() && TablePedidos.getSelectedRow() < 0) {
                 JOptionPane.showMessageDialog(this, "Seleccione un pedido de la tabla para reimprimir el ticket.", "Atención", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             try {
-                int idPed = Integer.parseInt(txtIdHistorialPedido.getText());
+                int idPed = TablePedidos.getSelectedRow() >= 0 ? Integer.parseInt(TablePedidos.getValueAt(TablePedidos.getSelectedRow(), 0).toString()) : Integer.parseInt(txtIdHistorialPedido.getText());
                 pedDao.pdfPedido(idPed);
                 ToastNotification.exito(this, "¡Comprobante PDF re-generado para el pedido #" + idPed + "!");
             } catch (Exception ex) {
                 ToastNotification.error(this, "Error al generar comprobante PDF.");
             }
         });
-        jPanel6.add(btnReimprimirTicketHistorial, new org.netbeans.lib.awtextra.AbsoluteConstraints(625, 525, 135, 40));
+        jPanel6.add(btnReimprimirTicketHistorial, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 525, 145, 40));
 
         // 📊 Footer de Estado Global
         inicializarFooterEstado();
