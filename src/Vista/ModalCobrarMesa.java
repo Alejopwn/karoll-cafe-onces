@@ -86,6 +86,20 @@ public class ModalCobrarMesa extends JDialog {
         pFooter.setOpaque(false);
         pFooter.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
 
+        JButton btnMarcarPreparado = new JButton("🟡 Marcar como PREPARADO");
+        btnMarcarPreparado.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnMarcarPreparado.setBackground(new Color(245, 158, 11));
+        btnMarcarPreparado.setForeground(Color.WHITE);
+        btnMarcarPreparado.setPreferredSize(new Dimension(220, 48));
+        btnMarcarPreparado.setFocusPainted(false);
+        btnMarcarPreparado.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnMarcarPreparado.addActionListener(e -> {
+            pedDao.marcarTodasPreparadasMesa(numMesa, idSala);
+            cargarDatos();
+            initUI();
+            ToastNotification.exito(parentFrame, "¡" + etiquetaMesa + " marcada como PREPARADO!");
+        });
+
         JButton btnCobrarTodo = new JButton("💰 Cobrar Todo Junto ($" + String.format("%,.0f", totalAcumulado) + ")");
         btnCobrarTodo.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnCobrarTodo.setBackground(new Color(16, 185, 129));
@@ -120,24 +134,6 @@ public class ModalCobrarMesa extends JDialog {
         btnCerrar.setFocusPainted(false);
         btnCerrar.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnCerrar.addActionListener(e -> dispose());
-
-        JButton btnMarcarPreparado = new JButton("🟡 Marcar PREPARADO");
-        btnMarcarPreparado.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        btnMarcarPreparado.setBackground(new Color(245, 158, 11));
-        btnMarcarPreparado.setForeground(Color.WHITE);
-        btnMarcarPreparado.setPreferredSize(new Dimension(190, 48));
-        btnMarcarPreparado.setFocusPainted(false);
-        btnMarcarPreparado.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnMarcarPreparado.addActionListener(e -> {
-            for (Pedido r : listaRondas) {
-                pedDao.marcarPreparado(r.getId());
-            }
-            ToastNotification.exito(parentFrame, etiquetaMesa + ": ¡Marcado como PREPARADO!");
-            dispose();
-            if (sistemaInstance != null) {
-                sistemaInstance.refrescarVistaMesas();
-            }
-        });
 
         pFooter.add(btnMarcarPreparado);
         pFooter.add(btnCobrarTodo);

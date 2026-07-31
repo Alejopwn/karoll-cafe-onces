@@ -4330,11 +4330,114 @@ public final class Sistema extends javax.swing.JFrame {
                         for (java.awt.event.ActionListener al : boton.getActionListeners()) {
                             boton.removeActionListener(al);
                         }
-                        for (java.awt.event.MouseListener ml : boton.getMouseListeners()) {
-                            boton.removeMouseListener(ml);
-                        }
+
+                        // 🖱️ Menú clic derecho O pulsación larga (táctil) en mesa
+                        final boolean[] fueLongPress = new boolean[]{false};
+                        boton.addMouseListener(new java.awt.event.MouseAdapter() {
+                            private javax.swing.Timer longPressTimer;
+
+                            private void mostrarMenuMesa(java.awt.Component comp, int x, int y) {
+                                if (verificar <= 0) return;
+                                javax.swing.JPopupMenu popupMesa = new javax.swing.JPopupMenu();
+
+                                javax.swing.JMenuItem itemMarcarPreparado = new javax.swing.JMenuItem("🟡 Marcar como Preparado");
+                                itemMarcarPreparado.addActionListener(ev -> {
+                                    pedDao.marcarPreparado(verificar);
+                                    PanelMesas.removeAll();
+                                    panelMesas(id_sala, cant);
+                                    ToastNotification.exito(Sistema.this, etiqueta + ": ¡Pedido marcado como PREPARADO!");
+                                });
+
+                                javax.swing.JMenuItem itemVerPedido = new javax.swing.JMenuItem(
+                                        "Ver Pedido / Agregar Platos");
+                                itemVerPedido.addActionListener(ev -> {
+                                    LimpiarTable();
+                                    verPedido(verificar);
+                                    verPedidoDetalle(verificar);
+                                    btnFinalizar.setEnabled(true);
+                                    jTabbedPane1.setSelectedIndex(4);
+                                });
+
+                                javax.swing.JMenuItem itemCobrar = new javax.swing.JMenuItem(
+                                        "Ir Directo a Cobrar");
+                                itemCobrar.addActionListener(ev -> {
+                                    LimpiarTable();
+                                    verPedido(verificar);
+                                    verPedidoDetalle(verificar);
+                                    btnFinalizar.setEnabled(true);
+                                    jTabbedPane1.setSelectedIndex(4);
+                                    btnFinalizar.doClick();
+                                });
+
+                                javax.swing.JMenuItem itemPidientoCuenta = new javax.swing.JMenuItem(
+                                        "Marcar: Pidió la Cuenta");
+                                itemPidientoCuenta.addActionListener(ev -> {
+                                    boton.setBackground(new java.awt.Color(120, 53, 15)); // Amber oscuro
+                                    boton.setForeground(new java.awt.Color(252, 211, 77)); // Amber claro
+                                    boton.setBorder(new RoundedBorder(16, new java.awt.Color(245, 158, 11),
+                                            new java.awt.Insets(10, 10, 10, 10)));
+                                    boton.setToolTipText("Pidió la cuenta");
+                                    try {
+                                        boton.setText("<html><center>" + etiqueta
+                                                + "<br><font color='#FCD34D'>PIDIÓ CUENTA</font></center></html>");
+                                    } catch (Exception ex) {
+                                    }
+                                    ToastNotification.advertencia(Sistema.this,
+                                            etiqueta + ": ¡Cliente pidió la cuenta!");
+                                });
+
+                                javax.swing.JMenuItem itemLiberar = new javax.swing.JMenuItem("🧹 Liberar Mesa");
+                                itemLiberar.addActionListener(ev -> {
+                                    int conf = JOptionPane.showConfirmDialog(Sistema.this,
+                                            "¿Liberar " + etiqueta + " sin cobrar?", "Confirmar",
+                                            JOptionPane.YES_NO_OPTION);
+                                    if (conf == JOptionPane.YES_OPTION) {
+                                        pedDao.actualizarEstado(verificar, "ANULADO");
+                                        PanelMesas.removeAll();
+                                        panelMesas(id_sala, cant);
+                                        ToastNotification.exito(Sistema.this, etiqueta + " liberada.");
+                                    }
+                                });
+
+                                popupMesa.add(itemMarcarPreparado);
+                                popupMesa.add(itemVerPedido);
+                                popupMesa.add(itemCobrar);
+                                popupMesa.addSeparator();
+                                popupMesa.add(itemPidientoCuenta);
+                                popupMesa.addSeparator();
+                                popupMesa.add(itemLiberar);
+                                popupMesa.show(comp, x, y);
+                            }
+
+                            @Override
+                            public void mousePressed(java.awt.event.MouseEvent evt) {
+                                fueLongPress[0] = false;
+                                if (javax.swing.SwingUtilities.isRightMouseButton(evt) && verificar > 0) {
+                                    fueLongPress[0] = true;
+                                    mostrarMenuMesa(evt.getComponent(), evt.getX(), evt.getY());
+                                } else if (javax.swing.SwingUtilities.isLeftMouseButton(evt) && verificar > 0) {
+                                    longPressTimer = new javax.swing.Timer(600, ev -> {
+                                        fueLongPress[0] = true;
+                                        mostrarMenuMesa(evt.getComponent(), evt.getX(), evt.getY());
+                                    });
+                                    longPressTimer.setRepeats(false);
+                                    longPressTimer.start();
+                                }
+                            }
+
+                            @Override
+                            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                                if (longPressTimer != null) {
+                                    longPressTimer.stop();
+                                }
+                            }
+                        });
 
                         boton.addActionListener((ActionEvent e) -> {
+                            if (fueLongPress[0]) {
+                                fueLongPress[0] = false;
+                                return;
+                            }
                             if (verificar > 0) {
                                 ModalCobrarMesa modalCobro = new ModalCobrarMesa(Sistema.this, Sistema.this, num_mesa, id_sala, etiqueta);
                                 modalCobro.setVisible(true);
@@ -4436,13 +4539,6 @@ public final class Sistema extends javax.swing.JFrame {
         txtTempNumMesa.setText("" + numMesa);
     }
 
-    public void refrescarVistaMesas() {
-        if (salaActivaId > 0 && salaActivaCant > 0) {
-            PanelMesas.removeAll();
-            panelMesas(salaActivaId, salaActivaCant);
-        }
-    }
-
     /**
      * Refresca el estado de mesas con UNA sola query a la BD (en lugar de N).
      * Solo actúa si la pestaña de Mesas es visible. El timer se auto-pausa
@@ -4456,19 +4552,17 @@ public final class Sistema extends javax.swing.JFrame {
         final int cantFinal = botonesActuales.length;
         final javax.swing.JButton[] botonesRef = botonesActuales;
 
-        new javax.swing.SwingWorker<java.util.Map<Integer, Integer>, Void>() {
+        new javax.swing.SwingWorker<java.util.Map<Integer, String[]>, Void>() {
             @Override
-            protected java.util.Map<Integer, Integer> doInBackground() {
-                // UNA sola query para toda la sala
-                return pedDao.getMesasOcupadas(idSala);
+            protected java.util.Map<Integer, String[]> doInBackground() {
+                return pedDao.getMesasOcupadasConEstado(idSala);
             }
 
             @Override
             protected void done() {
                 try {
-                    java.util.Map<Integer, Integer> ocupadas = get();
+                    java.util.Map<Integer, String[]> ocupadas = get();
 
-                    // Comparar snapshot actual vs nuevo: ¿cambió algo?
                     boolean cambio = false;
                     for (int i = 0; i < cantFinal; i++) {
                         int numMesa = i + 1;
@@ -4476,12 +4570,14 @@ public final class Sistema extends javax.swing.JFrame {
                         javax.swing.JButton boton = botonesRef[i];
                         if (boton == null) continue;
                         java.awt.Color bg = boton.getBackground();
-                        boolean estaOcupada = bg != null && !bg.equals(new java.awt.Color(6, 78, 59));
-                        if (estaOcupada != debeEstarOcupada) { cambio = true; break; }
+                        boolean estaOcupada = bg != null && (bg.getRed() > 100 || bg.getGreen() > 100);
+                        if (estaOcupada != debeEstarOcupada) { 
+                            cambio = true; 
+                            break; 
+                        }
                     }
 
                     if (cambio) {
-                        // Cambio de estado detectado → reconstruir panel
                         PanelMesas.removeAll();
                         panelMesas(idSala, salaActivaCant);
                     }
@@ -5004,8 +5100,7 @@ public final class Sistema extends javax.swing.JFrame {
 
         toggleBar.add(btnToggleDashboard);
         toggleBar.add(btnToggleHistorial);
-        toggleBar.add(btnExportCSV);
-        jPanel6.add(toggleBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 12, 480, 30));
+        jPanel6.add(toggleBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 320, 30));
 
         // 🏷️ Chips de Filtro Rápido
         javax.swing.JPanel filtroBar = new javax.swing.JPanel(null);
@@ -5019,18 +5114,19 @@ public final class Sistema extends javax.swing.JFrame {
                 { "Anulados", "ANULADO" }
         };
         int chipX = 0;
-        for (String[] chip : chips) {
+        int[] chipWidths = {70, 85, 90, 75, 75};
+        for (int i = 0; i < chips.length; i++) {
+            String[] chip = chips[i];
+            int w = chipWidths[i];
             JButton btnChip = new JButton(chip[0]);
             btnChip.setFont(getFontBold(11f));
             btnChip.setBackground(new Color(30, 41, 59));
             btnChip.setForeground(new Color(203, 213, 225));
             btnChip.setFocusPainted(false);
             btnChip.setCursor(new Cursor(Cursor.HAND_CURSOR));
-            btnChip.setBounds(chipX, 0, 115, 24);
+            btnChip.setBounds(chipX, 0, w, 26);
             final String filtroEstado = chip[1];
             btnChip.addActionListener(e -> {
-                DefaultTableModel mdl = (DefaultTableModel) TablePedidos.getModel();
-                int rows = mdl.getRowCount();
                 if (filtroEstado.equals("TODOS")) {
                     ListarPedidos();
                     return;
@@ -5040,12 +5136,9 @@ public final class Sistema extends javax.swing.JFrame {
                     protected java.util.List<Pedido> doInBackground() {
                         java.time.LocalDateTime ahora = java.time.LocalDateTime
                                 .now(java.time.ZoneId.of("America/Lima"));
-                        java.time.LocalDateTime inicio;
-                        if (ahora.getHour() < 16) {
-                            inicio = ahora.minusDays(1).withHour(16).withMinute(0).withSecond(0).withNano(0);
-                        } else {
-                            inicio = ahora.withHour(16).withMinute(0).withSecond(0).withNano(0);
-                        }
+                        java.time.LocalDateTime inicio = ahora.getHour() < 16
+                                ? ahora.minusDays(1).withHour(16).withMinute(0).withSecond(0).withNano(0)
+                                : ahora.withHour(16).withMinute(0).withSecond(0).withNano(0);
                         return pedDao.listarPedidosDelDia(
                                 java.sql.Timestamp.valueOf(inicio),
                                 java.sql.Timestamp.valueOf(ahora));
@@ -5073,10 +5166,28 @@ public final class Sistema extends javax.swing.JFrame {
                 }.execute();
             });
             filtroBar.add(btnChip);
-            chipX += 120;
+            chipX += w + 6;
         }
         filtroBarHistorial = filtroBar;
-        jPanel6.add(filtroBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(495, 15, 530, 24));
+        jPanel6.add(filtroBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 12, 550, 28));
+
+        // Botón Exportar CSV
+        btnExportCSV = new JButton("Exportar CSV");
+        btnExportCSV.setFont(getFontBold(11f));
+        btnExportCSV.setBackground(new Color(30, 41, 59));
+        btnExportCSV.setForeground(new Color(56, 189, 248));
+        btnExportCSV.setFocusPainted(false);
+        btnExportCSV.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnExportCSV.addActionListener(e -> {
+            if (!esAdmin()) {
+                JOptionPane.showMessageDialog(this,
+                        "Acceso restringido: Solo el Administrador puede exportar reportes en CSV.", "Acceso Denegado",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            exportarHistorialPedidosCSV();
+        });
+        jPanel6.add(btnExportCSV, new org.netbeans.lib.awtextra.AbsoluteConstraints(925, 12, 125, 28));
 
         // 🔍 Buscador Inteligente en Tiempo Real en Historial
         txtBuscarHistorial = new javax.swing.JTextField();
@@ -5121,8 +5232,8 @@ public final class Sistema extends javax.swing.JFrame {
 
         jPanel6.add(txtBuscarHistorial, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 48, 1020, 32));
 
-        // Botón Marcar Preparado (Cocina)
-        javax.swing.JButton btnMarcarPreparadoHistorial = UIUtils.crearBoton("🟡 Marcar Preparado", new java.awt.Color(217, 119, 6));
+        // 🔘 BOTONES ACCIONES INFERIORES PANEL PEDIDOS (Sin solapamientos)
+        javax.swing.JButton btnMarcarPreparadoHistorial = UIUtils.crearBoton("🟡 Preparado", new java.awt.Color(217, 119, 6));
         btnMarcarPreparadoHistorial.setFont(getFontBold(12f));
         btnMarcarPreparadoHistorial.setToolTipText("Marcar pedido como PREPARADO en cocina (Mesa cambia a amarillo)");
         btnMarcarPreparadoHistorial.addActionListener(e -> {
@@ -5133,13 +5244,12 @@ public final class Sistema extends javax.swing.JFrame {
             }
             int idPed = row >= 0 ? Integer.parseInt(TablePedidos.getValueAt(row, 0).toString()) : Integer.parseInt(txtIdHistorialPedido.getText());
             if (pedDao.marcarPreparado(idPed)) {
-                ToastNotification.exito(this, "¡Pedido #" + idPed + " marcado como PREPARADO en cocina!");
+                ToastNotification.exito(this, "¡Pedido #" + idPed + " marcado como PREPARADO!");
                 ListarPedidos();
             }
         });
-        jPanel6.add(btnMarcarPreparadoHistorial, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 525, 155, 40));
+        jPanel6.add(btnMarcarPreparadoHistorial, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 525, 140, 40));
 
-        // Botón Ir a Cobrar
         javax.swing.JButton btnCobrarHistorial = UIUtils.crearBoton("💰 Ir a Cobrar", new java.awt.Color(22, 163, 74));
         btnCobrarHistorial.setFont(getFontBold(12f));
         btnCobrarHistorial.setToolTipText("Abrir pantalla de cobro para el pedido seleccionado");
@@ -5152,9 +5262,8 @@ public final class Sistema extends javax.swing.JFrame {
             int idPed = row >= 0 ? Integer.parseInt(TablePedidos.getValueAt(row, 0).toString()) : Integer.parseInt(txtIdHistorialPedido.getText());
             abrirCobroPedido(idPed);
         });
-        jPanel6.add(btnCobrarHistorial, new org.netbeans.lib.awtextra.AbsoluteConstraints(465, 525, 145, 40));
+        jPanel6.add(btnCobrarHistorial, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 525, 130, 40));
 
-        // Botón Reimprimir Ticket
         btnReimprimirTicketHistorial = UIUtils.crearBoton("Reimprimir Ticket", UIUtils.COLOR_ACCENT_BLUE);
         btnReimprimirTicketHistorial.setFont(getFontBold(12f));
         btnReimprimirTicketHistorial.addActionListener(e -> {
@@ -5170,9 +5279,8 @@ public final class Sistema extends javax.swing.JFrame {
                 ToastNotification.error(this, "Error al generar comprobante PDF.");
             }
         });
-        jPanel6.add(btnReimprimirTicketHistorial, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 525, 145, 40));
+        jPanel6.add(btnReimprimirTicketHistorial, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 525, 150, 40));
 
-        // 📊 Footer de Estado Global
         inicializarFooterEstado();
     }
 

@@ -78,24 +78,23 @@ public class PedidosDao {
         return id_pedido;
     }
 
-    /**
-     * Obtiene en UNA sola query el mapa de num_mesa -> id_pedido para todas las
-     * mesas PENDIENTES o PREPARADAS de una sala.
-     */
-    public java.util.Map<Integer, Integer> getMesasOcupadas(int id_sala) {
-        java.util.Map<Integer, Integer> mapa = new java.util.HashMap<>();
-        String sql = "SELECT num_mesa, id FROM pedidos WHERE id_sala=? AND estado IN ('PENDIENTE', 'PREPARADO')";
+    public java.util.Map<Integer, String[]> getMesasOcupadasConEstado(int id_sala) {
+        java.util.Map<Integer, String[]> mapa = new java.util.HashMap<>();
+        String sql = "SELECT num_mesa, id, estado FROM pedidos WHERE id_sala=? AND estado IN ('PENDIENTE', 'PREPARADO') ORDER BY id DESC";
         try (Connection con = cn.getConnection();
              PreparedStatement ps = con != null ? con.prepareStatement(sql) : null) {
             if (ps == null) return mapa;
             ps.setInt(1, id_sala);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    mapa.put(rs.getInt("num_mesa"), rs.getInt("id"));
+                    int numMesa = rs.getInt("num_mesa");
+                    if (!mapa.containsKey(numMesa)) {
+                        mapa.put(numMesa, new String[]{ String.valueOf(rs.getInt("id")), rs.getString("estado") });
+                    }
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Error al obtener mesas ocupadas: " + e.getMessage());
+            System.err.println("Error al obtener mesas ocupadas con estado: " + e.getMessage());
         }
         return mapa;
     }
@@ -298,6 +297,20 @@ public class PedidosDao {
 
     public boolean marcarPreparado(int id_pedido) {
         return actualizarEstado(id_pedido, "PREPARADO");
+    }
+
+    public boolean marcarTodasPreparadasMesa(int numMesa, int idSala) {
+        String sql = "UPDATE pedidos SET estado = 'PREPARADO' WHERE num_mesa = ? AND id_sala = ? AND estado = 'PENDIENTE'";
+        try (Connection con = cn.getConnection();
+             PreparedStatement ps = con != null ? con.prepareStatement(sql) : null) {
+            if (ps == null) return false;
+            ps.setInt(1, numMesa);
+            ps.setInt(2, idSala);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error al marcar todas preparadas para mesa: " + e.getMessage());
+            return false;
+        }
     }
 
     public boolean actualizarEstado(int id_pedido, String estado) {
