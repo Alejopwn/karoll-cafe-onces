@@ -4728,9 +4728,8 @@ public final class Sistema extends javax.swing.JFrame {
                     double[] totales = get();
                     txtTotalDia.setText(String.format("%.2f", totales[0]));
                     txtTotalDiaTrans.setText(String.format("%.2f", totales[1]));
-                    System.out.println("Total EFECTIVO (" + rangoTexto + "): S/ " + String.format("%.2f", totales[0]));
-                    System.out
-                            .println("Total TRANSACCION (" + rangoTexto + "): S/ " + String.format("%.2f", totales[1]));
+                    System.out.println("Total EFECTIVO (" + rangoTexto + "): COP " + String.format("%.2f", totales[0]));
+                    System.out.println("Total TRANSACCION (" + rangoTexto + "): COP " + String.format("%.2f", totales[1]));
                 } catch (Exception e) {
                     System.out.println("Error al actualizar totales: " + e.getMessage());
                 }

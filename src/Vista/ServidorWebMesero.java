@@ -45,7 +45,7 @@ public class ServidorWebMesero {
     private static void asegurarReglaFirewall() {
         try {
             if (System.getProperty("os.name", "").toLowerCase().contains("win")) {
-                String cmd = "netsh advfirewall firewall add rule name=\"Comuneros POS - Panel Android\" dir=in action=allow protocol=TCP localport=" + puerto;
+                String cmd = "netsh advfirewall firewall add rule name=\"Karoll Cafe y Onces POS - Panel Android\" dir=in action=allow protocol=TCP localport=" + puerto;
                 Runtime.getRuntime().exec(cmd);
             }
         } catch (Exception ignored) {}
@@ -280,7 +280,7 @@ public class ServidorWebMesero {
         return "<!DOCTYPE html><html lang='es'><head>" +
             "<meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
             "<meta name='theme-color' content='#0f172a'>" +
-            "<title>Comuneros — Pedidos</title>" +
+            "<title>Karoll Café y Onces — Pedidos</title>" +
             "<style>" +
             "*{margin:0;padding:0;box-sizing:border-box}" +
             "body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f172a;color:#f1f5f9;min-height:100vh}" +
@@ -331,7 +331,7 @@ public class ServidorWebMesero {
             "</head><body>" +
             "<div class='navbar'>" +
             "  <div>🍴</div>" +
-            "  <h1>Comuneros POS</h1>" +
+            "  <h1>Karoll Café y Onces</h1>" +
             "  <div id='mesa-tag'></div>" +
             "</div>" +
             "<div class='toast' id='toast'></div>" +
