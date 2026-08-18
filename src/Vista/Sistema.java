@@ -2254,6 +2254,7 @@ public final class Sistema extends javax.swing.JFrame {
                 LimpiarTable();
                 verPedido(id_pedido);
                 verPedidoDetalle(id_pedido);
+                btnFinalizar.setEnabled(true);
                 jTabbedPane1.setSelectedIndex(4);
                 txtIdHistorialPedido.setText("" + id_pedido);
             });
@@ -2306,6 +2307,7 @@ public final class Sistema extends javax.swing.JFrame {
         LimpiarTable();
         verPedido(id_pedido);
         verPedidoDetalle(id_pedido);
+        btnFinalizar.setEnabled(true);
         jTabbedPane1.setSelectedIndex(4);
         txtIdHistorialPedido.setText("" + id_pedido);
     }// GEN-LAST:event_TablePedidosMouseClicked
@@ -2502,28 +2504,32 @@ public final class Sistema extends javax.swing.JFrame {
     }// GEN-LAST:event_btnEliminarPlatoFinalizarActionPerformed
 
     private void btnPdfPedidoActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnPdfPedidoActionPerformed
-        if (txtIdHistorialPedido.getText().equals("")) {
-            JOptionPane.showMessageDialog(null, "Selecciona una fila");
-        } else {
-            final int idPedido = Integer.parseInt(txtIdHistorialPedido.getText());
-            btnPdfPedido.setEnabled(false);
-            btnPdfPedido.setText("Generando...");
-            new javax.swing.SwingWorker<Void, Void>() {
-                @Override
-                protected Void doInBackground() {
-                    pedDao.pdfPedido(idPedido);
-                    return null;
-                }
-
-                @Override
-                protected void done() {
-                    btnPdfPedido.setEnabled(true);
-                    btnPdfPedido.setText("PDF Pedido");
-                    txtIdHistorialPedido.setText("");
-                    JOptionPane.showMessageDialog(null, "âœ… PDF generado correctamente.");
-                }
-            }.execute();
+        String idStr = txtIdPedido.getText().trim();
+        if (idStr.isEmpty()) {
+            idStr = txtIdHistorialPedido.getText().trim();
         }
+        if (idStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No hay pedido seleccionado para generar PDF.", "Advertencia",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        final int idPedido = Integer.parseInt(idStr);
+        btnPdfPedido.setEnabled(false);
+        btnPdfPedido.setText("Generando...");
+        new javax.swing.SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() {
+                pedDao.pdfPedido(idPedido);
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                btnPdfPedido.setEnabled(true);
+                btnPdfPedido.setText("🖨️ Ticket PDF");
+                ToastNotification.exito(Sistema.this, "✅ Ticket PDF generado para pedido #" + idPedido);
+            }
+        }.execute();
     }// GEN-LAST:event_btnPdfPedidoActionPerformed
 
     private void btnFinalizarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnFinalizarActionPerformed
@@ -2650,7 +2656,7 @@ public final class Sistema extends javax.swing.JFrame {
                         lblCambioVal.setForeground(new java.awt.Color(34, 197, 94)); // Green
                     }
                 } catch (NumberFormatException ex) {
-                    lblCambioVal.setText("Valor invÃ¡lido");
+                    lblCambioVal.setText("Valor inválido");
                     lblCambioVal.setForeground(new java.awt.Color(239, 68, 68));
                 }
             }
@@ -2820,12 +2826,40 @@ public final class Sistema extends javax.swing.JFrame {
                                     actualizarTotalDia();
                                     if (moduloCaja != null)
                                         moduloCaja.actualizarEstadoCajaUI();
-                                    double vueltos = (ef + tr) - totalConsumo;
-                                    String msg = "✅ Pedido finalizado correctamente.";
-                                    if (vueltos > 0) {
-                                        msg += "\nCambio/Vueltos a entregar: COP " + String.format("%,.2f", vueltos);
+
+                                    // Limpiar datos de cobro activo
+                                    if (idsRondasAcumuladasCobro != null) {
+                                        idsRondasAcumuladasCobro.clear();
                                     }
-                                    JOptionPane.showMessageDialog(Sistema.this, msg, "Éxito",
+                                    txtIdPedido.setText("");
+                                    txtSalaFinalizar.setText("");
+                                    txtNumMesaFinalizar.setText("");
+                                    txtFechaHora.setText("");
+                                    DefaultTableModel modFin = (DefaultTableModel) tableFinalizar.getModel();
+                                    modFin.setRowCount(0);
+                                    totalFinalizar.setText("0.00");
+
+                                    // Refrescar mapa de mesas para que la mesa se muestre libre (verde) de inmediato
+                                    try {
+                                        int idSalaActual = salaActivaId > 0 ? salaActivaId : 1;
+                                        int cantMesas = 10;
+                                        for (Sala s : slDao.Listar()) {
+                                            if (s.getId() == idSalaActual) {
+                                                cantMesas = s.getMesas();
+                                                break;
+                                            }
+                                        }
+                                        PanelMesas.removeAll();
+                                        panelMesas(idSalaActual, cantMesas);
+                                        jTabbedPane1.setSelectedIndex(2); // Retornar a la vista de mesas
+                                    } catch (Exception ignored) {}
+
+                                    double vueltos = (ef + tr) - totalConsumo;
+                                    String msg = "✅ Pedido finalizado y cobrado correctamente.";
+                                    if (vueltos > 0) {
+                                        msg += "\nCambio / Vueltos a entregar: COP " + String.format("%,.2f", vueltos);
+                                    }
+                                    JOptionPane.showMessageDialog(Sistema.this, msg, "Cobro Exitoso",
                                             JOptionPane.INFORMATION_MESSAGE);
                                 } else {
                                     JOptionPane.showMessageDialog(Sistema.this, "Error al finalizar el pedido.",
@@ -2835,7 +2869,7 @@ public final class Sistema extends javax.swing.JFrame {
                                 btnFinalizar.setEnabled(true);
                                 btnFinalizar.setText("Finalizar");
                                 JOptionPane.showMessageDialog(Sistema.this, "Error inesperado: " + e.getMessage(),
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+                                         "Error", JOptionPane.ERROR_MESSAGE);
                             }
                         }
                     }.execute();
@@ -2883,10 +2917,14 @@ public final class Sistema extends javax.swing.JFrame {
 
     private void btnGenerarPedidoActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnGenerarPedidoActionPerformed
         if (tableMenu.getRowCount() > 0) {
-            RegistrarPedido();
-            detallePedido();
+            int idNuevoPedido = RegistrarPedido();
+            if (idNuevoPedido <= 0) {
+                ToastNotification.advertencia(this, "No se pudo registrar el pedido. Verifique la mesa seleccionada.");
+                return;
+            }
+            detallePedido(idNuevoPedido);
             LimpiarTableMenu();
-            ToastNotification.exito(this, "¡Pedido registrado correctamente!");
+            ToastNotification.exito(this, "¡Pedido #" + idNuevoPedido + " registrado correctamente!");
 
             // Retornar al mapa de mesas de la sala actual (con mesas actualizadas en vivo)
             try {
@@ -4330,117 +4368,7 @@ public final class Sistema extends javax.swing.JFrame {
                         }
                         boton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
-                        for (java.awt.event.ActionListener al : boton.getActionListeners()) {
-                            boton.removeActionListener(al);
-                        }
-
-                        // 🖱️ Menú clic derecho O pulsación larga (táctil) en mesa
-                        final boolean[] fueLongPress = new boolean[]{false};
-                        boton.addMouseListener(new java.awt.event.MouseAdapter() {
-                            private javax.swing.Timer longPressTimer;
-
-                            private void mostrarMenuMesa(java.awt.Component comp, int x, int y) {
-                                if (verificar <= 0) return;
-                                javax.swing.JPopupMenu popupMesa = new javax.swing.JPopupMenu();
-
-                                javax.swing.JMenuItem itemMarcarPreparado = new javax.swing.JMenuItem("🟡 Marcar como Preparado");
-                                itemMarcarPreparado.addActionListener(ev -> {
-                                    pedDao.marcarPreparado(verificar);
-                                    PanelMesas.removeAll();
-                                    panelMesas(id_sala, cant);
-                                    ToastNotification.exito(Sistema.this, etiqueta + ": ¡Pedido marcado como PREPARADO!");
-                                });
-
-                                javax.swing.JMenuItem itemVerPedido = new javax.swing.JMenuItem(
-                                        "Ver Pedido / Agregar Platos");
-                                itemVerPedido.addActionListener(ev -> {
-                                    LimpiarTable();
-                                    verPedido(verificar);
-                                    verPedidoDetalle(verificar);
-                                    btnFinalizar.setEnabled(true);
-                                    jTabbedPane1.setSelectedIndex(4);
-                                });
-
-                                javax.swing.JMenuItem itemCobrar = new javax.swing.JMenuItem(
-                                        "Ir Directo a Cobrar");
-                                itemCobrar.addActionListener(ev -> {
-                                    LimpiarTable();
-                                    verPedido(verificar);
-                                    verPedidoDetalle(verificar);
-                                    btnFinalizar.setEnabled(true);
-                                    jTabbedPane1.setSelectedIndex(4);
-                                    btnFinalizar.doClick();
-                                });
-
-                                javax.swing.JMenuItem itemPidientoCuenta = new javax.swing.JMenuItem(
-                                        "Marcar: Pidió la Cuenta");
-                                itemPidientoCuenta.addActionListener(ev -> {
-                                    boton.setBackground(new java.awt.Color(120, 53, 15)); // Amber oscuro
-                                    boton.setForeground(new java.awt.Color(252, 211, 77)); // Amber claro
-                                    boton.setBorder(new RoundedBorder(16, new java.awt.Color(245, 158, 11),
-                                            new java.awt.Insets(10, 10, 10, 10)));
-                                    boton.setToolTipText("Pidió la cuenta");
-                                    try {
-                                        boton.setText("<html><center>" + etiqueta
-                                                + "<br><font color='#FCD34D'>PIDIÓ CUENTA</font></center></html>");
-                                    } catch (Exception ex) {
-                                    }
-                                    ToastNotification.advertencia(Sistema.this,
-                                            etiqueta + ": ¡Cliente pidió la cuenta!");
-                                });
-
-                                javax.swing.JMenuItem itemLiberar = new javax.swing.JMenuItem("🧹 Liberar Mesa");
-                                itemLiberar.addActionListener(ev -> {
-                                    int conf = JOptionPane.showConfirmDialog(Sistema.this,
-                                            "¿Liberar " + etiqueta + " sin cobrar?", "Confirmar",
-                                            JOptionPane.YES_NO_OPTION);
-                                    if (conf == JOptionPane.YES_OPTION) {
-                                        pedDao.actualizarEstado(verificar, "ANULADO");
-                                        PanelMesas.removeAll();
-                                        panelMesas(id_sala, cant);
-                                        ToastNotification.exito(Sistema.this, etiqueta + " liberada.");
-                                    }
-                                });
-
-                                popupMesa.add(itemMarcarPreparado);
-                                popupMesa.add(itemVerPedido);
-                                popupMesa.add(itemCobrar);
-                                popupMesa.addSeparator();
-                                popupMesa.add(itemPidientoCuenta);
-                                popupMesa.addSeparator();
-                                popupMesa.add(itemLiberar);
-                                popupMesa.show(comp, x, y);
-                            }
-
-                            @Override
-                            public void mousePressed(java.awt.event.MouseEvent evt) {
-                                fueLongPress[0] = false;
-                                if (javax.swing.SwingUtilities.isRightMouseButton(evt) && verificar > 0) {
-                                    fueLongPress[0] = true;
-                                    mostrarMenuMesa(evt.getComponent(), evt.getX(), evt.getY());
-                                } else if (javax.swing.SwingUtilities.isLeftMouseButton(evt) && verificar > 0) {
-                                    longPressTimer = new javax.swing.Timer(600, ev -> {
-                                        fueLongPress[0] = true;
-                                        mostrarMenuMesa(evt.getComponent(), evt.getX(), evt.getY());
-                                    });
-                                    longPressTimer.setRepeats(false);
-                                    longPressTimer.start();
-                                }
-                            }
-
-                            @Override
-                            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                                if (longPressTimer != null) {
-                                    longPressTimer.stop();
-                                }
-                            }
-                        });
-
                         boton.addActionListener((ActionEvent e) -> {
-                            if (fueLongPress[0]) {
-                                fueLongPress[0] = false;
-                                return;
-                            }
                             if (verificar > 0) {
                                 ModalCobrarMesa modalCobro = new ModalCobrarMesa(Sistema.this, Sistema.this, num_mesa, id_sala, etiqueta);
                                 modalCobro.setVisible(true);
@@ -4616,34 +4544,50 @@ public final class Sistema extends javax.swing.JFrame {
     }
 
     // registrar pedido
-    private void RegistrarPedido() {
-        int id_sala = Integer.parseInt(txtTempIdSala.getText());
-        int num_mesa = Integer.parseInt(txtTempNumMesa.getText());
-        double monto = Totalpagar;
-        ped.setId_sala(id_sala);
-        ped.setNum_mesa(num_mesa);
-        ped.setTotal(monto);
-        ped.setUsuario(LabelVendedor.getText());
-        pedDao.RegistrarPedido(ped);
+    private int RegistrarPedido() {
+        try {
+            String salaStr = txtTempIdSala.getText().trim();
+            String mesaStr = txtTempNumMesa.getText().trim();
+            if (salaStr.isEmpty() || mesaStr.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Por favor seleccione una mesa primero desde el panel de Mesas.",
+                        "Mesa no seleccionada", JOptionPane.WARNING_MESSAGE);
+                return -1;
+            }
+            int id_sala = Integer.parseInt(salaStr);
+            int num_mesa = Integer.parseInt(mesaStr);
+            double monto = Totalpagar;
+            ped.setId_sala(id_sala);
+            ped.setNum_mesa(num_mesa);
+            ped.setTotal(monto);
+            ped.setUsuario(LabelVendedor.getText());
+            return pedDao.RegistrarPedido(ped);
+        } catch (Exception e) {
+            System.err.println("Error en RegistrarPedido: " + e.getMessage());
+            return -1;
+        }
     }
 
-    private void detallePedido() {
-        int id = pedDao.IdPedido();
+    private void detallePedido(int id_pedido) {
+        if (id_pedido <= 0) return;
         for (int i = 0; i < tableMenu.getRowCount(); i++) {
-            String nombre = tableMenu.getValueAt(i, 1).toString();
-            int cant = Integer.parseInt(tableMenu.getValueAt(i, 2).toString());
-            double precio = Double.parseDouble(tableMenu.getValueAt(i, 3).toString());
-            String comentario = tableMenu.getValueAt(i, 5).toString(); // Obtener el comentario de tableMenu
-            detPedido.setNombre(nombre);
-            detPedido.setCantidad(cant);
-            detPedido.setPrecio(precio);
-            detPedido.setComentario(comentario);
-            detPedido.setId_pedido(id);
-            pedDao.RegistrarDetalle(detPedido);
+            try {
+                String nombre = tableMenu.getValueAt(i, 1).toString();
+                int cant = Integer.parseInt(tableMenu.getValueAt(i, 2).toString());
+                double precio = Double.parseDouble(tableMenu.getValueAt(i, 3).toString());
+                Object comObj = tableMenu.getValueAt(i, 5);
+                String comentario = (comObj != null) ? comObj.toString() : "";
+                detPedido.setNombre(nombre);
+                detPedido.setCantidad(cant);
+                detPedido.setPrecio(precio);
+                detPedido.setComentario(comentario);
+                detPedido.setId_pedido(id_pedido);
+                pedDao.RegistrarDetalle(detPedido);
+            } catch (Exception e) {
+                System.err.println("Error al insertar fila de detalle: " + e.getMessage());
+            }
         }
         LimpiarTable();
         LimpiarPlatos();
-
     }
 
     private void actualizarTotalMenu() {
@@ -4666,7 +4610,7 @@ public final class Sistema extends javax.swing.JFrame {
             ob[2] = Listar.get(i).getCantidad();
             ob[3] = Listar.get(i).getPrecio();
             ob[4] = Listar.get(i).getCantidad() * Listar.get(i).getPrecio();
-            ob[5] = Listar.get(i).getComentario();
+            ob[5] = Listar.get(i).getComentario() != null ? Listar.get(i).getComentario() : "";
             modelo.addRow(ob);
         }
         colorHeader(tableFinalizar);
@@ -4674,24 +4618,26 @@ public final class Sistema extends javax.swing.JFrame {
     }
 
     public void verPedido(int id_pedido) {
-        txtSalaFinalizar.setText(ped.getSala());
+        ped = pedDao.verPedido(id_pedido);
+        if (ped == null) return;
+
         // Deshabilitar el listener temporalmente
         ActionListener[] listeners = jComboSalas.getActionListeners();
         for (ActionListener listener : listeners) {
             jComboSalas.removeActionListener(listener);
         }
         // Configurar la sala actual
-        jComboSalas.setSelectedItem(ped.getSala());
+        if (ped.getSala() != null) {
+            jComboSalas.setSelectedItem(ped.getSala());
+        }
         // Restaurar los listeners
         for (ActionListener listener : listeners) {
             jComboSalas.addActionListener(listener);
         }
-        ped = pedDao.verPedido(id_pedido);
+
         totalFinalizar.setText("" + ped.getTotal());
-        txtFechaHora.setText("" + ped.getFecha());
-        txtSalaFinalizar.setText("" + ped.getSala());
-        txtSalaFinalizar.setText(ped.getSala());
-        jComboSalas.setSelectedItem(ped.getSala());
+        txtFechaHora.setText(ped.getFecha() != null ? ped.getFecha() : "");
+        txtSalaFinalizar.setText(ped.getSala() != null ? ped.getSala() : "");
         txtNumMesaFinalizar.setText("" + ped.getNum_mesa());
         txtIdPedido.setText("" + ped.getId());
     }

@@ -56,17 +56,16 @@ public class PedidosDao {
     }
 
     /**
-     * Verifica si una mesa en una sala específica tiene un pedido en estado PENDIENTE.
+     * Verifica si una mesa en una sala específica tiene un pedido activo (PENDIENTE o PREPARADO).
      */
     public int verificarStado(int mesa, int id_sala) {
         int id_pedido = 0;
-        String sql = "SELECT id FROM pedidos WHERE num_mesa=? AND id_sala=? AND estado = ?";
+        String sql = "SELECT id FROM pedidos WHERE num_mesa=? AND id_sala=? AND estado IN ('PENDIENTE', 'PREPARADO') ORDER BY id DESC LIMIT 1";
         try (Connection con = cn.getConnection();
              PreparedStatement ps = con != null ? con.prepareStatement(sql) : null) {
             if (ps == null) return 0;
             ps.setInt(1, mesa);
             ps.setInt(2, id_sala);
-            ps.setString(3, "PENDIENTE");
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     id_pedido = rs.getInt("id");
@@ -591,8 +590,11 @@ public class PedidosDao {
                 ps.executeUpdate();
             }
 
-            descontarStockDePedidoConConexion(con, id_pedido);
             con.commit();
+            try { con.close(); } catch (SQLException ignored) {}
+            con = null;
+
+            descontarStockDePedido(id_pedido);
             return true;
         } catch (SQLException e) {
             if (con != null) {
@@ -640,10 +642,13 @@ public class PedidosDao {
                 ps.executeBatch();
             }
 
-            for (int idPed : idsPedidos) {
-                descontarStockDePedidoConConexion(con, idPed);
-            }
             con.commit();
+            try { con.close(); } catch (SQLException ignored) {}
+            con = null;
+
+            for (int idPed : idsPedidos) {
+                descontarStockDePedido(idPed);
+            }
             return true;
         } catch (SQLException e) {
             if (con != null) {

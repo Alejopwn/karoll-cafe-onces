@@ -52,6 +52,41 @@ public class Conexion {
                     System.out.println("Columna 'pago_tarjeta' agregada a la tabla 'pedidos'.");
                 }
             }
+
+            // Migrar tabla pedidos para permitir estados 'PREPARADO' y 'ANULADO' si tiene CHECK restrictivo
+            try (Statement stmt = conn.createStatement();
+                 java.sql.ResultSet rs = stmt.executeQuery("SELECT sql FROM sqlite_master WHERE type='table' AND name='pedidos'")) {
+                if (rs.next()) {
+                    String sqlDef = rs.getString("sql");
+                    if (sqlDef != null && sqlDef.contains("CHECK") && !sqlDef.contains("PREPARADO")) {
+                        System.out.println("Migrando tabla 'pedidos' para soportar estados PREPARADO y ANULADO...");
+                        stmt.execute("PRAGMA foreign_keys = OFF");
+                        stmt.execute("CREATE TABLE IF NOT EXISTS pedidos_new ("
+                                + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                                + "id_sala INTEGER NOT NULL, "
+                                + "num_mesa INTEGER NOT NULL, "
+                                + "fecha TEXT DEFAULT CURRENT_TIMESTAMP, "
+                                + "total REAL NOT NULL, "
+                                + "estado TEXT CHECK(estado IN ('PENDIENTE','PREPARADO','FINALIZADO','ANULADO')) NOT NULL DEFAULT 'PENDIENTE', "
+                                + "usuario TEXT NOT NULL, "
+                                + "tipo_pago TEXT DEFAULT NULL, "
+                                + "fecha_registro TEXT DEFAULT NULL, "
+                                + "pago_efectivo REAL DEFAULT 0.0, "
+                                + "pago_transaccion REAL DEFAULT 0.0, "
+                                + "pago_tarjeta REAL DEFAULT 0.0, "
+                                + "id_cierre INTEGER DEFAULT NULL, "
+                                + "FOREIGN KEY (id_sala) REFERENCES salas (id))");
+                        stmt.execute("INSERT INTO pedidos_new SELECT id, id_sala, num_mesa, fecha, total, estado, usuario, tipo_pago, fecha_registro, "
+                                + "COALESCE(pago_efectivo, 0.0), COALESCE(pago_transaccion, 0.0), COALESCE(pago_tarjeta, 0.0), id_cierre FROM pedidos");
+                        stmt.execute("DROP TABLE pedidos");
+                        stmt.execute("ALTER TABLE pedidos_new RENAME TO pedidos");
+                        stmt.execute("PRAGMA foreign_keys = ON");
+                        System.out.println("✅ Tabla 'pedidos' migrada exitosamente.");
+                    }
+                }
+            } catch (SQLException e) {
+                System.err.println("Aviso en migración de pedidos: " + e.getMessage());
+            }
             // Verificar tablas de inventario
             try (java.sql.Statement stmt = conn.createStatement()) {
                 stmt.execute("CREATE TABLE IF NOT EXISTS inventario ("
