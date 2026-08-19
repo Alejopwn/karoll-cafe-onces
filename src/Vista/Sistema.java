@@ -249,8 +249,48 @@ public final class Sistema extends javax.swing.JFrame {
         tableSala.setDefaultRenderer(Object.class, zebraRenderer);
         TableUsuarios.setDefaultRenderer(Object.class, zebraRenderer);
         TablePlatos.setDefaultRenderer(Object.class, zebraRenderer);
-        tableMenu.setDefaultRenderer(Object.class, zebraRenderer);
-        tableFinalizar.setDefaultRenderer(Object.class, zebraRenderer);
+        tableFinalizar.setDefaultRenderer(Object.class, new javax.swing.table.DefaultTableCellRenderer() {
+            @Override
+            public java.awt.Component getTableCellRendererComponent(javax.swing.JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+                java.awt.Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                if (!isSelected) {
+                    if (row % 2 == 0) {
+                        c.setBackground(new java.awt.Color(15, 23, 42)); // Slate 900
+                    } else {
+                        c.setBackground(new java.awt.Color(30, 41, 59)); // Slate 800
+                    }
+                    c.setForeground(new java.awt.Color(241, 245, 249));
+                } else {
+                    c.setBackground(new java.awt.Color(37, 99, 235)); // Azul activo
+                    c.setForeground(java.awt.Color.WHITE);
+                }
+
+                setFont(getFontRegular(13f));
+                if (column == 0 || column == 2) {
+                    setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+                    if (column == 2) setFont(getFontBold(14f));
+                } else if (column == 3 || column == 4) {
+                    setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+                    setFont(getFontBold(13f));
+                    if (column == 4 && !isSelected) {
+                        c.setForeground(new java.awt.Color(56, 189, 248)); // Cyan
+                    }
+                    if (value instanceof Number) {
+                        setText(String.format("$ %,.0f", ((Number) value).doubleValue()));
+                    } else if (value != null) {
+                        try {
+                            double val = Double.parseDouble(value.toString().replace("$", "").replace(",", "").trim());
+                            setText(String.format("$ %,.0f", val));
+                        } catch (Exception ignored) {}
+                    }
+                } else {
+                    setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+                    if (column == 1) setFont(getFontBold(13f));
+                }
+                return c;
+            }
+        });
         tblTemPlatos.setDefaultRenderer(Object.class, zebraRenderer);
 
         // Validaciones numÃ©ricas para prevenir crashes
@@ -301,9 +341,7 @@ public final class Sistema extends javax.swing.JFrame {
             @Override
             public void onF3() {
                 if (!esAdmin()) {
-                    JOptionPane.showMessageDialog(Sistema.this,
-                            "Acceso restringido: Solo el Administrador puede acceder al Inventario.", "Acceso Denegado",
-                            JOptionPane.WARNING_MESSAGE);
+                    ModalAlerta.advertencia(Sistema.this, "Acceso Denegado", "Solo el <b>Administrador</b> puede acceder al Inventario.");
                     return;
                 }
                 if (moduloInventario != null)
@@ -313,9 +351,7 @@ public final class Sistema extends javax.swing.JFrame {
             @Override
             public void onF4() {
                 if (!esAdmin()) {
-                    JOptionPane.showMessageDialog(Sistema.this,
-                            "Acceso restringido: Solo el Administrador puede ingresar a Administración.",
-                            "Acceso Denegado", JOptionPane.WARNING_MESSAGE);
+                    ModalAlerta.advertencia(Sistema.this, "Acceso Denegado", "Solo el <b>Administrador</b> puede ingresar a Administración.");
                     return;
                 }
                 if (moduloConfig != null)
@@ -325,9 +361,7 @@ public final class Sistema extends javax.swing.JFrame {
             @Override
             public void onF5() {
                 if (!esAdmin()) {
-                    JOptionPane.showMessageDialog(Sistema.this,
-                            "Acceso restringido: Solo el Administrador puede ingresar a Administración.",
-                            "Acceso Denegado", JOptionPane.WARNING_MESSAGE);
+                    ModalAlerta.advertencia(Sistema.this, "Acceso Denegado", "Solo el <b>Administrador</b> puede ingresar a Administración.");
                     return;
                 }
                 if (moduloConfig != null)
@@ -1232,30 +1266,13 @@ public final class Sistema extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Platos", jPanel23);
 
+        jPanel25.setBackground(new java.awt.Color(15, 23, 42)); // Slate 900
         jPanel25.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        btnFinalizar.setText("Finalizar");
-        btnFinalizar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnFinalizarActionPerformed(evt);
-            }
-        });
-        jPanel25.add(btnFinalizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(920, 440, 110, 40));
-
-        totalFinalizar.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        totalFinalizar.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        totalFinalizar.setText("00.00");
-        jPanel25.add(totalFinalizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(910, 390, 120, -1));
-
-        jLabel17.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jLabel17.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/money.png"))); // NOI18N
-        jLabel17.setText("Total a Pagar");
-        jPanel25.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 340, -1, -1));
 
         tableFinalizar.setModel(new javax.swing.table.DefaultTableModel(
                 new Object[][] {},
                 new String[] {
-                        "", "Plato", "Cant", "Precio", "SubTotal", "Comentario"
+                        "ID", "Plato / Producto", "Cant.", "Precio Unit.", "SubTotal", "Comentario / Notas"
                 }) {
             boolean[] canEdit = new boolean[] {
                     false, false, false, false, false, true
@@ -1265,89 +1282,104 @@ public final class Sistema extends javax.swing.JFrame {
                 return canEdit[columnIndex];
             }
         });
-        tableFinalizar.setRowHeight(23);
+        tableFinalizar.setRowHeight(32);
+        UIUtils.estilarTablaOscura(tableFinalizar);
         jScrollPane13.setViewportView(tableFinalizar);
+        jScrollPane13.setBackground(new java.awt.Color(15, 23, 42));
+        jScrollPane13.getViewport().setBackground(new java.awt.Color(15, 23, 42));
         if (tableFinalizar.getColumnModel().getColumnCount() > 0) {
-            tableFinalizar.getColumnModel().getColumn(0).setMinWidth(30);
-            tableFinalizar.getColumnModel().getColumn(0).setPreferredWidth(30);
-            tableFinalizar.getColumnModel().getColumn(0).setMaxWidth(50);
-            tableFinalizar.getColumnModel().getColumn(1).setPreferredWidth(100);
-            tableFinalizar.getColumnModel().getColumn(2).setMinWidth(40);
-            tableFinalizar.getColumnModel().getColumn(2).setPreferredWidth(40);
-            tableFinalizar.getColumnModel().getColumn(2).setMaxWidth(50);
-            tableFinalizar.getColumnModel().getColumn(3).setPreferredWidth(50);
-            tableFinalizar.getColumnModel().getColumn(4).setPreferredWidth(60);
+            tableFinalizar.getColumnModel().getColumn(0).setMinWidth(40);
+            tableFinalizar.getColumnModel().getColumn(0).setPreferredWidth(40);
+            tableFinalizar.getColumnModel().getColumn(0).setMaxWidth(60);
+            tableFinalizar.getColumnModel().getColumn(1).setPreferredWidth(260);
+            tableFinalizar.getColumnModel().getColumn(2).setMinWidth(55);
+            tableFinalizar.getColumnModel().getColumn(2).setPreferredWidth(55);
+            tableFinalizar.getColumnModel().getColumn(2).setMaxWidth(70);
+            tableFinalizar.getColumnModel().getColumn(3).setPreferredWidth(110);
+            tableFinalizar.getColumnModel().getColumn(4).setPreferredWidth(120);
+            tableFinalizar.getColumnModel().getColumn(5).setPreferredWidth(170);
         }
 
-        jPanel25.add(jScrollPane13, new org.netbeans.lib.awtextra.AbsoluteConstraints(25, 15, 780, 550));
+        jPanel25.add(jScrollPane13, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 830, 560));
         jPanel25.add(txtIdPedido, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 390, 50, -1));
+        txtIdPedido.setVisible(false);
 
-        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(148, 163, 184));
-        jLabel7.setText("Fecha y Hora:");
-        jPanel25.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(825, 15, 230, 20));
+        jLabel7.setText("FECHA Y HORA:");
+        jPanel25.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(885, 20, 335, 18));
 
         txtFechaHora.setEditable(false);
-        txtFechaHora.setFont(new java.awt.Font("Segoe UI", 0, 13));
-        jPanel25.add(txtFechaHora, new org.netbeans.lib.awtextra.AbsoluteConstraints(825, 38, 230, 32));
+        UIUtils.estilarCampoTexto(txtFechaHora);
+        jPanel25.add(txtFechaHora, new org.netbeans.lib.awtextra.AbsoluteConstraints(885, 40, 335, 36));
 
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(148, 163, 184));
-        jLabel8.setText("Sala / Salón:");
-        jPanel25.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(825, 78, 230, 20));
+        jLabel8.setText("SALA / SALÓN:");
+        jPanel25.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(885, 84, 335, 18));
 
         txtSalaFinalizar.setEditable(false);
-        txtSalaFinalizar.setFont(new java.awt.Font("Segoe UI", 0, 13));
-        jPanel25.add(txtSalaFinalizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(825, 100, 230, 32));
+        UIUtils.estilarCampoTexto(txtSalaFinalizar);
+        jPanel25.add(txtSalaFinalizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(885, 104, 335, 36));
 
-        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
+        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(148, 163, 184));
-        jLabel9.setText("N° Mesa:");
-        jPanel25.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(825, 140, 230, 20));
+        jLabel9.setText("N° MESA:");
+        jPanel25.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(885, 148, 335, 18));
 
         txtNumMesaFinalizar.setEditable(false);
-        txtNumMesaFinalizar.setFont(new java.awt.Font("Segoe UI", 1, 14));
+        UIUtils.estilarCampoTexto(txtNumMesaFinalizar);
+        txtNumMesaFinalizar.setFont(new java.awt.Font("Segoe UI", 1, 15));
         txtNumMesaFinalizar.setForeground(new java.awt.Color(251, 191, 36));
-        jPanel25.add(txtNumMesaFinalizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(825, 162, 230, 32));
+        jPanel25.add(txtNumMesaFinalizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(885, 168, 335, 36));
 
         javax.swing.JLabel lblTotalTitle = new javax.swing.JLabel("TOTAL A PAGAR:");
-        lblTotalTitle.setFont(new java.awt.Font("Segoe UI", 1, 14));
+        lblTotalTitle.setFont(new java.awt.Font("Segoe UI", 1, 13));
         lblTotalTitle.setForeground(new java.awt.Color(226, 232, 240));
-        jPanel25.add(lblTotalTitle, new org.netbeans.lib.awtextra.AbsoluteConstraints(825, 208, 230, 22));
+        jPanel25.add(lblTotalTitle, new org.netbeans.lib.awtextra.AbsoluteConstraints(885, 216, 335, 20));
 
         totalFinalizar.setFont(new java.awt.Font("Segoe UI", 1, 24));
-        totalFinalizar.setForeground(new java.awt.Color(16, 185, 129));
-        totalFinalizar.setText("0.00");
-        jPanel25.add(totalFinalizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(825, 232, 230, 40));
+        totalFinalizar.setForeground(new java.awt.Color(52, 211, 153));
+        totalFinalizar.setBackground(new java.awt.Color(30, 41, 59));
+        totalFinalizar.setOpaque(true);
+        totalFinalizar.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        totalFinalizar.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(16, 185, 129), 1, true));
+        totalFinalizar.setText("$ 0 COP");
+        jPanel25.add(totalFinalizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(885, 238, 335, 52));
 
         btnFinalizar.setBackground(new java.awt.Color(16, 185, 129));
         btnFinalizar.setFont(new java.awt.Font("Segoe UI", 1, 15));
         btnFinalizar.setForeground(new java.awt.Color(255, 255, 255));
-        btnFinalizar.setText("💰 FINALIZAR Y COBRAR");
+        btnFinalizar.setText("FINALIZAR Y COBRAR");
         btnFinalizar.setFocusPainted(false);
         btnFinalizar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jPanel25.add(btnFinalizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(825, 285, 230, 50));
+        btnFinalizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFinalizarActionPerformed(evt);
+            }
+        });
+        jPanel25.add(btnFinalizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(885, 304, 335, 52));
 
         btnAddPlatoFinalizar.setBackground(new java.awt.Color(37, 99, 235));
         btnAddPlatoFinalizar.setFont(new java.awt.Font("Segoe UI", 1, 13));
         btnAddPlatoFinalizar.setForeground(new java.awt.Color(255, 255, 255));
-        btnAddPlatoFinalizar.setText("➕ Agregar Plato");
+        btnAddPlatoFinalizar.setText("Agregar Plato");
         btnAddPlatoFinalizar.setFocusPainted(false);
         btnAddPlatoFinalizar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jPanel25.add(btnAddPlatoFinalizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(825, 348, 230, 42));
+        jPanel25.add(btnAddPlatoFinalizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(885, 368, 335, 44));
 
         btnEliminarPlatoFinalizar.setBackground(new java.awt.Color(220, 38, 38));
         btnEliminarPlatoFinalizar.setFont(new java.awt.Font("Segoe UI", 1, 13));
         btnEliminarPlatoFinalizar.setForeground(new java.awt.Color(255, 255, 255));
-        btnEliminarPlatoFinalizar.setText("🗑️ Eliminar Plato");
+        btnEliminarPlatoFinalizar.setText("Eliminar Plato");
         btnEliminarPlatoFinalizar.setFocusPainted(false);
         btnEliminarPlatoFinalizar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jPanel25.add(btnEliminarPlatoFinalizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(825, 400, 230, 42));
+        jPanel25.add(btnEliminarPlatoFinalizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(885, 422, 335, 44));
 
         btnPdfPedido.setBackground(new java.awt.Color(51, 65, 85));
         btnPdfPedido.setFont(new java.awt.Font("Segoe UI", 1, 13));
         btnPdfPedido.setForeground(new java.awt.Color(255, 255, 255));
-        btnPdfPedido.setText("🖨️ Ticket PDF");
+        btnPdfPedido.setText("Reimprimir Ticket PDF");
         btnPdfPedido.setFocusPainted(false);
         btnPdfPedido.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnPdfPedido.addActionListener(new java.awt.event.ActionListener() {
@@ -1355,12 +1387,13 @@ public final class Sistema extends javax.swing.JFrame {
                 btnPdfPedidoActionPerformed(evt);
             }
         });
-        jPanel25.add(btnPdfPedido, new org.netbeans.lib.awtextra.AbsoluteConstraints(825, 452, 230, 42));
+        jPanel25.add(btnPdfPedido, new org.netbeans.lib.awtextra.AbsoluteConstraints(885, 476, 335, 44));
 
         btnImprimir.setVisible(false);
         jComboSalas.setVisible(false);
         btnEfectivo.setVisible(false);
         btnTransaccion.setVisible(false);
+        jLabel17.setVisible(false);
 
         txtIdHistorialPedido.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1368,6 +1401,7 @@ public final class Sistema extends javax.swing.JFrame {
             }
         });
         jPanel25.add(txtIdHistorialPedido, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 450, 50, -1));
+        txtIdHistorialPedido.setVisible(false);
 
         jTabbedPane1.addTab("Finalizar Pedido", jPanel25);
 
@@ -1398,58 +1432,57 @@ public final class Sistema extends javax.swing.JFrame {
         });
         jScrollPane5.setViewportView(TablePedidos);
         if (TablePedidos.getColumnModel().getColumnCount() > 0) {
-            TablePedidos.getColumnModel().getColumn(0).setMinWidth(80);
-            TablePedidos.getColumnModel().getColumn(0).setPreferredWidth(80);
-            TablePedidos.getColumnModel().getColumn(0).setMaxWidth(120);
-            TablePedidos.getColumnModel().getColumn(2).setPreferredWidth(60);
-            TablePedidos.getColumnModel().getColumn(3).setMinWidth(100);
-            TablePedidos.getColumnModel().getColumn(3).setPreferredWidth(100);
-            TablePedidos.getColumnModel().getColumn(3).setMaxWidth(150);
-            TablePedidos.getColumnModel().getColumn(4).setPreferredWidth(60);
+            TablePedidos.getColumnModel().getColumn(0).setPreferredWidth(70);
+            TablePedidos.getColumnModel().getColumn(1).setPreferredWidth(130);
+            TablePedidos.getColumnModel().getColumn(2).setPreferredWidth(210);
+            TablePedidos.getColumnModel().getColumn(3).setPreferredWidth(90);
+            TablePedidos.getColumnModel().getColumn(4).setPreferredWidth(200);
+            TablePedidos.getColumnModel().getColumn(5).setPreferredWidth(160);
+            TablePedidos.getColumnModel().getColumn(6).setPreferredWidth(180);
         }
 
-        jPanel6.add(jScrollPane5, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 86, 1020, 405));
+        jPanel6.add(jScrollPane5, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 88, 1200, 440));
 
         jLabel16.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         jLabel16.setForeground(new java.awt.Color(255, 255, 255));
         jLabel16.setText("");
         jLabel16.setVisible(false); // Ocultar para evitar solapamiento con los botones superiores
 
-        txtTotalDiaTrans.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        txtTotalDiaTrans.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
         txtTotalDiaTrans.setBackground(new java.awt.Color(30, 41, 59));
         txtTotalDiaTrans.setForeground(new java.awt.Color(56, 189, 248));
         txtTotalDiaTrans.setEditable(false);
         txtTotalDiaTrans.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jPanel6.add(txtTotalDiaTrans, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 525, 120, 40));
+        jPanel6.add(txtTotalDiaTrans, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 552, 110, 36));
 
-        txtTotalDia.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        txtTotalDia.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
         txtTotalDia.setBackground(new java.awt.Color(30, 41, 59));
         txtTotalDia.setForeground(new java.awt.Color(52, 211, 153));
         txtTotalDia.setEditable(false);
         txtTotalDia.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jPanel6.add(txtTotalDia, new org.netbeans.lib.awtextra.AbsoluteConstraints(158, 525, 120, 40));
+        jPanel6.add(txtTotalDia, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 552, 110, 36));
 
-        txtPedidosDia.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        txtPedidosDia.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
         txtPedidosDia.setBackground(new java.awt.Color(30, 41, 59));
         txtPedidosDia.setForeground(new java.awt.Color(251, 191, 36));
         txtPedidosDia.setEditable(false);
         txtPedidosDia.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jPanel6.add(txtPedidosDia, new org.netbeans.lib.awtextra.AbsoluteConstraints(286, 525, 90, 40));
+        jPanel6.add(txtPedidosDia, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 552, 95, 36));
 
         jLabel21.setFont(new java.awt.Font("Segoe UI", 1, 11)); // NOI18N
         jLabel21.setForeground(new java.awt.Color(148, 163, 184));
         jLabel21.setText("TRANSACCIONES:");
-        jPanel6.add(jLabel21, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 502, 120, 20));
+        jPanel6.add(jLabel21, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 532, 110, 18));
 
         jLabel22.setFont(new java.awt.Font("Segoe UI", 1, 11)); // NOI18N
         jLabel22.setForeground(new java.awt.Color(148, 163, 184));
         jLabel22.setText("EFECTIVO:");
-        jPanel6.add(jLabel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(158, 502, 120, 20));
+        jPanel6.add(jLabel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 532, 110, 18));
 
         jLabel20.setFont(new java.awt.Font("Segoe UI", 1, 11)); // NOI18N
         jLabel20.setForeground(new java.awt.Color(148, 163, 184));
         jLabel20.setText("N° PEDIDOS:");
-        jPanel6.add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(286, 502, 90, 20));
+        jPanel6.add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 532, 95, 18));
 
         btnEliminarPedido.setBackground(new java.awt.Color(220, 38, 38));
         btnEliminarPedido.setFont(new java.awt.Font("Segoe UI", 1, 12));
@@ -1462,7 +1495,7 @@ public final class Sistema extends javax.swing.JFrame {
                 btnEliminarPedidoActionPerformed(evt);
             }
         });
-        jPanel6.add(btnEliminarPedido, new org.netbeans.lib.awtextra.AbsoluteConstraints(783, 525, 125, 40));
+        jPanel6.add(btnEliminarPedido, new org.netbeans.lib.awtextra.AbsoluteConstraints(880, 548, 145, 40));
 
         BtnImprimirDia.setBackground(new java.awt.Color(5, 150, 105));
         BtnImprimirDia.setFont(new java.awt.Font("Segoe UI", 1, 12));
@@ -1475,7 +1508,7 @@ public final class Sistema extends javax.swing.JFrame {
                 BtnImprimirDiaActionPerformed(evt);
             }
         });
-        jPanel6.add(BtnImprimirDia, new org.netbeans.lib.awtextra.AbsoluteConstraints(916, 525, 134, 40));
+        jPanel6.add(BtnImprimirDia, new org.netbeans.lib.awtextra.AbsoluteConstraints(1035, 548, 150, 40));
 
         jTabbedPane1.addTab("Historial Pedidos", jPanel6);
 
@@ -2259,13 +2292,13 @@ public final class Sistema extends javax.swing.JFrame {
                 txtIdHistorialPedido.setText("" + id_pedido);
             });
 
-            javax.swing.JMenuItem itemReimprimir = new javax.swing.JMenuItem("Reimprimir Ticket PDF");
+            javax.swing.JMenuItem itemReimprimir = new javax.swing.JMenuItem("🖨 Reimprimir Ticket PDF");
             itemReimprimir.addActionListener(e -> {
                 pedDao.pdfPedido(id_pedido);
                 ToastNotification.exito(this, "Ticket PDF re-generado para pedido #" + id_pedido);
             });
 
-            javax.swing.JMenuItem itemAnular = new javax.swing.JMenuItem("Anular Pedido");
+            javax.swing.JMenuItem itemAnular = new javax.swing.JMenuItem("🗑 Anular Pedido");
             itemAnular.addActionListener(e -> {
                 int confirm = javax.swing.JOptionPane.showConfirmDialog(this,
                         "¿Desea anular el pedido #" + id_pedido + "?", "Confirmar Anulación",
@@ -2304,13 +2337,101 @@ public final class Sistema extends javax.swing.JFrame {
             return;
         }
 
-        LimpiarTable();
-        verPedido(id_pedido);
-        verPedidoDetalle(id_pedido);
-        btnFinalizar.setEnabled(true);
-        jTabbedPane1.setSelectedIndex(4);
         txtIdHistorialPedido.setText("" + id_pedido);
+
+        // Doble clic: Visor rápido de comanda sin cambiar de pestaña
+        if (evt.getClickCount() == 2) {
+            mostrarModalDetallePedidoRapido(id_pedido);
+        }
     }// GEN-LAST:event_TablePedidosMouseClicked
+
+    public void mostrarModalDetallePedidoRapido(int id_pedido) {
+        Pedido p = pedDao.verPedido(id_pedido);
+        if (p == null) return;
+        java.util.List<DetallePedido> detalles = pedDao.verPedidoDetalle(id_pedido);
+
+        javax.swing.JDialog dialog = new javax.swing.JDialog(this, "Detalle de Comanda - Pedido #" + id_pedido, true);
+        dialog.setLayout(new java.awt.BorderLayout());
+        dialog.getContentPane().setBackground(new java.awt.Color(15, 23, 42));
+
+        javax.swing.JPanel header = new javax.swing.JPanel(new java.awt.GridLayout(2, 1, 4, 4));
+        header.setOpaque(false);
+        header.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 20, 10, 20));
+
+        javax.swing.JLabel lblTitle = new javax.swing.JLabel("🍽️ " + (p.getSala() != null ? p.getSala() : "SALA") + " - MESA N° " + p.getNum_mesa());
+        lblTitle.setFont(getFontBold(16f));
+        lblTitle.setForeground(new java.awt.Color(241, 245, 249));
+
+        javax.swing.JLabel lblSub = new javax.swing.JLabel("Atendido por: " + (p.getUsuario() != null ? p.getUsuario() : "Mesero") + "  •  Estado: " + p.getEstado() + "  •  " + (p.getFecha() != null ? p.getFecha() : ""));
+        lblSub.setFont(getFontRegular(12f));
+        lblSub.setForeground(new java.awt.Color(148, 163, 184));
+
+        header.add(lblTitle);
+        header.add(lblSub);
+        dialog.add(header, java.awt.BorderLayout.NORTH);
+
+        String[] cols = {"Cant.", "Producto", "Precio Unit.", "Subtotal", "Notas / Comentarios"};
+        DefaultTableModel model = new DefaultTableModel(cols, 0) {
+            @Override
+            public boolean isCellEditable(int row, int col) { return false; }
+        };
+
+        for (DetallePedido d : detalles) {
+            model.addRow(new Object[]{
+                d.getCantidad(),
+                d.getNombre(),
+                String.format("$ %,.0f", d.getPrecio()),
+                String.format("$ %,.0f", (d.getCantidad() * d.getPrecio())),
+                d.getComentario() != null ? d.getComentario() : ""
+            });
+        }
+
+        javax.swing.JTable tableDet = new javax.swing.JTable(model);
+        UIUtils.estilarTablaOscura(tableDet);
+        tableDet.setRowHeight(28);
+        tableDet.getColumnModel().getColumn(0).setPreferredWidth(50);
+        tableDet.getColumnModel().getColumn(1).setPreferredWidth(180);
+        tableDet.getColumnModel().getColumn(2).setPreferredWidth(90);
+        tableDet.getColumnModel().getColumn(3).setPreferredWidth(90);
+        tableDet.getColumnModel().getColumn(4).setPreferredWidth(160);
+
+        javax.swing.JScrollPane scroll = new javax.swing.JScrollPane(tableDet);
+        scroll.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 20, 0, 20));
+        scroll.setOpaque(false);
+        scroll.getViewport().setOpaque(false);
+        dialog.add(scroll, java.awt.BorderLayout.CENTER);
+
+        javax.swing.JPanel footer = new javax.swing.JPanel(new java.awt.BorderLayout());
+        footer.setOpaque(false);
+        footer.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 20, 15, 20));
+
+        javax.swing.JLabel lblTotal = new javax.swing.JLabel("Total Pedido: " + String.format("$ %,.0f COP", p.getTotal()));
+        lblTotal.setFont(getFontBold(16f));
+        lblTotal.setForeground(new java.awt.Color(52, 211, 153));
+
+        javax.swing.JPanel pnlBtns = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 10, 0));
+        pnlBtns.setOpaque(false);
+
+        javax.swing.JButton btnCerrar = UIUtils.crearBoton("Cerrar", new java.awt.Color(51, 65, 85));
+        btnCerrar.addActionListener(e -> dialog.dispose());
+
+        javax.swing.JButton btnReimp = UIUtils.crearBoton("🖨 Reimprimir PDF", UIUtils.COLOR_ACCENT_BLUE);
+        btnReimp.addActionListener(e -> {
+            pedDao.pdfPedido(id_pedido);
+            ToastNotification.exito(this, "Comprobante PDF generado.");
+        });
+
+        pnlBtns.add(btnReimp);
+        pnlBtns.add(btnCerrar);
+
+        footer.add(lblTotal, java.awt.BorderLayout.WEST);
+        footer.add(pnlBtns, java.awt.BorderLayout.EAST);
+        dialog.add(footer, java.awt.BorderLayout.SOUTH);
+
+        dialog.setSize(640, 430);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
 
     private void btnAddPlatoFinalizarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAddPlatoFinalizarActionPerformed
         if (txtIdPedido.getText().isEmpty()) {
@@ -2466,9 +2587,9 @@ public final class Sistema extends javax.swing.JFrame {
                 if (pedDao.RegistrarDetalle(det)) {
                     verPedidoDetalle(idPedido);
                     TotalPagar(tableFinalizar, totalFinalizar);
-                    JOptionPane.showMessageDialog(null, "Plato agregado al pedido");
+                    ToastNotification.exito(Sistema.this, "Plato agregado al pedido");
                 } else {
-                    JOptionPane.showMessageDialog(null, "Error al agregar el plato");
+                    ToastNotification.error(Sistema.this, "Error al agregar el plato");
                 }
             }
         });
@@ -2479,7 +2600,7 @@ public final class Sistema extends javax.swing.JFrame {
 
     private void btnEliminarPlatoFinalizarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnEliminarPlatoFinalizarActionPerformed
         if (txtIdPedido.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "No hay pedido seleccionado");
+            ToastNotification.advertencia(this, "No hay pedido seleccionado");
             return;
         }
         if (tableFinalizar.getSelectedRow() >= 0) {
@@ -2491,15 +2612,15 @@ public final class Sistema extends javax.swing.JFrame {
                     modelo = (DefaultTableModel) tableFinalizar.getModel();
                     modelo.removeRow(tableFinalizar.getSelectedRow());
                     TotalPagar(tableFinalizar, totalFinalizar);
-                    JOptionPane.showMessageDialog(null, "Plato eliminado del pedido");
+                    ToastNotification.exito(this, "Plato eliminado del pedido");
                 } else {
-                    JOptionPane.showMessageDialog(null, "Error al eliminar el plato");
+                    ToastNotification.error(this, "Error al eliminar el plato");
                 }
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(null, "Error: ID invÃ¡lido");
+                ToastNotification.error(this, "Error: ID inválido");
             }
         } else {
-            JOptionPane.showMessageDialog(null, "Seleccione una fila");
+            ToastNotification.advertencia(this, "Seleccione un plato en la tabla para eliminarlo");
         }
     }// GEN-LAST:event_btnEliminarPlatoFinalizarActionPerformed
 
@@ -2527,371 +2648,82 @@ public final class Sistema extends javax.swing.JFrame {
             protected void done() {
                 btnPdfPedido.setEnabled(true);
                 btnPdfPedido.setText("🖨️ Ticket PDF");
-                ToastNotification.exito(Sistema.this, "✅ Ticket PDF generado para pedido #" + idPedido);
+                ToastNotification.exito(Sistema.this, "Ticket PDF generado");
             }
         }.execute();
     }// GEN-LAST:event_btnPdfPedidoActionPerformed
 
     private void btnFinalizarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnFinalizarActionPerformed
         if (txtIdPedido.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "No hay pedido seleccionado.", "Advertencia",
-                    JOptionPane.WARNING_MESSAGE);
+            ToastNotification.advertencia(this, "No hay pedido seleccionado para cobrar");
             return;
         }
 
-        final int idPedido = Integer.parseInt(txtIdPedido.getText());
-        double totalCons = 0.0;
-        for (int i = 0; i < tableFinalizar.getRowCount(); i++) {
-            double sub = parseDoubleSafe(tableFinalizar.getValueAt(i, 4).toString());
-            totalCons += sub;
+        try {
+            final int idPedido = Integer.parseInt(txtIdPedido.getText().trim());
+            double totalCons = 0.0;
+            for (int i = 0; i < tableFinalizar.getRowCount(); i++) {
+                double sub = parseDoubleSafe(tableFinalizar.getValueAt(i, 4).toString());
+                totalCons += sub;
+            }
+            final double totalConsumo = totalCons;
+
+            String mesaLabel = txtNumMesaFinalizar.getText().trim();
+            if (mesaLabel.isEmpty()) mesaLabel = "Mesa";
+            else if (!mesaLabel.toLowerCase().contains("mesa") && !mesaLabel.toLowerCase().contains("domicilio")) {
+                mesaLabel = "Mesa " + mesaLabel;
+            }
+
+            String salaLabel = txtSalaFinalizar.getText().trim();
+            if (salaLabel.isEmpty()) salaLabel = "Salón";
+
+            ModalCobroPOS modal = new ModalCobroPOS(this, this, idPedido, idsRondasAcumuladasCobro, totalConsumo, mesaLabel, salaLabel, tableFinalizar);
+            modal.setVisible(true);
+        } catch (Exception ex) {
+            ModalAlerta.error(this, "Error", "Error al abrir la pantalla de cobro: " + ex.getMessage());
         }
-        final double totalConsumo = totalCons;
-
-        // Custom Dialog for Checkout (DlgCobro)
-        final javax.swing.JDialog dialog = new javax.swing.JDialog(this, "Cobro de Pedido #" + idPedido, true);
-        dialog.setLayout(new java.awt.GridBagLayout());
-        dialog.getContentPane().setBackground(new java.awt.Color(15, 23, 42)); // Slate 900
-
-        java.awt.GridBagConstraints gbc = new java.awt.GridBagConstraints();
-        gbc.insets = new java.awt.Insets(10, 10, 10, 10);
-        gbc.fill = java.awt.GridBagConstraints.HORIZONTAL;
-
-        java.awt.Font fontLabel = new java.awt.Font("Outfit", java.awt.Font.BOLD, 14);
-        java.awt.Font fontValue = new java.awt.Font("Outfit", java.awt.Font.PLAIN, 14);
-        java.awt.Font fontBig = new java.awt.Font("Outfit", java.awt.Font.BOLD, 22);
-
-        final java.awt.Color slate100 = new java.awt.Color(241, 245, 249);
-        final java.awt.Color slate300 = new java.awt.Color(203, 213, 225);
-        final java.awt.Color slate700 = new java.awt.Color(51, 65, 85);
-        final java.awt.Color slate800 = new java.awt.Color(30, 41, 59);
-
-        // 1. Total Consumo
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        javax.swing.JLabel lblTotal = new javax.swing.JLabel("Total Consumo:");
-        lblTotal.setFont(fontLabel);
-        lblTotal.setForeground(slate300);
-        dialog.add(lblTotal, gbc);
-
-        gbc.gridx = 1;
-        javax.swing.JLabel lblTotalVal = new javax.swing.JLabel(String.format("COP %,.2f", totalConsumo));
-        lblTotalVal.setFont(fontBig);
-        lblTotalVal.setForeground(new java.awt.Color(34, 197, 94)); // Emerald Green
-        dialog.add(lblTotalVal, gbc);
-
-        // 2. Pago Efectivo
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        javax.swing.JLabel lblEfectivo = new javax.swing.JLabel("Pago Efectivo:");
-        lblEfectivo.setFont(fontLabel);
-        lblEfectivo.setForeground(slate300);
-        dialog.add(lblEfectivo, gbc);
-
-        gbc.gridx = 1;
-        final javax.swing.JTextField txtEfectivo = new javax.swing.JTextField(12);
-        txtEfectivo.setFont(fontValue);
-        txtEfectivo.setBackground(slate800);
-        txtEfectivo.setForeground(slate100);
-        txtEfectivo.setCaretColor(slate100);
-        txtEfectivo.setBorder(javax.swing.BorderFactory.createLineBorder(slate700));
-        dialog.add(txtEfectivo, gbc);
-
-        // 3. Pago Transferencia
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        javax.swing.JLabel lblTrans = new javax.swing.JLabel("Pago Transferencia:");
-        lblTrans.setFont(fontLabel);
-        lblTrans.setForeground(slate300);
-        dialog.add(lblTrans, gbc);
-
-        gbc.gridx = 1;
-        final javax.swing.JTextField txtTrans = new javax.swing.JTextField(12);
-        txtTrans.setFont(fontValue);
-        txtTrans.setBackground(slate800);
-        txtTrans.setForeground(slate100);
-        txtTrans.setCaretColor(slate100);
-        txtTrans.setBorder(javax.swing.BorderFactory.createLineBorder(slate700));
-        dialog.add(txtTrans, gbc);
-
-        // 4. Cambio / Vueltos
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        javax.swing.JLabel lblCambio = new javax.swing.JLabel("Cambio / Vueltos:");
-        lblCambio.setFont(fontLabel);
-        lblCambio.setForeground(slate300);
-        dialog.add(lblCambio, gbc);
-
-        gbc.gridx = 1;
-        final javax.swing.JLabel lblCambioVal = new javax.swing.JLabel("COP 0.00");
-        lblCambioVal.setFont(fontBig);
-        lblCambioVal.setForeground(new java.awt.Color(234, 179, 8)); // Yellow/Amber
-        dialog.add(lblCambioVal, gbc);
-
-        // Pre-fill logic based on Room
-        String salaActual = txtSalaFinalizar.getText();
-        if (salaActual.equalsIgnoreCase("EFECTIVO")) {
-            txtEfectivo.setText(String.format(java.util.Locale.US, "%.0f", totalConsumo));
-            txtTrans.setText("0");
-        } else if (salaActual.equalsIgnoreCase("TRANSACCIONES")) {
-            txtEfectivo.setText("0");
-            txtTrans.setText(String.format(java.util.Locale.US, "%.0f", totalConsumo));
-        } else {
-            txtEfectivo.setText("0");
-            txtTrans.setText("0");
-        }
-
-        final Runnable recalcularCambio = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    double ef = parseDoubleSafe(txtEfectivo.getText());
-                    double tr = parseDoubleSafe(txtTrans.getText());
-                    double totalPagado = ef + tr;
-                    double cambio = totalPagado - totalConsumo;
-                    if (cambio < 0) {
-                        lblCambioVal.setText("Restante: " + String.format("COP %,.2f", Math.abs(cambio)));
-                        lblCambioVal.setForeground(new java.awt.Color(239, 68, 68)); // Red
-                    } else {
-                        lblCambioVal.setText(String.format("COP %,.2f", cambio));
-                        lblCambioVal.setForeground(new java.awt.Color(34, 197, 94)); // Green
-                    }
-                } catch (NumberFormatException ex) {
-                    lblCambioVal.setText("Valor inválido");
-                    lblCambioVal.setForeground(new java.awt.Color(239, 68, 68));
-                }
-            }
-        };
-
-        javax.swing.event.DocumentListener dl = new javax.swing.event.DocumentListener() {
-            public void insertUpdate(javax.swing.event.DocumentEvent e) {
-                recalcularCambio.run();
-            }
-
-            public void removeUpdate(javax.swing.event.DocumentEvent e) {
-                recalcularCambio.run();
-            }
-
-            public void changedUpdate(javax.swing.event.DocumentEvent e) {
-                recalcularCambio.run();
-            }
-        };
-        txtEfectivo.getDocument().addDocumentListener(dl);
-        txtTrans.getDocument().addDocumentListener(dl);
-
-        recalcularCambio.run();
-
-        // Quick Actions (En 2 filas organizadas para no amontonar botones)
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        gbc.gridwidth = 2;
-        javax.swing.JPanel pnlQuickContainer = new javax.swing.JPanel(new java.awt.GridLayout(2, 1, 5, 5));
-        pnlQuickContainer.setBackground(new java.awt.Color(15, 23, 42));
-
-        javax.swing.JPanel pnlQuickMethods = new javax.swing.JPanel(
-                new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 8, 2));
-        pnlQuickMethods.setOpaque(false);
-
-        javax.swing.JButton btnQuickEf = new javax.swing.JButton("💵 Todo en Efectivo");
-        btnQuickEf.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 12));
-        btnQuickEf.setBackground(slate700);
-        btnQuickEf.setForeground(slate100);
-        btnQuickEf.setFocusPainted(false);
-        btnQuickEf.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                txtEfectivo.setText(String.format(java.util.Locale.US, "%.0f", totalConsumo));
-                txtTrans.setText("0");
-                recalcularCambio.run();
-            }
-        });
-        pnlQuickMethods.add(btnQuickEf);
-
-        javax.swing.JButton btnQuickTr = new javax.swing.JButton("📱 Todo en Transferencia");
-        btnQuickTr.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 12));
-        btnQuickTr.setBackground(slate700);
-        btnQuickTr.setForeground(slate100);
-        btnQuickTr.setFocusPainted(false);
-        btnQuickTr.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                txtEfectivo.setText("0");
-                txtTrans.setText(String.format(java.util.Locale.US, "%.0f", totalConsumo));
-                recalcularCambio.run();
-            }
-        });
-        pnlQuickMethods.add(btnQuickTr);
-
-        // Fila 2: Billetes Rápidos ($10k, $20k, $50k, $100k)
-        javax.swing.JPanel pnlQuickDenoms = new javax.swing.JPanel(
-                new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 6, 2));
-        pnlQuickDenoms.setOpaque(false);
-        double[] denomsCobro = { 10000, 20000, 50000, 100000 };
-        for (double val : denomsCobro) {
-            javax.swing.JButton btnDenom = new javax.swing.JButton(
-                    "$" + String.format(java.util.Locale.US, "%,.0f", val));
-            btnDenom.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 12));
-            btnDenom.setBackground(slate700);
-            btnDenom.setForeground(new java.awt.Color(56, 189, 248)); // Sky blue
-            btnDenom.setFocusPainted(false);
-            btnDenom.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-            btnDenom.addActionListener(new java.awt.event.ActionListener() {
-                @Override
-                public void actionPerformed(java.awt.event.ActionEvent e) {
-                    txtEfectivo.setText(String.format(java.util.Locale.US, "%.0f", val));
-                    txtTrans.setText("0");
-                    recalcularCambio.run();
-                }
-            });
-            pnlQuickDenoms.add(btnDenom);
-        }
-
-        pnlQuickContainer.add(pnlQuickMethods);
-        pnlQuickContainer.add(pnlQuickDenoms);
-        dialog.add(pnlQuickContainer, gbc);
-
-        // Action Buttons
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.gridwidth = 2;
-        javax.swing.JPanel pnlActions = new javax.swing.JPanel(
-                new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 10, 10));
-        pnlActions.setBackground(new java.awt.Color(15, 23, 42));
-
-        final javax.swing.JButton btnAceptar = new javax.swing.JButton("Finalizar y Facturar");
-        btnAceptar.setBackground(new java.awt.Color(34, 197, 94));
-        btnAceptar.setForeground(slate100);
-        btnAceptar.setFont(fontLabel);
-
-        final javax.swing.JButton btnCancelar = new javax.swing.JButton("Cancelar");
-        btnCancelar.setBackground(new java.awt.Color(239, 68, 68));
-        btnCancelar.setForeground(slate100);
-        btnCancelar.setFont(fontLabel);
-
-        pnlActions.add(btnAceptar);
-        pnlActions.add(btnCancelar);
-        dialog.add(pnlActions, gbc);
-
-        btnAceptar.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent event) {
-                try {
-                    final double ef = parseDoubleSafe(txtEfectivo.getText());
-                    final double tr = parseDoubleSafe(txtTrans.getText());
-                    if (ef + tr < totalConsumo) {
-                        JOptionPane.showMessageDialog(dialog,
-                                "Monto insuficiente. Faltan COP " + String.format("%,.2f", (totalConsumo - (ef + tr))),
-                                "Error", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    dialog.dispose();
-
-                    btnFinalizar.setEnabled(false);
-                    btnFinalizar.setText("⏳ Procesando...");
-                    new javax.swing.SwingWorker<Boolean, Void>() {
-                        @Override
-                        protected Boolean doInBackground() {
-                            boolean ok;
-                            String tipoPago = (ef > 0 && tr > 0) ? "MIXTO" : (tr > 0 ? "TRANSACCION" : "EFECTIVO");
-                            if (idsRondasAcumuladasCobro != null && idsRondasAcumuladasCobro.size() > 1) {
-                                ok = pedDao.finalizarMultiplePedidosConPago(idsRondasAcumuladasCobro, tipoPago, ef, tr, 0.0);
-                            } else {
-                                ok = pedDao.finalizarPedidoConPago(idPedido, ef, tr);
-                            }
-                            if (ok) {
-                                SonidoPOS.reproducirCobro();
-                                SonidoPOS.anunciarVoz("Pedido finalizado con éxito.");
-                                pedDao.pdfPedido(idPedido);
-                                try {
-                                    Modelo.ImpresionTicket impresion = new Modelo.ImpresionTicket();
-                                    impresion.imprimirTicket(idPedido, tableFinalizar);
-                                } catch (Exception ex) {
-                                    System.out.println("Error al imprimir ticket: " + ex.getMessage());
-                                }
-                                PedidosDao pedidosDao = new PedidosDao();
-                                pedidosDao.generarReporteDiario();
-                            }
-                            return ok;
-                        }
-
-                        @Override
-                        protected void done() {
-                            try {
-                                boolean ok = get();
-                                btnFinalizar.setEnabled(true);
-                                btnFinalizar.setText("Finalizar");
-                                if (ok) {
-                                    LimpiarTable();
-                                    ListarPedidos();
-                                    actualizarTotalDia();
-                                    if (moduloCaja != null)
-                                        moduloCaja.actualizarEstadoCajaUI();
-
-                                    // Limpiar datos de cobro activo
-                                    if (idsRondasAcumuladasCobro != null) {
-                                        idsRondasAcumuladasCobro.clear();
-                                    }
-                                    txtIdPedido.setText("");
-                                    txtSalaFinalizar.setText("");
-                                    txtNumMesaFinalizar.setText("");
-                                    txtFechaHora.setText("");
-                                    DefaultTableModel modFin = (DefaultTableModel) tableFinalizar.getModel();
-                                    modFin.setRowCount(0);
-                                    totalFinalizar.setText("0.00");
-
-                                    // Refrescar mapa de mesas para que la mesa se muestre libre (verde) de inmediato
-                                    try {
-                                        int idSalaActual = salaActivaId > 0 ? salaActivaId : 1;
-                                        int cantMesas = 10;
-                                        for (Sala s : slDao.Listar()) {
-                                            if (s.getId() == idSalaActual) {
-                                                cantMesas = s.getMesas();
-                                                break;
-                                            }
-                                        }
-                                        PanelMesas.removeAll();
-                                        panelMesas(idSalaActual, cantMesas);
-                                        jTabbedPane1.setSelectedIndex(2); // Retornar a la vista de mesas
-                                    } catch (Exception ignored) {}
-
-                                    double vueltos = (ef + tr) - totalConsumo;
-                                    String msg = "✅ Pedido finalizado y cobrado correctamente.";
-                                    if (vueltos > 0) {
-                                        msg += "\nCambio / Vueltos a entregar: COP " + String.format("%,.2f", vueltos);
-                                    }
-                                    JOptionPane.showMessageDialog(Sistema.this, msg, "Cobro Exitoso",
-                                            JOptionPane.INFORMATION_MESSAGE);
-                                } else {
-                                    JOptionPane.showMessageDialog(Sistema.this, "Error al finalizar el pedido.",
-                                            "Error", JOptionPane.ERROR_MESSAGE);
-                                }
-                            } catch (Exception e) {
-                                btnFinalizar.setEnabled(true);
-                                btnFinalizar.setText("Finalizar");
-                                JOptionPane.showMessageDialog(Sistema.this, "Error inesperado: " + e.getMessage(),
-                                         "Error", JOptionPane.ERROR_MESSAGE);
-                            }
-                        }
-                    }.execute();
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(dialog, "Por favor ingrese valores numéricos válidos.", "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-
-        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                dialog.dispose();
-            }
-        });
-
-        dialog.pack();
-        dialog.setSize(580, 440);
-        dialog.setLocationRelativeTo(this);
-        dialog.setVisible(true);
     }// GEN-LAST:event_btnFinalizarActionPerformed
+
+    public void notificarCobroCompletado(int idPed, double vueltos) {
+        LimpiarTable();
+        ListarPedidos();
+        actualizarTotalDia();
+        if (moduloCaja != null)
+            moduloCaja.actualizarEstadoCajaUI();
+
+        // Limpiar datos de cobro activo
+        if (idsRondasAcumuladasCobro != null) {
+            idsRondasAcumuladasCobro.clear();
+        }
+        txtIdPedido.setText("");
+        txtSalaFinalizar.setText("");
+        txtNumMesaFinalizar.setText("");
+        txtFechaHora.setText("");
+        DefaultTableModel modFin = (DefaultTableModel) tableFinalizar.getModel();
+        modFin.setRowCount(0);
+        totalFinalizar.setText("0.00");
+
+        // Refrescar mapa de mesas para que la mesa se muestre libre (verde) de inmediato
+        try {
+            int idSalaActual = salaActivaId > 0 ? salaActivaId : 1;
+            int cantMesas = 10;
+            for (Sala s : slDao.Listar()) {
+                if (s.getId() == idSalaActual) {
+                    cantMesas = s.getMesas();
+                    break;
+                }
+            }
+            PanelMesas.removeAll();
+            panelMesas(idSalaActual, cantMesas);
+            jTabbedPane1.setSelectedIndex(2); // Retornar a la vista de mesas
+        } catch (Exception ignored) {}
+
+        String msg = "Pedido <b>#" + idPed + "</b> cobrado exitosamente.";
+        if (vueltos > 0) {
+            msg += "<br>Vueltas / Cambio a entregar: <b>" + String.format("COP %,.2f", vueltos) + "</b>";
+        }
+        ModalAlerta.exito(Sistema.this, "Cobro Exitoso", msg);
+    }
 
     private void btnEliminarTempPlatoActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnEliminarTempPlatoActionPerformed
         modelo = (DefaultTableModel) tableMenu.getModel();
@@ -2916,10 +2748,16 @@ public final class Sistema extends javax.swing.JFrame {
     }// GEN-LAST:event_jButton2ActionPerformed
 
     private void btnGenerarPedidoActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnGenerarPedidoActionPerformed
+        Modelo.CajaDao cajaDao = new Modelo.CajaDao();
+        if (!cajaDao.hayCajaAbierta()) {
+            ModalAlerta.advertencia(this, "Caja Cerrada", "La <b>CAJA</b> se encuentra cerrada.<br>Debe realizar la Apertura de Caja antes de registrar pedidos.");
+            return;
+        }
+
         if (tableMenu.getRowCount() > 0) {
             int idNuevoPedido = RegistrarPedido();
             if (idNuevoPedido <= 0) {
-                ToastNotification.advertencia(this, "No se pudo registrar el pedido. Verifique la mesa seleccionada.");
+                ToastNotification.advertencia(this, "No se pudo registrar el pedido. Verifique la caja o la mesa seleccionada.");
                 return;
             }
             detallePedido(idNuevoPedido);
@@ -2999,23 +2837,23 @@ public final class Sistema extends javax.swing.JFrame {
 
     private void btnEliminarSalaActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnEliminarSalaActionPerformed
         if (!"".equals(txtIdSala.getText())) {
-            int pregunta = JOptionPane.showConfirmDialog(null, "Â¿EstÃ¡ seguro de eliminar esta sala?",
-                    "Confirmar eliminaciÃ³n", JOptionPane.YES_NO_OPTION);
-            if (pregunta == JOptionPane.YES_OPTION) {
+            boolean pregunta = ModalAlerta.confirmar(this, "Confirmar Eliminación",
+                    "¿Está seguro de que desea eliminar la sala <b>" + txtNombreSala.getText() + "</b>?",
+                    "Sí, Eliminar", "Cancelar");
+            if (pregunta) {
                 int id = Integer.parseInt(txtIdSala.getText());
                 boolean eliminado = slDao.Eliminar(id);
                 if (eliminado) {
-                    JOptionPane.showMessageDialog(null, "Sala eliminada correctamente");
+                    ToastNotification.exito(this, "Sala eliminada correctamente");
                     LimpiarSala();
                     ListarSalas();
                 } else {
-                    JOptionPane.showMessageDialog(null,
-                            "No se puede eliminar la sala. AsegÃºrese de que no tenga pedidos asociados.", "Error",
-                            JOptionPane.ERROR_MESSAGE);
+                    ModalAlerta.error(this, "Error al Eliminar",
+                            "No se puede eliminar la sala. Asegúrese de que no tenga pedidos asociados.");
                 }
             }
         } else {
-            JOptionPane.showMessageDialog(null, "Seleccione una fila");
+            ToastNotification.advertencia(this, "Seleccione una sala de la tabla primero");
         }
     }// GEN-LAST:event_btnEliminarSalaActionPerformed
 
@@ -3101,45 +2939,53 @@ public final class Sistema extends javax.swing.JFrame {
     }// GEN-LAST:event_btnImprimirActionPerformed
 
     private void btnEliminarPedidoActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnEliminarPedidoActionPerformed
-        String idInput = JOptionPane.showInputDialog(this, "Ingrese el ID del pedido a eliminar:", "Eliminar Pedido",
-                JOptionPane.PLAIN_MESSAGE);
-        if (idInput == null || idInput.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "No se ingresÃ³ un ID vÃ¡lido.", "Advertencia",
-                    JOptionPane.WARNING_MESSAGE);
+        int idPedido = -1;
+        int row = TablePedidos.getSelectedRow();
+        if (row >= 0) {
+            idPedido = Integer.parseInt(TablePedidos.getValueAt(row, 0).toString());
+        } else if (!txtIdHistorialPedido.getText().trim().isEmpty()) {
+            try {
+                idPedido = Integer.parseInt(txtIdHistorialPedido.getText().trim());
+            } catch (Exception ignored) {}
+        }
+
+        if (idPedido <= 0) {
+            String idInput = ModalAlerta.input(this, "Anular Pedido", "Ingrese el <b>ID del pedido</b> a anular/eliminar:", "");
+            if (idInput == null || idInput.trim().isEmpty()) {
+                return;
+            }
+            try {
+                idPedido = Integer.parseInt(idInput.trim());
+            } catch (NumberFormatException e) {
+                ModalAlerta.error(this, "ID Inválido", "El ID debe ser un número entero válido.");
+                return;
+            }
+        }
+
+        Pedido pedido = pedDao.verPedido(idPedido);
+        if (pedido == null || pedido.getId() == 0) {
+            ModalAlerta.error(this, "Pedido No Encontrado", "No se encontró un pedido con ID <b>#" + idPedido + "</b>.");
             return;
         }
 
-        int idPedido;
-        try {
-            idPedido = Integer.parseInt(idInput.trim());
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "El ID debe ser un nÃºmero entero vÃ¡lido.", "Error",
-                    JOptionPane.ERROR_MESSAGE);
+        String estadoActual = pedido.getEstado() != null ? pedido.getEstado().trim().toUpperCase() : "";
+        if (estadoActual.contains("ANULADO")) {
+            ModalAlerta.informacion(this, "Pedido Ya Anulado", "El pedido <b>#" + idPedido + "</b> ya se encuentra ANULADO.");
             return;
         }
 
-        // Verificar si el pedido existe
-        PedidosDao pedidosDao = new PedidosDao();
-        Pedido pedido = pedidosDao.verPedido(idPedido);
-        if (pedido.getId() == 0) {
-            JOptionPane.showMessageDialog(this, "No se encontrÃ³ un pedido con ID " + idPedido + ".", "Error",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+        boolean confirmacion = ModalAlerta.confirmar(this,
+                "Confirmar Anulación",
+                "¿Está seguro de que desea anular el pedido <b>#" + idPedido + "</b> (Mesa " + pedido.getNum_mesa() + ")?",
+                "Sí, Anular Pedido", "Cancelar");
 
-        int confirmacion = JOptionPane.showConfirmDialog(this,
-                "Â¿EstÃ¡ seguro de que desea eliminar el pedido con ID " + idPedido + "?",
-                "Confirmar EliminaciÃ³n",
-                JOptionPane.YES_NO_OPTION);
-
-        if (confirmacion == JOptionPane.YES_OPTION) {
-            boolean eliminado = pedidosDao.eliminarPedidoPorId(idPedido);
-            if (eliminado) {
-                cargarPedidosDelDia(); // Actualizar la tabla con el rango del dÃ­a operativo
-                JOptionPane.showMessageDialog(this, "Pedido eliminado correctamente.", "Ã‰xito",
-                        JOptionPane.INFORMATION_MESSAGE);
+        if (confirmacion) {
+            boolean anulado = pedDao.actualizarEstado(idPedido, "ANULADO");
+            if (anulado) {
+                ListarPedidos();
+                ToastNotification.exito(this, "Pedido #" + idPedido + " anulado correctamente.");
             } else {
-                JOptionPane.showMessageDialog(this, "Error al eliminar el pedido.", "Error", JOptionPane.ERROR_MESSAGE);
+                ModalAlerta.error(this, "Error", "No se pudo anular el pedido en la base de datos.");
             }
         }
     }// GEN-LAST:event_btnEliminarPedidoActionPerformed
@@ -3545,6 +3391,7 @@ public final class Sistema extends javax.swing.JFrame {
     private javax.swing.JLabel lblTotalVal;
     private javax.swing.JLabel lblEfectivoSub;
     private javax.swing.JLabel lblTransSub;
+    private javax.swing.JLabel lblBannerMesaComanda;
     private SalesTrendChart chartVentasHora;
     private TopDishesChart chartPlatosMasVendidos;
     private javax.swing.JLabel tipo;
@@ -3553,6 +3400,9 @@ public final class Sistema extends javax.swing.JFrame {
     private javax.swing.JTextField txtBuscarPlato;
     private javax.swing.JTextField txtBuscarHistorial;
     private javax.swing.JButton btnReimprimirTicketHistorial;
+    private javax.swing.JButton btnMarcarPreparadoHistorial;
+    private javax.swing.JButton btnCobrarHistorial;
+    private javax.swing.JButton btnExportCSV;
     private javax.swing.JTextPane txtComentario;
     private javax.swing.JTextField txtCorreo;
     private javax.swing.JTextField txtDireccionConfig;
@@ -3588,21 +3438,32 @@ public final class Sistema extends javax.swing.JFrame {
         boolean esFinalizar = (tabla == tableFinalizar);
 
         for (int i = 0; i < numFila; i++) {
-            String nombre = tabla.getValueAt(i, 1).toString();
-            double subtotal = Double.parseDouble(tabla.getValueAt(i, 4).toString());
-            if (nombre.equals("PAGO EFECTIVO") || nombre.equals("PAGO TRANSACCION")) {
+            Object objNom = tabla.getValueAt(i, 1);
+            String nombre = objNom != null ? objNom.toString().trim() : "";
+            Object objSub = tabla.getValueAt(i, 4);
+            double subtotal = 0.0;
+            if (objSub != null) {
+                try {
+                    String s = objSub.toString().replaceAll("[^0-9.]", "");
+                    if (!s.isEmpty()) {
+                        subtotal = Double.parseDouble(s);
+                    }
+                } catch (Exception ignored) {}
+            }
+            if (nombre.equalsIgnoreCase("PAGO EFECTIVO") || nombre.equalsIgnoreCase("PAGO TRANSACCION")) {
                 pagado += subtotal;
             } else {
                 consumo += subtotal;
             }
         }
 
-        if (esFinalizar) {
-            label.setText(String.format("%,.2f", consumo));
-            Totalpagar = consumo;
-        } else {
-            Totalpagar = consumo;
-            label.setText(String.format("%.2f", Totalpagar));
+        Totalpagar = consumo;
+        if (label != null) {
+            if (esFinalizar) {
+                label.setText(String.format("$ %,.0f COP", consumo));
+            } else {
+                label.setText(String.format("$ %,.0f", Totalpagar));
+            }
         }
     }
 
@@ -3633,15 +3494,11 @@ public final class Sistema extends javax.swing.JFrame {
                 LocalDateTime ahora = LocalDateTime.now(ZoneId.of("America/Lima"));
                 LocalDateTime inicio, fin;
                 if (ahora.getHour() < 4) {
-                    inicio = ahora.minusDays(1).withHour(16).withMinute(0).withSecond(0).withNano(0);
-                    fin = ahora;
-                } else if (ahora.getHour() < 16) {
-                    inicio = ahora.minusDays(1).withHour(16).withMinute(0).withSecond(0).withNano(0);
-                    fin = ahora;
+                    inicio = ahora.minusDays(1).withHour(4).withMinute(0).withSecond(0).withNano(0);
                 } else {
-                    inicio = ahora.withHour(16).withMinute(0).withSecond(0).withNano(0);
-                    fin = ahora;
+                    inicio = ahora.withHour(4).withMinute(0).withSecond(0).withNano(0);
                 }
+                fin = ahora.plusHours(12);
                 fechaInicio = Timestamp.valueOf(inicio);
                 fechaFin = Timestamp.valueOf(fin);
                 System.out.println("ListarPedidos usando rango: " + fechaInicio + " - " + fechaFin);
@@ -3655,20 +3512,41 @@ public final class Sistema extends javax.swing.JFrame {
                     EstiloTablas color = new EstiloTablas();
                     modelo = (DefaultTableModel) TablePedidos.getModel();
                     modelo.setRowCount(0);
-                    txtPedidosDia.setText(String.valueOf(Listar.size()));
+                    txtPedidosDia.setText(Listar.size() + " pedidos");
+                    // Identificar el número de ronda para mesas con múltiples pedidos en el turno
+                    java.util.Map<String, java.util.List<Integer>> mesaPedidosMap = new java.util.HashMap<>();
+                    for (int i = Listar.size() - 1; i >= 0; i--) {
+                        Pedido p = Listar.get(i);
+                        String key = (p.getSala() != null ? p.getSala() : "") + "_" + p.getNum_mesa();
+                        mesaPedidosMap.computeIfAbsent(key, k -> new java.util.ArrayList<>()).add(p.getId());
+                    }
+
+                    java.util.Map<Integer, String> pedidoRondaTextoMap = new java.util.HashMap<>();
+                    for (java.util.Map.Entry<String, java.util.List<Integer>> entry : mesaPedidosMap.entrySet()) {
+                        java.util.List<Integer> ids = entry.getValue();
+                        for (int r = 0; r < ids.size(); r++) {
+                            int idPed = ids.get(r);
+                            int rondaNum = r + 1;
+                            if (ids.size() > 1) {
+                                pedidoRondaTextoMap.put(idPed, " (Ronda " + rondaNum + ")");
+                            } else {
+                                pedidoRondaTextoMap.put(idPed, "");
+                            }
+                        }
+                    }
+
                     Object[] ob = new Object[9];
                     for (int i = 0; i < Listar.size(); i++) {
                         ob[0] = Listar.get(i).getId();
                         ob[1] = Listar.get(i).getSala();
                         ob[2] = Listar.get(i).getUsuario();
-                        ob[3] = Listar.get(i).getNum_mesa();
+                        ob[3] = Listar.get(i).getNum_mesa() + pedidoRondaTextoMap.getOrDefault(Listar.get(i).getId(), "");
                         ob[4] = Listar.get(i).getFecha();
-                        ob[5] = String.format("%.2f", Listar.get(i).getTotal());
+                        ob[5] = String.format("$ %,.0f", Listar.get(i).getTotal());
                         ob[6] = Listar.get(i).getEstado();
                         ob[7] = Listar.get(i).getPago_efectivo();
                         ob[8] = Listar.get(i).getPago_transaccion();
                         modelo.addRow(ob);
-                        System.out.println("Pedido " + i + ": Fecha = " + ob[4] + ", Total = " + ob[5]);
                     }
                     // Ocultar columnas auxiliares de pago (col 7 y 8)
                     TablePedidos.getColumnModel().getColumn(7).setMinWidth(0);
@@ -4296,70 +4174,86 @@ public final class Sistema extends javax.swing.JFrame {
         PanelMesas.revalidate();
         PanelMesas.repaint();
 
-        // 2. Verificar estado de mesas en hilo de fondo
-        new javax.swing.SwingWorker<String[][], Void>() {
+        // 2. Verificar estado de mesas en hilo de fondo (0 queries en el hilo UI)
+        new javax.swing.SwingWorker<Object[][], Void>() {
             @Override
-            protected String[][] doInBackground() {
-                String[][] estados = new String[cantFinal][2];
+            protected Object[][] doInBackground() {
+                Object[][] datos = new Object[cantFinal][6];
                 for (int i = 0; i < cantFinal; i++) {
-                    estados[i] = pedDao.verificarStadoInfo(i + 1, id_sala);
+                    int num_mesa = i + 1;
+                    String etiqueta = (num_mesa > cantFinal - 4) ? "DOMICILIO N\u00b0: " + num_mesa
+                            : "MESA N\u00b0: " + num_mesa;
+                    String[] info = pedDao.verificarStadoInfo(num_mesa, id_sala);
+                    int verificar = Integer.parseInt(info[0]);
+                    String estadoPed = info[1];
+                    boolean ocupada = (verificar > 0);
+                    boolean todasListas = false;
+                    String textoBtn = etiqueta;
+
+                    if (ocupada) {
+                        int[] avance = pedDao.getAvanceRondasMesa(num_mesa, id_sala);
+                        int preparadas = avance[0];
+                        int totalRondas = avance[1];
+                        todasListas = (totalRondas > 0 && preparadas == totalRondas);
+
+                        try {
+                            Modelo.Pedido p = pedDao.verPedido(verificar);
+                            if (p != null && p.getFecha() != null) {
+                                java.util.Date fechaApertura = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                                        .parse(p.getFecha());
+                                long minutos = (System.currentTimeMillis() - fechaApertura.getTime()) / 60000;
+                                String tiempoStr = minutos < 60 ? minutos + " min"
+                                        : (minutos / 60) + "h " + (minutos % 60) + "m";
+                                String tagEstado = todasListas ? " \u2022 \ud83d\udfe1 PREPARADO" : (totalRondas > 1 ? " \u2022 (" + preparadas + "/" + totalRondas + " Listas)" : "");
+                                textoBtn = "<html><center>" + etiqueta + "<br><font size='2' color='#FCD34D'>\u23f1 "
+                                        + tiempoStr + tagEstado + "</font></center></html>";
+                            }
+                        } catch (Exception ex) {
+                            textoBtn = etiqueta;
+                        }
+                    }
+
+                    datos[i][0] = verificar;
+                    datos[i][1] = estadoPed;
+                    datos[i][2] = etiqueta;
+                    datos[i][3] = todasListas;
+                    datos[i][4] = textoBtn;
+                    datos[i][5] = num_mesa;
                 }
-                return estados;
+                return datos;
             }
 
             @Override
             protected void done() {
                 try {
-                    String[][] infoEstados = get();
+                    Object[][] datos = get();
                     for (int i = 0; i < cantFinal; i++) {
-                        final String[] info = infoEstados[i];
-                        final int verificar = Integer.parseInt(info[0]);
-                        final String estadoPed = info[1];
-                        final int num_mesa = i + 1;
-                        final String etiqueta = (num_mesa > cantFinal - 4) ? "DOMICILIO N\u00b0: " + num_mesa
-                                : "MESA N\u00b0: " + num_mesa;
+                        final int verificar = (int) datos[i][0];
+                        final String estadoPed = (String) datos[i][1];
+                        final String etiqueta = (String) datos[i][2];
+                        final boolean todasListas = (boolean) datos[i][3];
+                        final String textoBtn = (String) datos[i][4];
+                        final int num_mesa = (int) datos[i][5];
                         JButton boton = botones[i];
+                        if (boton == null) continue;
+
+                        boton.setText(textoBtn);
 
                         if (verificar > 0) {
-                            int[] avance = pedDao.getAvanceRondasMesa(num_mesa, id_sala);
-                            int preparadas = avance[0];
-                            int totalRondas = avance[1];
-                            boolean todasListas = (totalRondas > 0 && preparadas == totalRondas);
-
                             if (todasListas || "PREPARADO".equalsIgnoreCase(estadoPed)) {
-                                // 🟡 Estado AMARILLO (Todas las rondas preparadas)
-                                boton.setBackground(new java.awt.Color(120, 53, 15)); // Amber oscuro
-                                boton.setForeground(new java.awt.Color(252, 211, 77)); // Amber claro
+                                boton.setBackground(new java.awt.Color(120, 53, 15));
+                                boton.setForeground(new java.awt.Color(252, 211, 77));
                                 boton.setBorder(new RoundedBorder(16, new java.awt.Color(245, 158, 11),
                                         new java.awt.Insets(10, 10, 10, 10)));
                                 boton.setToolTipText("¡Todas las rondas listas! Click para cobrar");
                             } else {
-                                // 🔴 Estado ROJO (Rondas en cocina)
                                 boton.setBackground(new java.awt.Color(127, 29, 29));
                                 boton.setForeground(new java.awt.Color(252, 165, 165));
                                 boton.setBorder(new RoundedBorder(16, new java.awt.Color(220, 38, 38),
                                         new java.awt.Insets(10, 10, 10, 10)));
                                 boton.setToolTipText("Ocupada en cocina - Click para ver o administrar rondas");
                             }
-
-                            // ⏱️ Cronómetro: mostrar tiempo transcurrido desde que se abrió el pedido
-                            try {
-                                Modelo.Pedido p = pedDao.verPedido(verificar);
-                                if (p != null && p.getFecha() != null) {
-                                    java.util.Date fechaApertura = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-                                            .parse(p.getFecha());
-                                    long minutos = (System.currentTimeMillis() - fechaApertura.getTime()) / 60000;
-                                    String tiempoStr = minutos < 60 ? minutos + " min"
-                                            : (minutos / 60) + "h " + (minutos % 60) + "m";
-                                    String tagEstado = todasListas ? " • 🟡 PREPARADO" : (totalRondas > 1 ? " • (" + preparadas + "/" + totalRondas + " Listas)" : "");
-                                    boton.setText("<html><center>" + etiqueta + "<br><font size='2' color='#FCD34D'>⏱ "
-                                            + tiempoStr + tagEstado + "</font></center></html>");
-                                }
-                            } catch (Exception ex) {
-                                boton.setText(etiqueta);
-                            }
                         } else {
-                            // 🟢 Estado VERDE (Mesa libre)
                             boton.setBackground(new java.awt.Color(6, 78, 59));
                             boton.setForeground(new java.awt.Color(52, 211, 153));
                             boton.setBorder(new RoundedBorder(16, new java.awt.Color(5, 150, 105),
@@ -4368,11 +4262,29 @@ public final class Sistema extends javax.swing.JFrame {
                         }
                         boton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
+                        // Limpiar listeners previos
+                        for (ActionListener al : boton.getActionListeners()) {
+                            boton.removeActionListener(al);
+                        }
+
                         boton.addActionListener((ActionEvent e) -> {
                             if (verificar > 0) {
                                 ModalCobrarMesa modalCobro = new ModalCobrarMesa(Sistema.this, Sistema.this, num_mesa, id_sala, etiqueta);
                                 modalCobro.setVisible(true);
                             } else {
+                                Modelo.CajaDao cajaDao = new Modelo.CajaDao();
+                                if (!cajaDao.hayCajaAbierta()) {
+                                    boolean abrir = ModalAlerta.confirmar(Sistema.this,
+                                            "Caja Cerrada - Apertura Requerida",
+                                            "La <b>CAJA</b> se encuentra cerrada.<br><br>No es posible tomar pedidos ni abrir mesas sin un turno de caja abierto.<br>¿Desea realizar la <b>Apertura de Caja</b> ahora?",
+                                            "Sí, Abrir Caja",
+                                            "Cancelar");
+                                    if (abrir && moduloCaja != null) {
+                                        moduloCaja.abrirComoVentanaModal(Sistema.this);
+                                    }
+                                    return;
+                                }
+
                                 if (id_sala == 3) {
                                     txtTempIdSala.setText("" + id_sala);
                                     txtTempNumMesa.setText("" + num_mesa);
@@ -4382,7 +4294,6 @@ public final class Sistema extends javax.swing.JFrame {
                                     ped.setUsuario(LabelVendedor.getText());
                                     int id_pedido = pedDao.RegistrarPedido(ped);
                                     if (id_pedido != -1) {
-                                        LimpiarTable();
                                         verPedido(id_pedido);
                                         verPedidoDetalle(id_pedido);
                                         btnFinalizar.setEnabled(true);
@@ -4391,14 +4302,23 @@ public final class Sistema extends javax.swing.JFrame {
                                         JOptionPane.showMessageDialog(null,
                                                 "Pedido creado para " + etiqueta + " en Sala 3");
                                     } else {
-                                        JOptionPane.showMessageDialog(null, "Error al crear el pedido");
+                                        JOptionPane.showMessageDialog(null, "Error al crear el pedido: verifique que la caja esté abierta.");
                                     }
                                 } else {
-                                    LimpiarTable();
+                                    txtBuscarPlato.setText("");
+                                    LimpiarTableMenu();
                                     ListarPlatos(tblTemPlatos);
                                     jTabbedPane1.setSelectedIndex(3);
                                     txtTempIdSala.setText("" + id_sala);
                                     txtTempNumMesa.setText("" + num_mesa);
+                                    String nomSala = "SALA " + id_sala;
+                                    for (Sala s : slDao.Listar()) {
+                                        if (s.getId() == id_sala) {
+                                            nomSala = s.getNombre();
+                                            break;
+                                        }
+                                    }
+                                    actualizarBannerMesaComanda(num_mesa, nomSala);
                                 }
                             }
                         });
@@ -4412,58 +4332,94 @@ public final class Sistema extends javax.swing.JFrame {
         }.execute();
     }
 
+    public void actualizarBannerMesaComanda(int numMesa, String nomSala) {
+        if (lblBannerMesaComanda != null) {
+            lblBannerMesaComanda.setText("🍽️ COMANDA ACTIVA: MESA N° " + numMesa + " (" + (nomSala != null ? nomSala : "SALA") + ")");
+        }
+    }
+
     private java.util.List<Integer> idsRondasAcumuladasCobro = new java.util.ArrayList<>();
 
     public void abrirCobroPedido(int idPedido) {
-        idsRondasAcumuladasCobro.clear();
-        idsRondasAcumuladasCobro.add(idPedido);
-        txtIdPedido.setText("" + idPedido);
-        LimpiarTable();
-        verPedido(idPedido);
-        verPedidoDetalle(idPedido);
-        btnFinalizar.setEnabled(true);
-        btnPdfPedido.setEnabled(false);
-        jTabbedPane1.setSelectedIndex(4);
+        try {
+            idsRondasAcumuladasCobro.clear();
+            idsRondasAcumuladasCobro.add(idPedido);
+            txtIdPedido.setText("" + idPedido);
+            jTabbedPane1.setSelectedIndex(4);
+            verPedido(idPedido);
+            verPedidoDetalle(idPedido);
+            btnFinalizar.setEnabled(true);
+            btnPdfPedido.setEnabled(false);
+        } catch (Exception ex) {
+            System.err.println("Error al abrir cobro de pedido: " + ex.getMessage());
+            jTabbedPane1.setSelectedIndex(4);
+        }
     }
 
     public void abrirCobroMesaAcumulado(int numMesa, int idSala) {
-        idsRondasAcumuladasCobro.clear();
-        java.util.List<Modelo.Pedido> rondas = pedDao.getRondasMesa(numMesa, idSala);
-        if (rondas.isEmpty()) return;
+        try {
+            idsRondasAcumuladasCobro.clear();
+            java.util.List<Modelo.Pedido> rondas = pedDao.getRondasMesa(numMesa, idSala);
+            if (rondas.isEmpty()) {
+                int altId = pedDao.verificarStado(numMesa, idSala);
+                if (altId > 0) {
+                    abrirCobroPedido(altId);
+                    return;
+                }
+                ToastNotification.advertencia(this, "No se encontraron consumos activos en esta mesa.");
+                return;
+            }
 
-        int primerId = rondas.get(0).getId();
-        txtIdPedido.setText("" + primerId);
+            int primerId = rondas.get(0).getId();
+            txtIdPedido.setText("" + primerId);
 
-        for (Modelo.Pedido r : rondas) {
-            idsRondasAcumuladasCobro.add(r.getId());
+            for (Modelo.Pedido r : rondas) {
+                idsRondasAcumuladasCobro.add(r.getId());
+            }
+
+            // Cambiar a la pestaña de cobro inmediatamente
+            jTabbedPane1.setSelectedIndex(4);
+
+            // Cargamos el primer pedido para datos de cabecera
+            verPedido(primerId);
+
+            // Cargamos TODOS los detalles acumulados de todas las rondas en tableFinalizar
+            java.util.List<Modelo.DetallePedido> detalles = pedDao.getDetallesAcumuladosMesa(numMesa, idSala);
+            if (detalles.isEmpty() && !rondas.isEmpty()) {
+                for (Modelo.Pedido r : rondas) {
+                    detalles.addAll(pedDao.verPedidoDetalle(r.getId()));
+                }
+            }
+            DefaultTableModel model = (DefaultTableModel) tableFinalizar.getModel();
+            model.setRowCount(0);
+            for (Modelo.DetallePedido d : detalles) {
+                model.addRow(new Object[]{
+                    d.getId(),
+                    d.getNombre(),
+                    d.getCantidad(),
+                    d.getPrecio(),
+                    d.getCantidad() * d.getPrecio(),
+                    d.getComentario() != null ? d.getComentario() : ""
+                });
+            }
+            colorHeader(tableFinalizar);
+            TotalPagar(tableFinalizar, totalFinalizar);
+            btnFinalizar.setEnabled(true);
+            btnPdfPedido.setEnabled(false);
+        } catch (Exception ex) {
+            System.err.println("Error al abrir cobro acumulado: " + ex.getMessage());
+            jTabbedPane1.setSelectedIndex(4);
         }
-
-        // Cargamos el primer pedido para datos de cabecera
-        verPedido(primerId);
-
-        // Cargamos TODOS los detalles acumulados de todas las rondas en tableFinalizar
-        java.util.List<Modelo.DetallePedido> detalles = pedDao.getDetallesAcumuladosMesa(numMesa, idSala);
-        DefaultTableModel model = (DefaultTableModel) tableFinalizar.getModel();
-        model.setRowCount(0);
-        for (Modelo.DetallePedido d : detalles) {
-            model.addRow(new Object[]{
-                d.getId(),
-                d.getNombre(),
-                d.getCantidad(),
-                d.getPrecio(),
-                d.getCantidad() * d.getPrecio(),
-                d.getComentario() != null ? d.getComentario() : ""
-            });
-        }
-        colorHeader(tableFinalizar);
-        TotalPagar(tableFinalizar, totalFinalizar);
-        btnFinalizar.setEnabled(true);
-        btnPdfPedido.setEnabled(false);
-        jTabbedPane1.setSelectedIndex(4);
     }
 
     public void crearNuevaRondaMesa(int numMesa, int idSala) {
-        LimpiarTable();
+        Modelo.CajaDao cajaDao = new Modelo.CajaDao();
+        if (!cajaDao.hayCajaAbierta()) {
+            ToastNotification.advertencia(this, "⚠️ La caja está cerrada. Debe abrir la caja para registrar rondas.");
+            return;
+        }
+        txtBuscarPlato.setText("");
+        LimpiarTableMenu();
         ListarPlatos(tblTemPlatos);
         jTabbedPane1.setSelectedIndex(3);
         txtTempIdSala.setText("" + idSala);
@@ -4546,11 +4502,15 @@ public final class Sistema extends javax.swing.JFrame {
     // registrar pedido
     private int RegistrarPedido() {
         try {
+            Modelo.CajaDao cajaDao = new Modelo.CajaDao();
+            if (!cajaDao.hayCajaAbierta()) {
+                ModalAlerta.advertencia(this, "Caja Cerrada", "La <b>CAJA</b> se encuentra cerrada.<br>Debe realizar la Apertura de Caja antes de registrar pedidos.");
+                return -1;
+            }
             String salaStr = txtTempIdSala.getText().trim();
             String mesaStr = txtTempNumMesa.getText().trim();
             if (salaStr.isEmpty() || mesaStr.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Por favor seleccione una mesa primero desde el panel de Mesas.",
-                        "Mesa no seleccionada", JOptionPane.WARNING_MESSAGE);
+                ModalAlerta.advertencia(this, "Mesa No Seleccionada", "Por favor seleccione una mesa primero desde el panel de <b>Mesas</b>.");
                 return -1;
             }
             int id_sala = Integer.parseInt(salaStr);
@@ -4672,10 +4632,8 @@ public final class Sistema extends javax.swing.JFrame {
             protected void done() {
                 try {
                     double[] totales = get();
-                    txtTotalDia.setText(String.format("%.2f", totales[0]));
-                    txtTotalDiaTrans.setText(String.format("%.2f", totales[1]));
-                    System.out.println("Total EFECTIVO (" + rangoTexto + "): COP " + String.format("%.2f", totales[0]));
-                    System.out.println("Total TRANSACCION (" + rangoTexto + "): COP " + String.format("%.2f", totales[1]));
+                    txtTotalDia.setText(String.format("$ %,.0f", totales[0]));
+                    txtTotalDiaTrans.setText(String.format("$ %,.0f", totales[1]));
                 } catch (Exception e) {
                     System.out.println("Error al actualizar totales: " + e.getMessage());
                 }
@@ -5050,7 +5008,7 @@ public final class Sistema extends javax.swing.JFrame {
         toggleBar.add(btnToggleHistorial);
         jPanel6.add(toggleBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 310, 30));
 
-        // 🏷️ Chips de Filtro Rápido
+        // 🏷️ Chips de Filtro Rápido con Indicador de Estado Activo
         javax.swing.JPanel filtroBar = new javax.swing.JPanel(null);
         filtroBar.setOpaque(false);
 
@@ -5063,18 +5021,29 @@ public final class Sistema extends javax.swing.JFrame {
         };
         int chipX = 0;
         int[] chipWidths = {75, 100, 100, 85, 85};
+        final java.util.List<JButton> chipButtons = new java.util.ArrayList<>();
         for (int i = 0; i < chips.length; i++) {
             String[] chip = chips[i];
             int w = chipWidths[i];
             JButton btnChip = new JButton(chip[0]);
             btnChip.setFont(getFontBold(11f));
-            btnChip.setBackground(new Color(30, 41, 59));
-            btnChip.setForeground(new Color(203, 213, 225));
+            btnChip.setBackground(i == 0 ? new Color(37, 99, 235) : new Color(30, 41, 59));
+            btnChip.setForeground(i == 0 ? Color.WHITE : new Color(203, 213, 225));
             btnChip.setFocusPainted(false);
             btnChip.setCursor(new Cursor(Cursor.HAND_CURSOR));
             btnChip.setBounds(chipX, 0, w, 26);
+            chipButtons.add(btnChip);
             final String filtroEstado = chip[1];
             btnChip.addActionListener(e -> {
+                for (JButton b : chipButtons) {
+                    if (b == btnChip) {
+                        b.setBackground(new Color(37, 99, 235));
+                        b.setForeground(Color.WHITE);
+                    } else {
+                        b.setBackground(new Color(30, 41, 59));
+                        b.setForeground(new Color(203, 213, 225));
+                    }
+                }
                 if (filtroEstado.equals("TODOS")) {
                     ListarPedidos();
                     return;
@@ -5082,14 +5051,14 @@ public final class Sistema extends javax.swing.JFrame {
                 new javax.swing.SwingWorker<java.util.List<Pedido>, Void>() {
                     @Override
                     protected java.util.List<Pedido> doInBackground() {
-                        java.time.LocalDateTime ahora = java.time.LocalDateTime
-                                .now(java.time.ZoneId.of("America/Lima"));
-                        java.time.LocalDateTime inicio = ahora.getHour() < 16
-                                ? ahora.minusDays(1).withHour(16).withMinute(0).withSecond(0).withNano(0)
-                                : ahora.withHour(16).withMinute(0).withSecond(0).withNano(0);
+                        java.time.LocalDateTime ahora = java.time.LocalDateTime.now(java.time.ZoneId.of("America/Lima"));
+                        java.time.LocalDateTime inicio = ahora.getHour() < 4
+                                ? ahora.minusDays(1).withHour(4).withMinute(0).withSecond(0).withNano(0)
+                                : ahora.withHour(4).withMinute(0).withSecond(0).withNano(0);
+                        java.time.LocalDateTime fin = ahora.plusHours(12);
                         return pedDao.listarPedidosDelDia(
                                 java.sql.Timestamp.valueOf(inicio),
-                                java.sql.Timestamp.valueOf(ahora));
+                                java.sql.Timestamp.valueOf(fin));
                     }
 
                     @Override
@@ -5098,12 +5067,35 @@ public final class Sistema extends javax.swing.JFrame {
                             java.util.List<Pedido> todos = get();
                             DefaultTableModel model2 = (DefaultTableModel) TablePedidos.getModel();
                             model2.setRowCount(0);
+
+                            java.util.Map<String, java.util.List<Integer>> mesaPedidosMap = new java.util.HashMap<>();
+                            for (int i = todos.size() - 1; i >= 0; i--) {
+                                Pedido p = todos.get(i);
+                                String key = (p.getSala() != null ? p.getSala() : "") + "_" + p.getNum_mesa();
+                                mesaPedidosMap.computeIfAbsent(key, k -> new java.util.ArrayList<>()).add(p.getId());
+                            }
+
+                            java.util.Map<Integer, String> pedidoRondaTextoMap = new java.util.HashMap<>();
+                            for (java.util.Map.Entry<String, java.util.List<Integer>> entry : mesaPedidosMap.entrySet()) {
+                                java.util.List<Integer> ids = entry.getValue();
+                                for (int r = 0; r < ids.size(); r++) {
+                                    int idPed = ids.get(r);
+                                    int rondaNum = r + 1;
+                                    if (ids.size() > 1) {
+                                        pedidoRondaTextoMap.put(idPed, " (Ronda " + rondaNum + ")");
+                                    } else {
+                                        pedidoRondaTextoMap.put(idPed, "");
+                                    }
+                                }
+                            }
+
                             for (Pedido p : todos) {
                                 String estado = p.getEstado() != null ? p.getEstado() : "";
                                 if (estado.equalsIgnoreCase(filtroEstado)) {
                                     model2.addRow(new Object[] {
-                                            p.getId(), p.getSala(), p.getUsuario(), p.getNum_mesa(),
-                                            p.getFecha(), String.format("%.2f", p.getTotal()),
+                                            p.getId(), p.getSala(), p.getUsuario(),
+                                            p.getNum_mesa() + pedidoRondaTextoMap.getOrDefault(p.getId(), ""),
+                                            p.getFecha(), String.format("$ %,.0f", p.getTotal()),
                                             p.getEstado(), p.getPago_efectivo(), p.getPago_transaccion()
                                     });
                                 }
@@ -5135,7 +5127,7 @@ public final class Sistema extends javax.swing.JFrame {
             }
             exportarHistorialPedidosCSV();
         });
-        jPanel6.add(btnExportCSV, new org.netbeans.lib.awtextra.AbsoluteConstraints(920, 12, 130, 28));
+        jPanel6.add(btnExportCSV, new org.netbeans.lib.awtextra.AbsoluteConstraints(1080, 12, 150, 28));
 
         // 🔍 Buscador Inteligente en Tiempo Real en Historial
         txtBuscarHistorial = new javax.swing.JTextField();
@@ -5178,28 +5170,41 @@ public final class Sistema extends javax.swing.JFrame {
             }
         });
 
-        jPanel6.add(txtBuscarHistorial, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 48, 1020, 32));
+        jPanel6.add(txtBuscarHistorial, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 48, 1200, 34));
 
-        // 🔘 BOTONES ACCIONES INFERIORES PANEL PEDIDOS (Perfectamente distribuidos sin colisión)
-        javax.swing.JButton btnMarcarPreparadoHistorial = UIUtils.crearBoton("🟡 Preparado", new java.awt.Color(217, 119, 6));
-        btnMarcarPreparadoHistorial.setFont(getFontBold(11f));
+        // 🔘 BOTONES ACCIONES INFERIORES PANEL PEDIDOS (Sin iconos rotos, perfectamente estilizados y validados)
+        btnMarcarPreparadoHistorial = UIUtils.crearBoton("Marcar Preparado", new java.awt.Color(217, 119, 6));
+        btnMarcarPreparadoHistorial.setFont(getFontBold(12f));
         btnMarcarPreparadoHistorial.setToolTipText("Marcar pedido como PREPARADO en cocina (Mesa cambia a amarillo)");
         btnMarcarPreparadoHistorial.addActionListener(e -> {
             int row = TablePedidos.getSelectedRow();
             if (row < 0 && txtIdHistorialPedido.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Seleccione un pedido de la tabla.", "Atención", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Seleccione un pedido de la tabla primero.", "Atención", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             int idPed = row >= 0 ? Integer.parseInt(TablePedidos.getValueAt(row, 0).toString()) : Integer.parseInt(txtIdHistorialPedido.getText());
+            String estado = row >= 0 && TablePedidos.getValueAt(row, 6) != null ? TablePedidos.getValueAt(row, 6).toString().trim().toUpperCase() : "";
+            if (estado.contains("FINALIZADO")) {
+                JOptionPane.showMessageDialog(this, "El pedido #" + idPed + " ya está FINALIZADO y cobrado.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            if (estado.contains("ANULADO")) {
+                JOptionPane.showMessageDialog(this, "El pedido #" + idPed + " está ANULADO y no se puede preparar.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            if (estado.contains("PREPARADO")) {
+                JOptionPane.showMessageDialog(this, "El pedido #" + idPed + " ya se encuentra PREPARADO.", "Información", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
             if (pedDao.marcarPreparado(idPed)) {
                 ToastNotification.exito(this, "¡Pedido #" + idPed + " marcado como PREPARADO!");
                 ListarPedidos();
             }
         });
-        jPanel6.add(btnMarcarPreparadoHistorial, new org.netbeans.lib.awtextra.AbsoluteConstraints(384, 525, 120, 40));
+        jPanel6.add(btnMarcarPreparadoHistorial, new org.netbeans.lib.awtextra.AbsoluteConstraints(375, 548, 155, 40));
 
-        javax.swing.JButton btnCobrarHistorial = UIUtils.crearBoton("💰 Ir a Cobrar", new java.awt.Color(22, 163, 74));
-        btnCobrarHistorial.setFont(getFontBold(11f));
+        btnCobrarHistorial = UIUtils.crearBoton("Ir a Cobrar", new java.awt.Color(22, 163, 74));
+        btnCobrarHistorial.setFont(getFontBold(12f));
         btnCobrarHistorial.setToolTipText("Abrir pantalla de cobro para el pedido seleccionado");
         btnCobrarHistorial.addActionListener(e -> {
             int row = TablePedidos.getSelectedRow();
@@ -5208,12 +5213,22 @@ public final class Sistema extends javax.swing.JFrame {
                 return;
             }
             int idPed = row >= 0 ? Integer.parseInt(TablePedidos.getValueAt(row, 0).toString()) : Integer.parseInt(txtIdHistorialPedido.getText());
+            String estado = row >= 0 && TablePedidos.getValueAt(row, 6) != null ? TablePedidos.getValueAt(row, 6).toString().trim().toUpperCase() : "";
+            if (estado.contains("FINALIZADO")) {
+                JOptionPane.showMessageDialog(this, "El pedido #" + idPed + " ya fue cobrado y finalizado.", "Información", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+            if (estado.contains("ANULADO")) {
+                JOptionPane.showMessageDialog(this, "El pedido #" + idPed + " está ANULADO y no se puede cobrar.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             abrirCobroPedido(idPed);
         });
-        jPanel6.add(btnCobrarHistorial, new org.netbeans.lib.awtextra.AbsoluteConstraints(512, 525, 120, 40));
+        jPanel6.add(btnCobrarHistorial, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 548, 140, 40));
 
         btnReimprimirTicketHistorial = UIUtils.crearBoton("Reimprimir Ticket", UIUtils.COLOR_ACCENT_BLUE);
-        btnReimprimirTicketHistorial.setFont(getFontBold(11f));
+        btnReimprimirTicketHistorial.setFont(getFontBold(12f));
+        btnReimprimirTicketHistorial.setToolTipText("Reimprimir Comprobante PDF del pedido seleccionado");
         btnReimprimirTicketHistorial.addActionListener(e -> {
             if (txtIdHistorialPedido.getText().isEmpty() && TablePedidos.getSelectedRow() < 0) {
                 JOptionPane.showMessageDialog(this, "Seleccione un pedido de la tabla para reimprimir el ticket.", "Atención", JOptionPane.WARNING_MESSAGE);
@@ -5227,7 +5242,17 @@ public final class Sistema extends javax.swing.JFrame {
                 ToastNotification.error(this, "Error al generar comprobante PDF.");
             }
         });
-        jPanel6.add(btnReimprimirTicketHistorial, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 525, 135, 40));
+        jPanel6.add(btnReimprimirTicketHistorial, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 548, 180, 40));
+
+        // Estilizar botones existentes Eliminar y Reporte del Día
+        if (btnEliminarPedido != null) {
+            btnEliminarPedido.setText("Eliminar Pedido");
+            btnEliminarPedido.setFont(getFontBold(12f));
+        }
+        if (BtnImprimirDia != null) {
+            BtnImprimirDia.setText("Reporte del Día");
+            BtnImprimirDia.setFont(getFontBold(12f));
+        }
 
         inicializarFooterEstado();
     }
@@ -5248,7 +5273,7 @@ public final class Sistema extends javax.swing.JFrame {
     private void setDashboardVisible(boolean visible) {
         java.awt.Component[] histComps = { jScrollPane5, txtTotalDia, txtTotalDiaTrans, txtPedidosDia,
                 jLabel20, jLabel21, jLabel22, btnEliminarPedido, BtnImprimirDia, filtroBarHistorial,
-                txtBuscarHistorial, btnReimprimirTicketHistorial };
+                txtBuscarHistorial, btnReimprimirTicketHistorial, btnMarcarPreparadoHistorial, btnCobrarHistorial, btnExportCSV };
         for (java.awt.Component c : histComps) {
             if (c != null)
                 c.setVisible(!visible);
@@ -5379,6 +5404,35 @@ public final class Sistema extends javax.swing.JFrame {
         }
     }
 
+    private javax.swing.JButton btnNavHome;
+    private javax.swing.JButton btnNavSalas;
+    private javax.swing.JButton btnNavPedidos;
+    private javax.swing.JButton btnNavCaja;
+    private javax.swing.JButton btnNavInv;
+    private javax.swing.JButton btnNavAdmin;
+    private javax.swing.JButton btnNavSonido;
+
+    private void actualizarEstadoNavbarActivo() {
+        int idx = jTabbedPane1.getSelectedIndex();
+        javax.swing.JButton activo = null;
+        if (idx == 0) activo = btnNavHome;
+        else if (idx == 1 || idx == 2 || idx == 3 || idx == 4) activo = btnNavSalas;
+        else if (idx == 5) activo = btnNavPedidos;
+
+        javax.swing.JButton[] btns = { btnNavHome, btnNavSalas, btnNavPedidos, btnNavCaja, btnNavInv, btnNavAdmin, btnNavSonido };
+        for (javax.swing.JButton b : btns) {
+            if (b != null) {
+                if (b == activo) {
+                    b.setBackground(new java.awt.Color(37, 99, 235)); // Azul brillante activo
+                    b.setForeground(java.awt.Color.WHITE);
+                } else {
+                    b.setBackground(new java.awt.Color(30, 41, 59));
+                    b.setForeground(new java.awt.Color(203, 213, 225));
+                }
+            }
+        }
+    }
+
     private void construirTopNavbarPOS() {
         topNavbarPOS = new javax.swing.JPanel(new java.awt.BorderLayout(15, 0));
         topNavbarPOS.setBackground(UIUtils.COLOR_PANEL_DARK);
@@ -5410,20 +5464,20 @@ public final class Sistema extends javax.swing.JFrame {
         navBtnsPanel.add(lblNavLogo);
 
         // Botón Inicio (ESC)
-        javax.swing.JButton btnNavHome = UIUtils.crearBoton("Inicio", new java.awt.Color(30, 41, 59));
+        btnNavHome = UIUtils.crearBoton("Inicio", new java.awt.Color(30, 41, 59));
         btnNavHome.setFont(getFontBold(12f));
         btnNavHome.setToolTipText("Regresar a la Pantalla Principal (ESC)");
         btnNavHome.addActionListener(e -> jTabbedPane1.setSelectedIndex(0));
         navBtnsPanel.add(btnNavHome);
 
         // Botón Salas [F1]
-        javax.swing.JButton btnNavSalas = UIUtils.crearBoton("Salas [F1]", new java.awt.Color(30, 41, 59));
+        btnNavSalas = UIUtils.crearBoton("Salas [F1]", new java.awt.Color(30, 41, 59));
         btnNavSalas.setFont(getFontBold(12f));
         btnNavSalas.addActionListener(e -> btnSala.doClick());
         navBtnsPanel.add(btnNavSalas);
 
         // Botón Pedidos
-        javax.swing.JButton btnNavPedidos = UIUtils.crearBoton("Pedidos", new java.awt.Color(30, 41, 59));
+        btnNavPedidos = UIUtils.crearBoton("Pedidos", new java.awt.Color(30, 41, 59));
         btnNavPedidos.setFont(getFontBold(12f));
         btnNavPedidos.addActionListener(e -> {
             ListarPedidos();
@@ -5437,7 +5491,7 @@ public final class Sistema extends javax.swing.JFrame {
         navBtnsPanel.add(sep1);
 
         // Botón Caja [F2]
-        javax.swing.JButton btnNavCaja = UIUtils.crearBoton("Caja [F2]", new java.awt.Color(30, 41, 59));
+        btnNavCaja = UIUtils.crearBoton("Caja [F2]", new java.awt.Color(30, 41, 59));
         btnNavCaja.setFont(getFontBold(12f));
         btnNavCaja.addActionListener(e -> {
             if (moduloCaja != null)
@@ -5446,7 +5500,7 @@ public final class Sistema extends javax.swing.JFrame {
         navBtnsPanel.add(btnNavCaja);
 
         // Botón Inventario [F3]
-        javax.swing.JButton btnNavInv = UIUtils.crearBoton("Inventario [F3]", new java.awt.Color(30, 41, 59));
+        btnNavInv = UIUtils.crearBoton("Inventario [F3]", new java.awt.Color(30, 41, 59));
         btnNavInv.setFont(getFontBold(12f));
         btnNavInv.addActionListener(e -> {
             if (!esAdmin()) {
@@ -5462,7 +5516,7 @@ public final class Sistema extends javax.swing.JFrame {
 
         // Botón Admin [F4/F5] (Config Unificada: Empresa + Salas + Carta + Usuarios -
         // Solo Admin)
-        javax.swing.JButton btnNavAdmin = UIUtils.crearBoton("Admin [F5]", new java.awt.Color(30, 41, 59));
+        btnNavAdmin = UIUtils.crearBoton("Admin [F5]", new java.awt.Color(30, 41, 59));
         btnNavAdmin.setFont(getFontBold(12f));
         btnNavAdmin.addActionListener(e -> {
             if (!esAdmin()) {
@@ -5504,7 +5558,7 @@ public final class Sistema extends javax.swing.JFrame {
         navBtnsPanel.add(btnNavTareas);
 
         // Botón Sonidos POS (Exclusivo Administrador)
-        javax.swing.JButton btnNavSonido = UIUtils.crearBoton("Sonidos", new java.awt.Color(30, 41, 59));
+        btnNavSonido = UIUtils.crearBoton("Sonidos", new java.awt.Color(30, 41, 59));
         btnNavSonido.setFont(getFontBold(12f));
         btnNavSonido.setToolTipText("Configurar Sonidos de Cobro, Clics y Voz Sintetizada (Solo Admin)");
         btnNavSonido.addActionListener(e -> {
@@ -5517,6 +5571,9 @@ public final class Sistema extends javax.swing.JFrame {
             SonidoPOS.abrirModalConfigSonido(this);
         });
         navBtnsPanel.add(btnNavSonido);
+
+        jTabbedPane1.addChangeListener(e -> actualizarEstadoNavbarActivo());
+        actualizarEstadoNavbarActivo();
 
         // 2. Derecha: Operador, Reloj, Cambiar Usuario y Salir
         javax.swing.JPanel rightPanel = new javax.swing.JPanel(
@@ -5935,9 +5992,27 @@ public final class Sistema extends javax.swing.JFrame {
             pChips.add(bObs);
         }
 
+        javax.swing.JPanel pBannerMesa = new javax.swing.JPanel(new java.awt.BorderLayout(10, 0));
+        pBannerMesa.setOpaque(false);
+        pBannerMesa.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 4, 0));
+
+        lblBannerMesaComanda = new javax.swing.JLabel("🍽️ COMANDA ACTIVA - SELECCIONE PRODUCTOS");
+        lblBannerMesaComanda.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 15));
+        lblBannerMesaComanda.setForeground(new java.awt.Color(56, 189, 248)); // Sky Blue
+
+        javax.swing.JButton btnVolverMesas = UIUtils.crearBoton("⬅ Volver a Mesas", new java.awt.Color(51, 65, 85));
+        btnVolverMesas.setFont(getFontBold(12f));
+        btnVolverMesas.addActionListener(e -> {
+            btnSala.doClick();
+        });
+
+        pBannerMesa.add(lblBannerMesaComanda, java.awt.BorderLayout.WEST);
+        pBannerMesa.add(btnVolverMesas, java.awt.BorderLayout.EAST);
+
         javax.swing.JPanel contenedorHeader = new javax.swing.JPanel(new java.awt.BorderLayout(0, 5));
         contenedorHeader.setOpaque(false);
-        contenedorHeader.add(barraPOS, java.awt.BorderLayout.NORTH);
+        contenedorHeader.add(pBannerMesa, java.awt.BorderLayout.NORTH);
+        contenedorHeader.add(barraPOS, java.awt.BorderLayout.CENTER);
         contenedorHeader.add(pChips, java.awt.BorderLayout.SOUTH);
 
         jPanel23.add(contenedorHeader, java.awt.BorderLayout.NORTH);
@@ -6049,23 +6124,10 @@ public final class Sistema extends javax.swing.JFrame {
         };
         actualizarFooter(lblFooterVentas, lblFooterMesas, lblFooterStock);
 
-        // ── Auto-refresh mesas cada 8s (detecta pedidos del celular) ──────────
-        // UNA sola query por tick. Se pausa automáticamente si la ventana pierde foco.
-        timerAutoRefreshMesas = new javax.swing.Timer(8000, e -> refreshEstadosMesas());
-        timerAutoRefreshMesas.setInitialDelay(8000);
+        // ── Auto-refresh mesas cada 3s (detecta pedidos del celular en tiempo real) ──────────
+        timerAutoRefreshMesas = new javax.swing.Timer(3000, e -> refreshEstadosMesas());
+        timerAutoRefreshMesas.setInitialDelay(1500);
         timerAutoRefreshMesas.start();
-
-        // Pausar timer cuando la ventana no tiene foco (minimizada / otra app)
-        addWindowFocusListener(new java.awt.event.WindowFocusListener() {
-            @Override
-            public void windowGainedFocus(java.awt.event.WindowEvent e) {
-                if (timerAutoRefreshMesas != null) timerAutoRefreshMesas.restart();
-            }
-            @Override
-            public void windowLostFocus(java.awt.event.WindowEvent e) {
-                if (timerAutoRefreshMesas != null) timerAutoRefreshMesas.stop();
-            }
-        });
     }
 
     private void actualizarFooter(javax.swing.JLabel lblVentas, javax.swing.JLabel lblMesas,
@@ -6123,10 +6185,11 @@ public final class Sistema extends javax.swing.JFrame {
 
     private void cerrarSesionYCambiarUsuario() {
         String nombreUser = LabelVendedor != null ? LabelVendedor.getText().trim() : "usuario";
-        int conf = JOptionPane.showConfirmDialog(this,
-                "¿Deseas cerrar la sesión de \"" + nombreUser + "\" e ingresar con otra cuenta?",
-                "Cambiar Usuario", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-        if (conf == JOptionPane.YES_OPTION) {
+        boolean conf = ModalAlerta.confirmar(this,
+                "Cambiar Usuario",
+                "¿Deseas cerrar la sesión de <b>" + nombreUser + "</b> e ingresar con otra cuenta?",
+                "Sí, Cerrar Sesión", "Cancelar");
+        if (conf) {
             this.dispose();
             FrmLogin loginWin = new FrmLogin();
             loginWin.setVisible(true);
@@ -6134,10 +6197,11 @@ public final class Sistema extends javax.swing.JFrame {
     }
 
     private void salirDelSistema() {
-        int conf = JOptionPane.showConfirmDialog(this,
+        boolean conf = ModalAlerta.confirmar(this,
+                "Salir del Sistema",
                 "¿Estás seguro de que deseas salir del sistema POS?",
-                "Salir del Sistema", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-        if (conf == JOptionPane.YES_OPTION) {
+                "Sí, Salir", "Cancelar");
+        if (conf) {
             System.exit(0);
         }
     }

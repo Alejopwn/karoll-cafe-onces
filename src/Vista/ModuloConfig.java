@@ -10,14 +10,21 @@ import Modelo.SalasDao;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -30,6 +37,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -86,7 +95,7 @@ public class ModuloConfig {
             inicializar();
         }
         JDialog dialog = new JDialog(parentFrame, "Administración General del Sistema POS", true);
-        dialog.setSize(900, 620);
+        dialog.setSize(960, 640);
         dialog.setLocationRelativeTo(parentFrame);
         dialog.setContentPane(panelMain);
         cargarDatosEmpresa();
@@ -99,24 +108,35 @@ public class ModuloConfig {
     private void inicializar() {
         panelMain = new JPanel(new BorderLayout(12, 12));
         panelMain.setBackground(UIUtils.COLOR_BG_DARK);
-        panelMain.setBorder(BorderFactory.createEmptyBorder(18, 18, 18, 18));
+        panelMain.setBorder(BorderFactory.createEmptyBorder(16, 20, 16, 20));
+
+        JPanel headerPanel = new JPanel(new BorderLayout(10, 0));
+        headerPanel.setOpaque(false);
+        headerPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
         JLabel lblTitle = new JLabel("Administración del Sistema y Configuración");
         lblTitle.setFont(Sistema.getFontBold(18f));
         lblTitle.setForeground(Color.WHITE);
+
+        JLabel lblSub = new JLabel("Gestiona los parámetros de tu negocio, salas, menú de carta y permisos");
+        lblSub.setFont(Sistema.getFontRegular(12f));
+        lblSub.setForeground(new Color(148, 163, 184));
+
+        headerPanel.add(lblTitle, BorderLayout.NORTH);
+        headerPanel.add(lblSub, BorderLayout.SOUTH);
 
         tabbedPane = new JTabbedPane();
         tabbedPane.setFont(Sistema.getFontBold(13f));
         tabbedPane.setBackground(UIUtils.COLOR_PANEL_DARK);
         tabbedPane.setForeground(Color.WHITE);
 
-        // Pestañas sin emojis que causaban recuadros vacíos
         tabbedPane.addTab("Datos Empresa", crearPanelEmpresa());
         tabbedPane.addTab("Edición de Salas", crearPanelSalas());
         tabbedPane.addTab("Gestión de Carta", crearPanelPlatos());
         tabbedPane.addTab("Usuarios y Roles", crearPanelUsuarios());
+        tabbedPane.addTab("Panel Móvil (Meseros)", crearPanelAndroid());
 
-        panelMain.add(lblTitle, BorderLayout.NORTH);
+        panelMain.add(headerPanel, BorderLayout.NORTH);
         panelMain.add(tabbedPane, BorderLayout.CENTER);
     }
 
@@ -124,10 +144,19 @@ public class ModuloConfig {
     private JPanel crearPanelEmpresa() {
         JPanel panel = new JPanel(new BorderLayout(20, 20));
         panel.setBackground(UIUtils.COLOR_BG_DARK);
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        panel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
 
-        JPanel form = new JPanel(new GridLayout(5, 2, 12, 14));
-        form.setOpaque(false);
+        // Tarjeta central elegante con GridBagLayout
+        JPanel card = new JPanel(new GridBagLayout());
+        card.setBackground(UIUtils.COLOR_PANEL_DARK);
+        card.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(UIUtils.COLOR_BORDER_DARK, 1, true),
+            BorderFactory.createEmptyBorder(24, 32, 24, 32)
+        ));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 12, 10, 12);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
         txtRuc = new JTextField();
         txtNombre = new JTextField();
@@ -141,45 +170,36 @@ public class ModuloConfig {
         UIUtils.estilarCampoTexto(txtDireccion);
         UIUtils.estilarCampoTexto(txtMensaje);
 
-        JLabel l1 = new JLabel("RUC / NIT:"); l1.setForeground(UIUtils.COLOR_TEXT_PRIMARY); l1.setFont(Sistema.getFontBold(13f));
-        JLabel l2 = new JLabel("Nombre Restaurante:"); l2.setForeground(UIUtils.COLOR_TEXT_PRIMARY); l2.setFont(Sistema.getFontBold(13f));
-        JLabel l3 = new JLabel("Teléfono:"); l3.setForeground(UIUtils.COLOR_TEXT_PRIMARY); l3.setFont(Sistema.getFontBold(13f));
-        JLabel l4 = new JLabel("Dirección:"); l4.setForeground(UIUtils.COLOR_TEXT_PRIMARY); l4.setFont(Sistema.getFontBold(13f));
-        JLabel l5 = new JLabel("Mensaje Ticket:"); l5.setForeground(UIUtils.COLOR_TEXT_PRIMARY); l5.setFont(Sistema.getFontBold(13f));
+        String[] labels = {
+            "RUC / NIT:",
+            "Nombre Restaurante:",
+            "Teléfono de Contacto:",
+            "Dirección:",
+            "Mensaje Pie de Ticket:"
+        };
+        JTextField[] fields = { txtRuc, txtNombre, txtTelefono, txtDireccion, txtMensaje };
 
-        form.add(l1); form.add(txtRuc);
-        form.add(l2); form.add(txtNombre);
-        form.add(l3); form.add(txtTelefono);
-        form.add(l4); form.add(txtDireccion);
-        form.add(l5); form.add(txtMensaje);
+        for (int i = 0; i < labels.length; i++) {
+            gbc.gridx = 0;
+            gbc.gridy = i;
+            gbc.weightx = 0.0;
+            JLabel lbl = new JLabel(labels[i]);
+            lbl.setFont(Sistema.getFontBold(13f));
+            lbl.setForeground(new Color(226, 232, 240));
+            lbl.setPreferredSize(new Dimension(180, 36));
+            card.add(lbl, gbc);
 
-        JPanel panelBtn = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 0));
+            gbc.gridx = 1;
+            gbc.weightx = 1.0;
+            card.add(fields[i], gbc);
+        }
+
+        JPanel panelBtn = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 10));
         panelBtn.setOpaque(false);
 
-        JButton btnGuardar = UIUtils.crearBoton("Actualizar Datos", UIUtils.COLOR_ACCENT_BLUE);
-        btnGuardar.setFont(Sistema.getFontBold(14f));
-        btnGuardar.addActionListener(e -> {
-            if (txtRuc.getText().isEmpty() || txtNombre.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(parentFrame, "RUC y Nombre son obligatorios.", "Atención", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-            Config c = configActual != null ? configActual : new Config();
-            c.setRuc(txtRuc.getText().trim());
-            c.setNombre(txtNombre.getText().trim());
-            c.setTelefono(txtTelefono.getText().trim());
-            c.setDireccion(txtDireccion.getText().trim());
-            c.setMensaje(txtMensaje.getText().trim());
-
-            boolean ok = loginDao.ModificarDatos(c);
-            if (ok) {
-                ToastNotification.exito(parentFrame, "Datos de la empresa actualizados.");
-            } else {
-                ToastNotification.error(parentFrame, "Error al actualizar configuración.");
-            }
-        });
-
         JButton btnBackup = UIUtils.crearBoton("Respaldar Base de Datos", UIUtils.COLOR_ACCENT_GREEN);
-        btnBackup.setFont(Sistema.getFontBold(14f));
+        btnBackup.setPreferredSize(new Dimension(210, 42));
+        btnBackup.setFont(Sistema.getFontBold(13f));
         btnBackup.addActionListener(e -> {
             try {
                 java.io.File dirBackup = new java.io.File("backups");
@@ -204,61 +224,132 @@ public class ModuloConfig {
             }
         });
 
+        JButton btnGuardar = UIUtils.crearBoton("Actualizar Datos", UIUtils.COLOR_ACCENT_BLUE);
+        btnGuardar.setPreferredSize(new Dimension(170, 42));
+        btnGuardar.setFont(Sistema.getFontBold(13f));
+        btnGuardar.addActionListener(e -> {
+            if (txtRuc.getText().isEmpty() || txtNombre.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(parentFrame, "RUC y Nombre son obligatorios.", "Atención", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            Config c = configActual != null ? configActual : new Config();
+            c.setRuc(txtRuc.getText().trim());
+            c.setNombre(txtNombre.getText().trim());
+            c.setTelefono(txtTelefono.getText().trim());
+            c.setDireccion(txtDireccion.getText().trim());
+            c.setMensaje(txtMensaje.getText().trim());
+
+            boolean ok = loginDao.ModificarDatos(c);
+            if (ok) {
+                ToastNotification.exito(parentFrame, "Datos de la empresa actualizados correctamente.");
+            } else {
+                ToastNotification.error(parentFrame, "Error al actualizar configuración.");
+            }
+        });
+
         panelBtn.add(btnBackup);
         panelBtn.add(btnGuardar);
-        panel.add(form, BorderLayout.CENTER);
+
+        panel.add(card, BorderLayout.CENTER);
         panel.add(panelBtn, BorderLayout.SOUTH);
         return panel;
     }
 
     // --- 2. PANEL SALAS ---
     private JPanel crearPanelSalas() {
-        JPanel panel = new JPanel(new BorderLayout(15, 15));
+        JPanel panel = new JPanel(new BorderLayout(16, 16));
         panel.setBackground(UIUtils.COLOR_BG_DARK);
         panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        JPanel formPanel = new JPanel(new GridLayout(4, 2, 10, 10));
-        formPanel.setOpaque(false);
-        formPanel.setPreferredSize(new Dimension(300, 180));
+        // Formulario izquierdo apilado
+        JPanel leftCard = new JPanel();
+        leftCard.setLayout(new BoxLayout(leftCard, BoxLayout.Y_AXIS));
+        leftCard.setBackground(UIUtils.COLOR_PANEL_DARK);
+        leftCard.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(UIUtils.COLOR_BORDER_DARK, 1, true),
+            BorderFactory.createEmptyBorder(18, 16, 18, 16)
+        ));
+        leftCard.setPreferredSize(new Dimension(300, 300));
 
         txtSalaId = new JTextField();
-        txtSalaId.setEditable(false);
         txtSalaId.setVisible(false);
 
+        JLabel lbl1 = new JLabel("Nombre de Sala:");
+        lbl1.setForeground(new Color(203, 213, 225));
+        lbl1.setFont(Sistema.getFontBold(12f));
+        lbl1.setAlignmentX(Component.LEFT_ALIGNMENT);
+
         txtSalaNombre = new JTextField();
-        txtSalaMesas = new JTextField();
         UIUtils.estilarCampoTexto(txtSalaNombre);
+        txtSalaNombre.setMaximumSize(new Dimension(Integer.MAX_VALUE, 36));
+        txtSalaNombre.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel lbl2 = new JLabel("Cantidad de Mesas:");
+        lbl2.setForeground(new Color(203, 213, 225));
+        lbl2.setFont(Sistema.getFontBold(12f));
+        lbl2.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        txtSalaMesas = new JTextField();
         UIUtils.estilarCampoTexto(txtSalaMesas);
-
-        JLabel l1 = new JLabel("Nombre de Sala:"); l1.setForeground(UIUtils.COLOR_TEXT_PRIMARY); l1.setFont(Sistema.getFontBold(13f));
-        JLabel l2 = new JLabel("Cantidad de Mesas:"); l2.setForeground(UIUtils.COLOR_TEXT_PRIMARY); l2.setFont(Sistema.getFontBold(13f));
-
-        formPanel.add(l1); formPanel.add(txtSalaNombre);
-        formPanel.add(l2); formPanel.add(txtSalaMesas);
+        txtSalaMesas.setMaximumSize(new Dimension(Integer.MAX_VALUE, 36));
+        txtSalaMesas.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JPanel formBtns = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 0));
         formBtns.setOpaque(false);
+        formBtns.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JButton btnNuevo = UIUtils.crearBoton("Nueva", UIUtils.COLOR_ACCENT_ORANGE);
+        btnNuevo.setPreferredSize(new Dimension(80, 38));
         btnNuevo.addActionListener(e -> limpiarFormularioSala());
 
         btnSalaGuardar = UIUtils.crearBoton("Guardar", UIUtils.COLOR_ACCENT_GREEN);
+        btnSalaGuardar.setPreferredSize(new Dimension(95, 38));
         btnSalaGuardar.addActionListener(e -> guardarOModificarSala());
 
         JButton btnEliminar = UIUtils.crearBoton("Eliminar", UIUtils.COLOR_ACCENT_RED);
+        btnEliminar.setPreferredSize(new Dimension(85, 38));
         btnEliminar.addActionListener(e -> eliminarSalaSeleccionada());
 
         formBtns.add(btnNuevo);
         formBtns.add(btnSalaGuardar);
         formBtns.add(btnEliminar);
 
-        JPanel leftContainer = new JPanel(new BorderLayout(10, 10));
-        leftContainer.setOpaque(false);
-        leftContainer.add(formPanel, BorderLayout.NORTH);
-        leftContainer.add(formBtns, BorderLayout.CENTER);
+        leftCard.add(lbl1);
+        leftCard.add(Box.createVerticalStrut(6));
+        leftCard.add(txtSalaNombre);
+        leftCard.add(Box.createVerticalStrut(14));
+        leftCard.add(lbl2);
+        leftCard.add(Box.createVerticalStrut(6));
+        leftCard.add(txtSalaMesas);
+        leftCard.add(Box.createVerticalStrut(20));
+        leftCard.add(formBtns);
+        leftCard.add(Box.createVerticalGlue());
 
+        // Tabla derecha estilizada
         tableSalasConfig = new JTable();
         UIUtils.estilarTablaOscura(tableSalasConfig);
+        tableSalasConfig.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+                if (!isSelected) {
+                    c.setBackground(row % 2 == 0 ? new Color(15, 23, 42) : new Color(30, 41, 59));
+                    c.setForeground(new Color(241, 245, 249));
+                } else {
+                    c.setBackground(new Color(37, 99, 235));
+                    c.setForeground(Color.WHITE);
+                }
+                setFont(Sistema.getFontRegular(13f));
+                if (col == 0 || col == 2) {
+                    setHorizontalAlignment(SwingConstants.CENTER);
+                    if (col == 2) setFont(Sistema.getFontBold(13f));
+                } else {
+                    setHorizontalAlignment(SwingConstants.LEFT);
+                    setFont(Sistema.getFontBold(13f));
+                }
+                return c;
+            }
+        });
 
         tableSalasConfig.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -278,7 +369,7 @@ public class ModuloConfig {
         scroll.getViewport().setBackground(UIUtils.COLOR_BG_DARK);
         scroll.setBorder(BorderFactory.createLineBorder(UIUtils.COLOR_BORDER_DARK, 1));
 
-        panel.add(leftContainer, BorderLayout.WEST);
+        panel.add(leftCard, BorderLayout.WEST);
         panel.add(scroll, BorderLayout.CENTER);
 
         return panel;
@@ -286,52 +377,102 @@ public class ModuloConfig {
 
     // --- 3. PANEL PLATOS ---
     private JPanel crearPanelPlatos() {
-        JPanel panel = new JPanel(new BorderLayout(15, 15));
+        JPanel panel = new JPanel(new BorderLayout(16, 16));
         panel.setBackground(UIUtils.COLOR_BG_DARK);
         panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        JPanel formPanel = new JPanel(new GridLayout(4, 2, 10, 10));
-        formPanel.setOpaque(false);
-        formPanel.setPreferredSize(new Dimension(300, 180));
+        // Formulario izquierdo apilado
+        JPanel leftCard = new JPanel();
+        leftCard.setLayout(new BoxLayout(leftCard, BoxLayout.Y_AXIS));
+        leftCard.setBackground(UIUtils.COLOR_PANEL_DARK);
+        leftCard.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(UIUtils.COLOR_BORDER_DARK, 1, true),
+            BorderFactory.createEmptyBorder(18, 16, 18, 16)
+        ));
+        leftCard.setPreferredSize(new Dimension(300, 300));
 
         txtPlatoId = new JTextField();
-        txtPlatoId.setEditable(false);
         txtPlatoId.setVisible(false);
 
+        JLabel lbl1 = new JLabel("Nombre del Plato / Producto:");
+        lbl1.setForeground(new Color(203, 213, 225));
+        lbl1.setFont(Sistema.getFontBold(12f));
+        lbl1.setAlignmentX(Component.LEFT_ALIGNMENT);
+
         txtPlatoNombre = new JTextField();
-        txtPlatoPrecio = new JTextField();
         UIUtils.estilarCampoTexto(txtPlatoNombre);
+        txtPlatoNombre.setMaximumSize(new Dimension(Integer.MAX_VALUE, 36));
+        txtPlatoNombre.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel lbl2 = new JLabel("Precio Unitario (COP):");
+        lbl2.setForeground(new Color(203, 213, 225));
+        lbl2.setFont(Sistema.getFontBold(12f));
+        lbl2.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        txtPlatoPrecio = new JTextField();
         UIUtils.estilarCampoTexto(txtPlatoPrecio);
-
-        JLabel l1 = new JLabel("Nombre del Plato:"); l1.setForeground(UIUtils.COLOR_TEXT_PRIMARY); l1.setFont(Sistema.getFontBold(13f));
-        JLabel l2 = new JLabel("Precio (COP):"); l2.setForeground(UIUtils.COLOR_TEXT_PRIMARY); l2.setFont(Sistema.getFontBold(13f));
-
-        formPanel.add(l1); formPanel.add(txtPlatoNombre);
-        formPanel.add(l2); formPanel.add(txtPlatoPrecio);
+        txtPlatoPrecio.setMaximumSize(new Dimension(Integer.MAX_VALUE, 36));
+        txtPlatoPrecio.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JPanel formBtns = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 0));
         formBtns.setOpaque(false);
+        formBtns.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JButton btnNuevo = UIUtils.crearBoton("Nuevo", UIUtils.COLOR_ACCENT_ORANGE);
+        btnNuevo.setPreferredSize(new Dimension(80, 38));
         btnNuevo.addActionListener(e -> limpiarFormularioPlato());
 
         btnPlatoGuardar = UIUtils.crearBoton("Guardar", UIUtils.COLOR_ACCENT_GREEN);
+        btnPlatoGuardar.setPreferredSize(new Dimension(95, 38));
         btnPlatoGuardar.addActionListener(e -> guardarOModificarPlato());
 
         JButton btnEliminar = UIUtils.crearBoton("Eliminar", UIUtils.COLOR_ACCENT_RED);
+        btnEliminar.setPreferredSize(new Dimension(85, 38));
         btnEliminar.addActionListener(e -> eliminarPlatoSeleccionado());
 
         formBtns.add(btnNuevo);
         formBtns.add(btnPlatoGuardar);
         formBtns.add(btnEliminar);
 
-        JPanel leftContainer = new JPanel(new BorderLayout(10, 10));
-        leftContainer.setOpaque(false);
-        leftContainer.add(formPanel, BorderLayout.NORTH);
-        leftContainer.add(formBtns, BorderLayout.CENTER);
+        leftCard.add(lbl1);
+        leftCard.add(Box.createVerticalStrut(6));
+        leftCard.add(txtPlatoNombre);
+        leftCard.add(Box.createVerticalStrut(14));
+        leftCard.add(lbl2);
+        leftCard.add(Box.createVerticalStrut(6));
+        leftCard.add(txtPlatoPrecio);
+        leftCard.add(Box.createVerticalStrut(20));
+        leftCard.add(formBtns);
+        leftCard.add(Box.createVerticalGlue());
 
+        // Tabla derecha estilizada
         tablePlatosConfig = new JTable();
         UIUtils.estilarTablaOscura(tablePlatosConfig);
+        tablePlatosConfig.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+                if (!isSelected) {
+                    c.setBackground(row % 2 == 0 ? new Color(15, 23, 42) : new Color(30, 41, 59));
+                    c.setForeground(new Color(241, 245, 249));
+                } else {
+                    c.setBackground(new Color(37, 99, 235));
+                    c.setForeground(Color.WHITE);
+                }
+                setFont(Sistema.getFontRegular(13f));
+                if (col == 0) {
+                    setHorizontalAlignment(SwingConstants.CENTER);
+                } else if (col == 1) {
+                    setHorizontalAlignment(SwingConstants.LEFT);
+                    setFont(Sistema.getFontBold(13f));
+                } else if (col == 2) {
+                    setHorizontalAlignment(SwingConstants.RIGHT);
+                    setFont(Sistema.getFontBold(13f));
+                    if (!isSelected) c.setForeground(new Color(56, 189, 248)); // Cyan
+                }
+                return c;
+            }
+        });
 
         tablePlatosConfig.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -351,7 +492,7 @@ public class ModuloConfig {
         scroll.getViewport().setBackground(UIUtils.COLOR_BG_DARK);
         scroll.setBorder(BorderFactory.createLineBorder(UIUtils.COLOR_BORDER_DARK, 1));
 
-        panel.add(leftContainer, BorderLayout.WEST);
+        panel.add(leftCard, BorderLayout.WEST);
         panel.add(scroll, BorderLayout.CENTER);
 
         return panel;
@@ -359,16 +500,21 @@ public class ModuloConfig {
 
     // --- 4. PANEL USUARIOS ---
     private JPanel crearPanelUsuarios() {
-        JPanel panel = new JPanel(new BorderLayout(15, 15));
+        JPanel panel = new JPanel(new BorderLayout(16, 16));
         panel.setBackground(UIUtils.COLOR_BG_DARK);
         panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        JPanel formPanel = new JPanel(new GridLayout(5, 2, 10, 10));
-        formPanel.setOpaque(false);
-        formPanel.setPreferredSize(new Dimension(320, 220));
+        // Formulario izquierdo apilado
+        JPanel leftCard = new JPanel();
+        leftCard.setLayout(new BoxLayout(leftCard, BoxLayout.Y_AXIS));
+        leftCard.setBackground(UIUtils.COLOR_PANEL_DARK);
+        leftCard.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(UIUtils.COLOR_BORDER_DARK, 1, true),
+            BorderFactory.createEmptyBorder(18, 16, 18, 16)
+        ));
+        leftCard.setPreferredSize(new Dimension(300, 380));
 
         txtUserId = new JTextField();
-        txtUserId.setEditable(false);
         txtUserId.setVisible(false);
 
         txtUserNombre = new JTextField();
@@ -381,39 +527,82 @@ public class ModuloConfig {
         UIUtils.estilarCampoTexto(txtUserPass);
         UIUtils.estilarCombo(cbxUserRol);
 
-        JLabel l1 = new JLabel("Nombre Completo:"); l1.setForeground(UIUtils.COLOR_TEXT_PRIMARY); l1.setFont(Sistema.getFontBold(13f));
-        JLabel l2 = new JLabel("Correo / Usuario:"); l2.setForeground(UIUtils.COLOR_TEXT_PRIMARY); l2.setFont(Sistema.getFontBold(13f));
-        JLabel l3 = new JLabel("Contraseña:"); l3.setForeground(UIUtils.COLOR_TEXT_PRIMARY); l3.setFont(Sistema.getFontBold(13f));
-        JLabel l4 = new JLabel("Rol:"); l4.setForeground(UIUtils.COLOR_TEXT_PRIMARY); l4.setFont(Sistema.getFontBold(13f));
+        txtUserNombre.setMaximumSize(new Dimension(Integer.MAX_VALUE, 34));
+        txtUserCorreo.setMaximumSize(new Dimension(Integer.MAX_VALUE, 34));
+        txtUserPass.setMaximumSize(new Dimension(Integer.MAX_VALUE, 34));
+        cbxUserRol.setMaximumSize(new Dimension(Integer.MAX_VALUE, 34));
 
-        formPanel.add(l1); formPanel.add(txtUserNombre);
-        formPanel.add(l2); formPanel.add(txtUserCorreo);
-        formPanel.add(l3); formPanel.add(txtUserPass);
-        formPanel.add(l4); formPanel.add(cbxUserRol);
+        JLabel l1 = new JLabel("Nombre Completo:"); l1.setForeground(new Color(203, 213, 225)); l1.setFont(Sistema.getFontBold(12f)); l1.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JLabel l2 = new JLabel("Correo / Usuario:"); l2.setForeground(new Color(203, 213, 225)); l2.setFont(Sistema.getFontBold(12f)); l2.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JLabel l3 = new JLabel("Contraseña:"); l3.setForeground(new Color(203, 213, 225)); l3.setFont(Sistema.getFontBold(12f)); l3.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JLabel l4 = new JLabel("Rol / Perfil:"); l4.setForeground(new Color(203, 213, 225)); l4.setFont(Sistema.getFontBold(12f)); l4.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        txtUserNombre.setAlignmentX(Component.LEFT_ALIGNMENT);
+        txtUserCorreo.setAlignmentX(Component.LEFT_ALIGNMENT);
+        txtUserPass.setAlignmentX(Component.LEFT_ALIGNMENT);
+        cbxUserRol.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JPanel formBtns = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 0));
         formBtns.setOpaque(false);
+        formBtns.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JButton btnNuevo = UIUtils.crearBoton("Nuevo", UIUtils.COLOR_ACCENT_ORANGE);
+        btnNuevo.setPreferredSize(new Dimension(80, 38));
         btnNuevo.addActionListener(e -> limpiarFormularioUsuario());
 
         btnUserGuardar = UIUtils.crearBoton("Guardar", UIUtils.COLOR_ACCENT_GREEN);
+        btnUserGuardar.setPreferredSize(new Dimension(95, 38));
         btnUserGuardar.addActionListener(e -> guardarOModificarUsuario());
 
         JButton btnEliminar = UIUtils.crearBoton("Eliminar", UIUtils.COLOR_ACCENT_RED);
+        btnEliminar.setPreferredSize(new Dimension(85, 38));
         btnEliminar.addActionListener(e -> eliminarUsuarioSeleccionado());
 
         formBtns.add(btnNuevo);
         formBtns.add(btnUserGuardar);
         formBtns.add(btnEliminar);
 
-        JPanel leftContainer = new JPanel(new BorderLayout(10, 10));
-        leftContainer.setOpaque(false);
-        leftContainer.add(formPanel, BorderLayout.NORTH);
-        leftContainer.add(formBtns, BorderLayout.CENTER);
+        leftCard.add(l1); leftCard.add(Box.createVerticalStrut(4)); leftCard.add(txtUserNombre);
+        leftCard.add(Box.createVerticalStrut(10));
+        leftCard.add(l2); leftCard.add(Box.createVerticalStrut(4)); leftCard.add(txtUserCorreo);
+        leftCard.add(Box.createVerticalStrut(10));
+        leftCard.add(l3); leftCard.add(Box.createVerticalStrut(4)); leftCard.add(txtUserPass);
+        leftCard.add(Box.createVerticalStrut(10));
+        leftCard.add(l4); leftCard.add(Box.createVerticalStrut(4)); leftCard.add(cbxUserRol);
+        leftCard.add(Box.createVerticalStrut(16));
+        leftCard.add(formBtns);
+        leftCard.add(Box.createVerticalGlue());
 
+        // Tabla derecha estilizada
         tableUsuariosConfig = new JTable();
         UIUtils.estilarTablaOscura(tableUsuariosConfig);
+        tableUsuariosConfig.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+                if (!isSelected) {
+                    c.setBackground(row % 2 == 0 ? new Color(15, 23, 42) : new Color(30, 41, 59));
+                    c.setForeground(new Color(241, 245, 249));
+                } else {
+                    c.setBackground(new Color(37, 99, 235));
+                    c.setForeground(Color.WHITE);
+                }
+                setFont(Sistema.getFontRegular(13f));
+                if (col == 0) {
+                    setHorizontalAlignment(SwingConstants.CENTER);
+                } else if (col == 1) {
+                    setHorizontalAlignment(SwingConstants.LEFT);
+                    setFont(Sistema.getFontBold(13f));
+                } else if (col == 3) {
+                    setHorizontalAlignment(SwingConstants.CENTER);
+                    setFont(Sistema.getFontBold(13f));
+                    if (!isSelected) c.setForeground(new Color(251, 191, 36)); // Gold
+                } else {
+                    setHorizontalAlignment(SwingConstants.LEFT);
+                }
+                return c;
+            }
+        });
 
         tableUsuariosConfig.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -436,7 +625,7 @@ public class ModuloConfig {
         scroll.getViewport().setBackground(UIUtils.COLOR_BG_DARK);
         scroll.setBorder(BorderFactory.createLineBorder(UIUtils.COLOR_BORDER_DARK, 1));
 
-        panel.add(leftContainer, BorderLayout.WEST);
+        panel.add(leftCard, BorderLayout.WEST);
         panel.add(scroll, BorderLayout.CENTER);
 
         return panel;
@@ -467,12 +656,17 @@ public class ModuloConfig {
             model.addRow(new Object[]{ s.getId(), s.getNombre(), s.getMesas() });
         }
         tableSalasConfig.setModel(model);
+        if (tableSalasConfig.getColumnModel().getColumnCount() > 0) {
+            tableSalasConfig.getColumnModel().getColumn(0).setMaxWidth(60);
+            tableSalasConfig.getColumnModel().getColumn(0).setPreferredWidth(50);
+            tableSalasConfig.getColumnModel().getColumn(2).setPreferredWidth(90);
+        }
     }
 
     private void cargarTablaPlatos() {
         List<Plato> lista = platosDao.Listar("");
         DefaultTableModel model = new DefaultTableModel(
-            new Object[]{"ID", "Nombre", "Precio (COP)"}, 0
+            new Object[]{"ID", "Nombre del Plato", "Precio (COP)"}, 0
         ) {
             @Override
             public boolean isCellEditable(int r, int c) { return false; }
@@ -482,16 +676,21 @@ public class ModuloConfig {
             model.addRow(new Object[]{
                 p.getId(),
                 p.getNombre(),
-                String.format("$ %,.2f", p.getPrecio())
+                String.format("$ %,.0f", p.getPrecio())
             });
         }
         tablePlatosConfig.setModel(model);
+        if (tablePlatosConfig.getColumnModel().getColumnCount() > 0) {
+            tablePlatosConfig.getColumnModel().getColumn(0).setMaxWidth(60);
+            tablePlatosConfig.getColumnModel().getColumn(0).setPreferredWidth(50);
+            tablePlatosConfig.getColumnModel().getColumn(2).setPreferredWidth(120);
+        }
     }
 
     private void cargarTablaUsuarios() {
         List<Login> lista = loginDao.ListarUsuarios();
         DefaultTableModel model = new DefaultTableModel(
-            new Object[]{"ID", "Nombre", "Correo / Usuario", "Rol"}, 0
+            new Object[]{"ID", "Nombre Completo", "Correo / Usuario", "Rol"}, 0
         ) {
             @Override
             public boolean isCellEditable(int r, int c) { return false; }
@@ -501,6 +700,11 @@ public class ModuloConfig {
             model.addRow(new Object[]{ u.getId(), u.getNombre(), u.getCorreo(), u.getRol() });
         }
         tableUsuariosConfig.setModel(model);
+        if (tableUsuariosConfig.getColumnModel().getColumnCount() > 0) {
+            tableUsuariosConfig.getColumnModel().getColumn(0).setMaxWidth(60);
+            tableUsuariosConfig.getColumnModel().getColumn(0).setPreferredWidth(50);
+            tableUsuariosConfig.getColumnModel().getColumn(3).setPreferredWidth(120);
+        }
     }
 
     // --- ACCIONES SALAS ---
@@ -518,7 +722,7 @@ public class ModuloConfig {
         String mesasStr = txtSalaMesas.getText().trim();
 
         if (nom.isEmpty() || mesasStr.isEmpty()) {
-            JOptionPane.showMessageDialog(parentFrame, "Nombre de Sala y N° de Mesas son obligatorios.", "Atención", JOptionPane.WARNING_MESSAGE);
+            ToastNotification.advertencia(parentFrame, "Nombre de Sala y N° de Mesas son obligatorios.");
             return;
         }
 
@@ -526,7 +730,7 @@ public class ModuloConfig {
         try {
             mesas = Integer.parseInt(mesasStr);
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(parentFrame, "El número de mesas debe ser un entero.", "Error", JOptionPane.ERROR_MESSAGE);
+            ToastNotification.error(parentFrame, "El número de mesas debe ser un entero.");
             return;
         }
 
@@ -558,12 +762,12 @@ public class ModuloConfig {
 
     private void eliminarSalaSeleccionada() {
         if (txtSalaId.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(parentFrame, "Seleccione una sala para eliminar.", "Atención", JOptionPane.WARNING_MESSAGE);
+            ToastNotification.advertencia(parentFrame, "Seleccione una sala para eliminar.");
             return;
         }
         int id = Integer.parseInt(txtSalaId.getText());
-        int opt = JOptionPane.showConfirmDialog(parentFrame, "¿Desea eliminar la sala seleccionada?", "Confirmar", JOptionPane.YES_NO_OPTION);
-        if (opt == JOptionPane.YES_OPTION) {
+        boolean opt = ModalAlerta.confirmar(parentFrame, "Eliminar Sala", "¿Desea eliminar la sala seleccionada?", "Sí, Eliminar", "Cancelar");
+        if (opt) {
             boolean ok = salasDao.Eliminar(id);
             if (ok) {
                 ToastNotification.exito(parentFrame, "Sala eliminada.");
@@ -590,7 +794,7 @@ public class ModuloConfig {
         String precioStr = txtPlatoPrecio.getText().trim();
 
         if (nom.isEmpty() || precioStr.isEmpty()) {
-            JOptionPane.showMessageDialog(parentFrame, "Nombre y Precio son obligatorios.", "Atención", JOptionPane.WARNING_MESSAGE);
+            ToastNotification.advertencia(parentFrame, "Nombre y Precio son obligatorios.");
             return;
         }
 
@@ -598,7 +802,7 @@ public class ModuloConfig {
         try {
             precio = Double.parseDouble(precioStr);
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(parentFrame, "El precio debe ser un valor numérico válido.", "Error", JOptionPane.ERROR_MESSAGE);
+            ToastNotification.error(parentFrame, "El precio debe ser un valor numérico válido.");
             return;
         }
 
@@ -631,12 +835,12 @@ public class ModuloConfig {
 
     private void eliminarPlatoSeleccionado() {
         if (txtPlatoId.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(parentFrame, "Seleccione un plato de la lista para eliminar.", "Atención", JOptionPane.WARNING_MESSAGE);
+            ToastNotification.advertencia(parentFrame, "Seleccione un plato de la lista para eliminar.");
             return;
         }
         int id = Integer.parseInt(txtPlatoId.getText());
-        int opt = JOptionPane.showConfirmDialog(parentFrame, "¿Desea eliminar el plato seleccionado?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
-        if (opt == JOptionPane.YES_OPTION) {
+        boolean opt = ModalAlerta.confirmar(parentFrame, "Eliminar Plato", "¿Desea eliminar el plato seleccionado?", "Sí, Eliminar", "Cancelar");
+        if (opt) {
             boolean ok = platosDao.Eliminar(id);
             if (ok) {
                 ToastNotification.exito(parentFrame, "Plato eliminado.");
@@ -666,7 +870,7 @@ public class ModuloConfig {
         String rol = cbxUserRol.getSelectedItem().toString();
 
         if (nom.isEmpty() || mail.isEmpty() || (txtUserId.getText().isEmpty() && pass.isEmpty())) {
-            JOptionPane.showMessageDialog(parentFrame, "Nombre, Correo y Contraseña son obligatorios.", "Atención", JOptionPane.WARNING_MESSAGE);
+            ToastNotification.advertencia(parentFrame, "Nombre, Correo y Contraseña son obligatorios.");
             return;
         }
 
@@ -700,12 +904,12 @@ public class ModuloConfig {
 
     private void eliminarUsuarioSeleccionado() {
         if (txtUserId.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(parentFrame, "Seleccione un usuario para eliminar.", "Atención", JOptionPane.WARNING_MESSAGE);
+            ToastNotification.advertencia(parentFrame, "Seleccione un usuario para eliminar.");
             return;
         }
         int id = Integer.parseInt(txtUserId.getText());
-        int opt = JOptionPane.showConfirmDialog(parentFrame, "¿Desea eliminar el usuario seleccionado?", "Confirmar", JOptionPane.YES_NO_OPTION);
-        if (opt == JOptionPane.YES_OPTION) {
+        boolean opt = ModalAlerta.confirmar(parentFrame, "Eliminar Usuario", "¿Desea eliminar el usuario seleccionado?", "Sí, Eliminar", "Cancelar");
+        if (opt) {
             boolean ok = loginDao.eliminarUsuario(id);
             if (ok) {
                 ToastNotification.exito(parentFrame, "Usuario eliminado.");
@@ -715,5 +919,140 @@ public class ModuloConfig {
                 ToastNotification.error(parentFrame, "No se puede eliminar el usuario (posiblemente tiene pedidos registrados).");
             }
         }
+    }
+
+    // --- 5. PANEL CELULARES / ANDROID ---
+    private JPanel crearPanelAndroid() {
+        JPanel panel = new JPanel(new BorderLayout(16, 16));
+        panel.setBackground(UIUtils.COLOR_BG_DARK);
+        panel.setBorder(BorderFactory.createEmptyBorder(18, 20, 18, 20));
+
+        JPanel card = new JPanel(new GridBagLayout());
+        card.setBackground(UIUtils.COLOR_PANEL_DARK);
+        card.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(UIUtils.COLOR_BORDER_DARK, 1, true),
+            BorderFactory.createEmptyBorder(20, 24, 20, 24)
+        ));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(6, 10, 6, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 0;
+        gbc.weightx = 1.0;
+
+        // Estado del Servidor
+        JPanel pnlStatus = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        pnlStatus.setOpaque(false);
+        JLabel lblDot = new JLabel("●");
+        lblDot.setFont(Sistema.getFontBold(20f));
+        lblDot.setForeground(new Color(16, 185, 129)); // Verde Esmeralda
+        JLabel lblStatusText = new JLabel("Servidor Web Activo en Red Local (Puerto " + ServidorWebMesero.getPuerto() + ")");
+        lblStatusText.setFont(Sistema.getFontBold(14f));
+        lblStatusText.setForeground(new Color(241, 245, 249));
+        pnlStatus.add(lblDot);
+        pnlStatus.add(lblStatusText);
+
+        gbc.gridy = 0;
+        card.add(pnlStatus, gbc);
+
+        // Caja destacada de la URL
+        JLabel lblUrlTitle = new JLabel("DIRECCIÓN DE ACCESO PARA CELULARES (CHROME / SAFARI):");
+        lblUrlTitle.setFont(Sistema.getFontBold(12f));
+        lblUrlTitle.setForeground(new Color(148, 163, 184));
+        gbc.gridy = 1;
+        card.add(lblUrlTitle, gbc);
+
+        JTextField txtUrl = new JTextField(ServidorWebMesero.getUrlAcceso());
+        txtUrl.setEditable(false);
+        txtUrl.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        txtUrl.setForeground(new Color(56, 189, 248)); // Cyan
+        txtUrl.setBackground(new Color(15, 23, 42)); // Slate 900
+        txtUrl.setHorizontalAlignment(JTextField.CENTER);
+        txtUrl.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(56, 189, 248), 1, true),
+            BorderFactory.createEmptyBorder(10, 14, 10, 14)
+        ));
+        gbc.gridy = 2;
+        card.add(txtUrl, gbc);
+
+        // Botones de acción de la URL
+        JPanel pnlBtnsUrl = new JPanel(new FlowLayout(FlowLayout.CENTER, 12, 0));
+        pnlBtnsUrl.setOpaque(false);
+
+        JButton btnCopiar = UIUtils.crearBoton("Copiar Enlace", UIUtils.COLOR_ACCENT_BLUE);
+        btnCopiar.setPreferredSize(new Dimension(160, 40));
+        btnCopiar.setFont(Sistema.getFontBold(13f));
+        btnCopiar.addActionListener(e -> {
+            String url = ServidorWebMesero.getUrlAcceso();
+            java.awt.datatransfer.StringSelection selection = new java.awt.datatransfer.StringSelection(url);
+            java.awt.Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, selection);
+            ToastNotification.exito(parentFrame, "¡URL copiada al portapapeles!");
+        });
+
+        JButton btnAbrir = UIUtils.crearBoton("Abrir en Navegador", UIUtils.COLOR_ACCENT_GREEN);
+        btnAbrir.setPreferredSize(new Dimension(180, 40));
+        btnAbrir.setFont(Sistema.getFontBold(13f));
+        btnAbrir.addActionListener(e -> {
+            try {
+                String url = ServidorWebMesero.getUrlAcceso();
+                if (java.awt.Desktop.isDesktopSupported() && java.awt.Desktop.getDesktop().isSupported(java.awt.Desktop.Action.BROWSE)) {
+                    java.awt.Desktop.getDesktop().browse(new java.net.URI(url));
+                }
+            } catch (Exception ex) {
+                ToastNotification.error(parentFrame, "Error al abrir navegador: " + ex.getMessage());
+            }
+        });
+
+        JButton btnReiniciar = UIUtils.crearBoton("Reiniciar Servidor", UIUtils.COLOR_ACCENT_ORANGE);
+        btnReiniciar.setPreferredSize(new Dimension(170, 40));
+        btnReiniciar.setFont(Sistema.getFontBold(13f));
+        btnReiniciar.addActionListener(e -> {
+            ServidorWebMesero.detener();
+            ServidorWebMesero.iniciar();
+            txtUrl.setText(ServidorWebMesero.getUrlAcceso());
+            ToastNotification.exito(parentFrame, "Servidor web reiniciado en " + ServidorWebMesero.getUrlAcceso());
+        });
+
+        pnlBtnsUrl.add(btnCopiar);
+        pnlBtnsUrl.add(btnAbrir);
+        pnlBtnsUrl.add(btnReiniciar);
+
+        gbc.gridy = 3;
+        card.add(pnlBtnsUrl, gbc);
+
+        // Tarjeta de Instrucciones y Módulos
+        JPanel pnlPasos = new JPanel(new GridLayout(4, 1, 6, 8));
+        pnlPasos.setOpaque(false);
+        pnlPasos.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(UIUtils.COLOR_BORDER_DARK, 1, true),
+            BorderFactory.createEmptyBorder(14, 18, 14, 18)
+        ));
+
+        JLabel p1 = new JLabel("📱 1. App Meseros: Abrir la dirección principal para tomar pedidos en mesas.");
+        p1.setFont(Sistema.getFontBold(13f));
+        p1.setForeground(new Color(56, 189, 248));
+
+        JLabel p2 = new JLabel("🍳 2. Pantalla Cocina (KDS): Ingresar a " + ServidorWebMesero.getUrlAcceso() + "/cocina en la tablet de cocina.");
+        p2.setFont(Sistema.getFontBold(13f));
+        p2.setForeground(new Color(251, 191, 36));
+
+        JLabel p3 = new JLabel("📲 3. Menú Digital Clientes: Abrir " + ServidorWebMesero.getUrlAcceso() + "/menu para consultar la carta.");
+        p3.setFont(Sistema.getFontBold(13f));
+        p3.setForeground(new Color(52, 211, 153));
+
+        JLabel p4 = new JLabel("📶 Requisito: Los celulares y tablets deben estar conectados a la misma red WiFi del POS.");
+        p4.setFont(Sistema.getFontRegular(12f));
+        p4.setForeground(new Color(148, 163, 184));
+
+        pnlPasos.add(p1);
+        pnlPasos.add(p2);
+        pnlPasos.add(p3);
+        pnlPasos.add(p4);
+
+        gbc.gridy = 4;
+        card.add(pnlPasos, gbc);
+
+        panel.add(card, BorderLayout.CENTER);
+        return panel;
     }
 }

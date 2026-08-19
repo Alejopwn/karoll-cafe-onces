@@ -227,12 +227,13 @@ public class Conexion {
      */
     public Connection getConnection() {
         try {
-            String url = "jdbc:sqlite:" + DB_PATH
-                    + "?journal_mode=WAL"
-                    + "&busy_timeout=5000"
-                    + "&foreign_keys=on"
-                    + "&synchronous=NORMAL";
-            return DriverManager.getConnection(url);
+            String url = "jdbc:sqlite:" + DB_PATH;
+            org.sqlite.SQLiteConfig config = new org.sqlite.SQLiteConfig();
+            config.setJournalMode(org.sqlite.SQLiteConfig.JournalMode.WAL);
+            config.setSynchronous(org.sqlite.SQLiteConfig.SynchronousMode.NORMAL);
+            config.setBusyTimeout(15000); // 15 segundos para evitar bloqueos por concurrencia
+            config.enforceForeignKeys(true);
+            return config.createConnection(url);
         } catch (SQLException e) {
             System.err.println("Error al conectar con SQLite: " + e.getMessage());
             return null;

@@ -252,10 +252,11 @@ public class ModuloInventario {
             if (row >= 0) {
                 int id = Integer.parseInt(tableInventario.getValueAt(row, 0).toString());
                 String nombre = tableInventario.getValueAt(row, 2).toString();
-                int confirm = JOptionPane.showConfirmDialog(parentFrame,
-                        "¿Desea eliminar el producto '" + nombre + "' del inventario?",
-                        "Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
-                if (confirm == JOptionPane.YES_OPTION) {
+                boolean confirm = ModalAlerta.confirmar(parentFrame,
+                        "Confirmar Eliminación",
+                        "¿Desea eliminar el producto <b>" + nombre + "</b> del inventario?",
+                        "Sí, Eliminar", "Cancelar");
+                if (confirm) {
                     if (invDao.eliminar(id)) {
                         ToastNotification.exito(parentFrame, "Producto eliminado exitosamente.");
                         cargarTablaInventario(txtBuscarInventario.getText());
@@ -477,7 +478,7 @@ public class ModuloInventario {
         JButton btnGuardar = UIUtils.crearBoton("Guardar", UIUtils.COLOR_ACCENT_GREEN);
         btnGuardar.addActionListener(e -> {
             if (txtNom.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(dialog, "El nombre del producto es obligatorio.", "Atención", JOptionPane.WARNING_MESSAGE);
+                ModalAlerta.advertencia(dialog, "Campo Requerido", "El <b>nombre del producto</b> es obligatorio.");
                 return;
             }
             try {
@@ -497,10 +498,10 @@ public class ModuloInventario {
                     cargarTablaInventario("");
                     dialog.dispose();
                 } else {
-                    JOptionPane.showMessageDialog(dialog, "Error al guardar el producto. Verifica que el código no esté duplicado.", "Error", JOptionPane.ERROR_MESSAGE);
+                    ModalAlerta.error(dialog, "Error al Guardar", "Error al guardar el producto. Verifica que el código no esté duplicado.");
                 }
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(dialog, "Verifique los valores numéricos ingresados: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                ModalAlerta.error(dialog, "Valores Inválidos", "Verifique los valores numéricos ingresados: " + ex.getMessage());
             }
         });
 
@@ -515,7 +516,7 @@ public class ModuloInventario {
     private void abrirModalAjusteStock(boolean esEntrada) {
         List<Inventario> prods = invDao.listar("", "Todas");
         if (prods.isEmpty()) {
-            JOptionPane.showMessageDialog(parentFrame, "No hay productos en inventario.", "Atención", JOptionPane.WARNING_MESSAGE);
+            ModalAlerta.advertencia(parentFrame, "Sin Productos", "No hay productos en inventario para ajustar.");
             return;
         }
 

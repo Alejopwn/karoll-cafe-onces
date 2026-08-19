@@ -60,7 +60,7 @@ public class PedidosDao {
      */
     public int verificarStado(int mesa, int id_sala) {
         int id_pedido = 0;
-        String sql = "SELECT id FROM pedidos WHERE num_mesa=? AND id_sala=? AND estado IN ('PENDIENTE', 'PREPARADO') ORDER BY id DESC LIMIT 1";
+        String sql = "SELECT id FROM pedidos WHERE num_mesa=? AND id_sala=? AND UPPER(TRIM(estado)) IN ('PENDIENTE', 'PREPARADO') ORDER BY id DESC LIMIT 1";
         try (Connection con = cn.getConnection();
              PreparedStatement ps = con != null ? con.prepareStatement(sql) : null) {
             if (ps == null) return 0;
@@ -79,7 +79,7 @@ public class PedidosDao {
 
     public java.util.Map<Integer, String[]> getMesasOcupadasConEstado(int id_sala) {
         java.util.Map<Integer, String[]> mapa = new java.util.HashMap<>();
-        String sql = "SELECT num_mesa, id, estado FROM pedidos WHERE id_sala=? AND estado IN ('PENDIENTE', 'PREPARADO') ORDER BY id DESC";
+        String sql = "SELECT num_mesa, id, estado FROM pedidos WHERE id_sala=? AND UPPER(TRIM(estado)) IN ('PENDIENTE', 'PREPARADO') ORDER BY id DESC";
         try (Connection con = cn.getConnection();
              PreparedStatement ps = con != null ? con.prepareStatement(sql) : null) {
             if (ps == null) return mapa;
@@ -103,7 +103,7 @@ public class PedidosDao {
      */
     public List<Pedido> getRondasMesa(int numMesa, int idSala) {
         List<Pedido> lista = new ArrayList<>();
-        String sql = "SELECT * FROM pedidos WHERE num_mesa=? AND id_sala=? AND estado IN ('PENDIENTE', 'PREPARADO') ORDER BY id ASC";
+        String sql = "SELECT * FROM pedidos WHERE num_mesa=? AND id_sala=? AND UPPER(TRIM(estado)) IN ('PENDIENTE', 'PREPARADO') ORDER BY id ASC";
         try (Connection con = cn.getConnection();
              PreparedStatement ps = con != null ? con.prepareStatement(sql) : null) {
             if (ps == null) return lista;
@@ -133,7 +133,7 @@ public class PedidosDao {
      */
     public List<DetallePedido> getDetallesAcumuladosMesa(int numMesa, int idSala) {
         List<DetallePedido> lista = new ArrayList<>();
-        String sql = "SELECT d.* FROM detalle_pedidos d INNER JOIN pedidos p ON d.id_pedido = p.id WHERE p.num_mesa=? AND p.id_sala=? AND p.estado IN ('PENDIENTE', 'PREPARADO')";
+        String sql = "SELECT d.* FROM detalle_pedidos d INNER JOIN pedidos p ON d.id_pedido = p.id WHERE p.num_mesa=? AND p.id_sala=? AND UPPER(TRIM(p.estado)) IN ('PENDIENTE', 'PREPARADO')";
         try (Connection con = cn.getConnection();
              PreparedStatement ps = con != null ? con.prepareStatement(sql) : null) {
             if (ps == null) return lista;
@@ -191,22 +191,23 @@ public class PedidosDao {
         int idGenerado = -1;
         CajaDao cajaDao = new CajaDao();
         CierreCaja activa = cajaDao.obtenerCajaActiva();
-        Integer idCierre = (activa != null) ? activa.getId() : null;
+        if (activa == null) {
+            System.err.println("❌ Bloqueado: No se puede registrar pedido porque la caja está cerrada.");
+            return -1;
+        }
+        int idCierre = activa.getId();
 
-        String sql = "INSERT INTO pedidos (id_sala, num_mesa, total, usuario, fecha, id_cierre) VALUES (?,?,?,?,?,?)";
+        String sql = "INSERT INTO pedidos (id_sala, num_mesa, total, usuario, fecha, id_cierre, estado) VALUES (?,?,?,?,?,?,?)";
         try (Connection con = cn.getConnection();
              PreparedStatement ps = con != null ? con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : null) {
             if (ps == null) return -1;
             ps.setInt(1, ped.getId_sala());
             ps.setInt(2, ped.getNum_mesa());
             ps.setDouble(3, ped.getTotal());
-            ps.setString(4, ped.getUsuario());
+            ps.setString(4, ped.getUsuario() != null ? ped.getUsuario() : "Mesero");
             ps.setString(5, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date()));
-            if (idCierre != null) {
-                ps.setInt(6, idCierre);
-            } else {
-                ps.setNull(6, java.sql.Types.INTEGER);
-            }
+            ps.setInt(6, idCierre);
+            ps.setString(7, (ped.getEstado() != null && !ped.getEstado().isEmpty()) ? ped.getEstado().toUpperCase() : "PENDIENTE");
             ps.executeUpdate();
 
             try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -225,7 +226,7 @@ public class PedidosDao {
      */
     public List<DetallePedido> verPedidoDetalle(int id_pedido) {
         List<DetallePedido> lista = new ArrayList<>();
-        String sql = "SELECT d.* FROM pedidos p INNER JOIN detalle_pedidos d ON p.id = d.id_pedido WHERE p.id = ?";
+        String sql = "SELECT * FROM detalle_pedidos WHERE id_pedido = ?";
         try (Connection con = cn.getConnection();
              PreparedStatement ps = con != null ? con.prepareStatement(sql) : null) {
             if (ps == null) return lista;
@@ -238,6 +239,7 @@ public class PedidosDao {
                     det.setPrecio(rs.getDouble("precio"));
                     det.setCantidad(rs.getInt("cantidad"));
                     det.setComentario(rs.getString("comentario"));
+                    det.setId_pedido(rs.getInt("id_pedido"));
                     lista.add(det);
                 }
             }
@@ -252,7 +254,7 @@ public class PedidosDao {
      */
     public Pedido verPedido(int id_pedido) {
         Pedido ped = new Pedido();
-        String sql = "SELECT p.*, s.nombre FROM pedidos p INNER JOIN salas s ON p.id_sala = s.id WHERE p.id = ?";
+        String sql = "SELECT p.*, s.nombre AS nombre_sala FROM pedidos p LEFT JOIN salas s ON p.id_sala = s.id WHERE p.id = ?";
         try (Connection con = cn.getConnection();
              PreparedStatement ps = con != null ? con.prepareStatement(sql) : null) {
             if (ps == null) return ped;
@@ -260,10 +262,14 @@ public class PedidosDao {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     ped.setId(rs.getInt("id"));
-                    ped.setFecha(rs.getString("fecha"));
-                    ped.setSala(rs.getString("nombre"));
+                    ped.setId_sala(rs.getInt("id_sala"));
                     ped.setNum_mesa(rs.getInt("num_mesa"));
+                    ped.setFecha(rs.getString("fecha"));
+                    String nomSala = rs.getString("nombre_sala");
+                    ped.setSala(nomSala != null ? nomSala : "Salón " + rs.getInt("id_sala"));
                     ped.setTotal(rs.getDouble("total"));
+                    ped.setEstado(rs.getString("estado"));
+                    ped.setUsuario(rs.getString("usuario"));
                     ped.setPago_efectivo(rs.getDouble("pago_efectivo"));
                     ped.setPago_transaccion(rs.getDouble("pago_transaccion"));
                 }
@@ -276,7 +282,7 @@ public class PedidosDao {
 
     public String[] verificarStadoInfo(int mesa, int id_sala) {
         String[] info = new String[]{"0", ""};
-        String sql = "SELECT id, estado FROM pedidos WHERE num_mesa=? AND id_sala=? AND estado IN ('PENDIENTE', 'PREPARADO') ORDER BY id DESC LIMIT 1";
+        String sql = "SELECT id, estado FROM pedidos WHERE num_mesa=? AND id_sala=? AND UPPER(TRIM(estado)) IN ('PENDIENTE', 'PREPARADO') ORDER BY id DESC LIMIT 1";
         try (Connection con = cn.getConnection();
              PreparedStatement ps = con != null ? con.prepareStatement(sql) : null) {
             if (ps == null) return info;
@@ -558,18 +564,16 @@ public class PedidosDao {
      * Finaliza un pedido registrando los montos pagados en efectivo y/o transacción.
      */
     public boolean finalizarPedidoConPago(int id_pedido, double pago_efectivo, double pago_transaccion) {
+        String tipoPago = (pago_efectivo > 0 && pago_transaccion > 0) ? "MIXTO" : (pago_transaccion > 0 ? "TRANSACCION" : "EFECTIVO");
+        return finalizarPedidoConPago(id_pedido, tipoPago, pago_efectivo, pago_transaccion, 0.0);
+    }
+
+    public boolean finalizarPedidoConPago(int id_pedido, String tipoPago, double pago_efectivo, double pago_transaccion, double pago_tarjeta) {
         CajaDao cajaDao = new CajaDao();
         CierreCaja activa = cajaDao.obtenerCajaActiva();
         Integer idCierre = (activa != null) ? activa.getId() : null;
 
-        String tipoPago = "EFECTIVO";
-        if (pago_efectivo > 0 && pago_transaccion > 0) {
-            tipoPago = "MIXTO";
-        } else if (pago_transaccion > 0) {
-            tipoPago = "TRANSACCION";
-        }
-
-        String sql = "UPDATE pedidos SET estado = ?, tipo_pago = ?, pago_efectivo = ?, pago_transaccion = ?, id_cierre = COALESCE(id_cierre, ?) WHERE id = ?";
+        String sql = "UPDATE pedidos SET estado = ?, tipo_pago = ?, pago_efectivo = ?, pago_transaccion = ?, pago_tarjeta = ?, id_cierre = COALESCE(id_cierre, ?) WHERE id = ?";
         Connection con = null;
         try {
             con = cn.getConnection();
@@ -578,15 +582,16 @@ public class PedidosDao {
 
             try (PreparedStatement ps = con.prepareStatement(sql)) {
                 ps.setString(1, ESTADO_FINALIZADO);
-                ps.setString(2, tipoPago);
+                ps.setString(2, (tipoPago != null && !tipoPago.isEmpty()) ? tipoPago : "EFECTIVO");
                 ps.setDouble(3, pago_efectivo);
                 ps.setDouble(4, pago_transaccion);
+                ps.setDouble(5, pago_tarjeta);
                 if (idCierre != null) {
-                    ps.setInt(5, idCierre);
+                    ps.setInt(6, idCierre);
                 } else {
-                    ps.setNull(5, java.sql.Types.INTEGER);
+                    ps.setNull(6, java.sql.Types.INTEGER);
                 }
-                ps.setInt(6, id_pedido);
+                ps.setInt(7, id_pedido);
                 ps.executeUpdate();
             }
 
@@ -717,6 +722,32 @@ public class PedidosDao {
             }
         } catch (SQLException e) {
             System.err.println("Error al listar pedidos: " + e.getMessage());
+        }
+        return lista;
+    }
+
+    public List<Pedido> listarPedidosCocina() {
+        List<Pedido> lista = new ArrayList<>();
+        String sql = "SELECT p.*, s.nombre FROM pedidos p INNER JOIN salas s ON p.id_sala = s.id WHERE UPPER(TRIM(p.estado)) IN ('PENDIENTE', 'PREPARADO') ORDER BY p.id ASC";
+        try (Connection con = cn.getConnection();
+             PreparedStatement ps = con != null ? con.prepareStatement(sql) : null;
+             ResultSet rs = ps != null ? ps.executeQuery() : null) {
+            if (rs != null) {
+                while (rs.next()) {
+                    Pedido ped = new Pedido();
+                    ped.setId(rs.getInt("id"));
+                    ped.setId_sala(rs.getInt("id_sala"));
+                    ped.setSala(rs.getString("nombre"));
+                    ped.setNum_mesa(rs.getInt("num_mesa"));
+                    ped.setFecha(rs.getString("fecha"));
+                    ped.setTotal(rs.getDouble("total"));
+                    ped.setUsuario(rs.getString("usuario"));
+                    ped.setEstado(rs.getString("estado"));
+                    lista.add(ped);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al listar pedidos cocina: " + e.getMessage());
         }
         return lista;
     }
@@ -972,7 +1003,7 @@ public class PedidosDao {
         List<Pedido> lista = new ArrayList<>();
         String sql = "SELECT p.id, s.nombre AS sala, p.num_mesa, p.fecha, p.total, p.usuario, p.estado, p.pago_efectivo, p.pago_transaccion "
                 + "FROM pedidos p INNER JOIN salas s ON p.id_sala = s.id "
-                + "WHERE p.fecha BETWEEN ? AND ? AND p.estado IN ('FINALIZADO', 'PENDIENTE') ORDER BY p.fecha";
+                + "WHERE p.fecha BETWEEN ? AND ? ORDER BY p.id DESC";
         try (Connection con = cn.getConnection();
              PreparedStatement ps = con != null ? con.prepareStatement(sql) : null) {
             if (ps == null) return lista;
