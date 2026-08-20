@@ -71,10 +71,8 @@ public class ModuloInventario {
     }
 
     public void abrirComoVentanaModal(JFrame parent) {
-        if (panelInventarioMain == null) {
-            inicializar();
-        }
-        JDialog dialog = new JDialog(parent, "📦 Catálogo e Inventario de Productos", true);
+        inicializar();
+        JDialog dialog = new JDialog(parent, "Catálogo e Inventario de Productos", true);
         dialog.setSize(1020, 660);
         dialog.setLocationRelativeTo(parent);
         dialog.setContentPane(panelInventarioMain);
@@ -86,7 +84,7 @@ public class ModuloInventario {
 
     public void inicializar() {
         panelInventarioMain = new JPanel(new BorderLayout(10, 10));
-        panelInventarioMain.setBackground(UIUtils.COLOR_BG_DARK);
+        panelInventarioMain.setBackground(UIUtils.getBgColor());
         panelInventarioMain.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
         JPanel panelTop = new JPanel(new BorderLayout(10, 10));
@@ -108,25 +106,18 @@ public class ModuloInventario {
 
         // Barra de Búsqueda
         JPanel panelSearchBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 8));
-        panelSearchBar.setBackground(UIUtils.COLOR_PANEL_DARK);
+        panelSearchBar.setBackground(UIUtils.getPanelColor());
         panelSearchBar.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(UIUtils.COLOR_BORDER_DARK, 1),
+            BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1),
             BorderFactory.createEmptyBorder(3, 8, 3, 8)
         ));
 
-        JLabel lblSearch = new JLabel("🔍 Buscar (SKU / Nombre):");
-        lblSearch.setForeground(Color.WHITE);
+        JLabel lblSearch = new JLabel("Buscar (SKU / Nombre):");
+        lblSearch.setForeground(UIUtils.getTextPrimary());
         lblSearch.setFont(new Font("Segoe UI", Font.BOLD, 12));
 
         txtBuscarInventario = new JTextField(18);
-        txtBuscarInventario.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        txtBuscarInventario.setForeground(Color.WHITE);
-        txtBuscarInventario.setBackground(UIUtils.COLOR_BG_DARK);
-        txtBuscarInventario.setCaretColor(Color.WHITE);
-        txtBuscarInventario.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(UIUtils.COLOR_BORDER_DARK, 1),
-            BorderFactory.createEmptyBorder(4, 6, 4, 6)
-        ));
+        UIUtils.estilarCampoTexto(txtBuscarInventario);
         txtBuscarInventario.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent evt) {
@@ -135,16 +126,14 @@ public class ModuloInventario {
         });
 
         JLabel lblCat = new JLabel("Categoría:");
-        lblCat.setForeground(Color.WHITE);
+        lblCat.setForeground(UIUtils.getTextPrimary());
         lblCat.setFont(new Font("Segoe UI", Font.BOLD, 12));
 
         cbxCategoriaFilter = new JComboBox<>();
-        cbxCategoriaFilter.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        cbxCategoriaFilter.setBackground(UIUtils.COLOR_PANEL_DARK);
-        cbxCategoriaFilter.setForeground(Color.WHITE);
+        UIUtils.estilarCombo(cbxCategoriaFilter);
         cbxCategoriaFilter.addActionListener(e -> cargarTablaInventario(txtBuscarInventario.getText()));
 
-        JButton btnFilterBajoStock = new JButton("⚠️ Solo Stock Bajo");
+        JButton btnFilterBajoStock = new JButton("Solo Stock Bajo");
         btnFilterBajoStock.setFont(new Font("Segoe UI", Font.BOLD, 12));
         btnFilterBajoStock.setBackground(new Color(220, 38, 38)); // Red
         btnFilterBajoStock.setForeground(Color.WHITE);
@@ -175,16 +164,16 @@ public class ModuloInventario {
         // Sidebar Acciones
         JPanel panelAccionesIzq = new JPanel();
         panelAccionesIzq.setLayout(new BoxLayout(panelAccionesIzq, BoxLayout.Y_AXIS));
-        panelAccionesIzq.setBackground(new Color(22, 30, 50));
+        panelAccionesIzq.setBackground(UIUtils.getPanelColor());
         panelAccionesIzq.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(0, 0, 0, 1, UIUtils.COLOR_BORDER_DARK),
+            BorderFactory.createMatteBorder(0, 0, 0, 1, UIUtils.getBorderColor()),
             BorderFactory.createEmptyBorder(12, 8, 12, 8)
         ));
         panelAccionesIzq.setPreferredSize(new Dimension(170, 0));
 
         JLabel lblAcciones = new JLabel("Acciones");
         lblAcciones.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        lblAcciones.setForeground(UIUtils.COLOR_TEXT_MUTED);
+        lblAcciones.setForeground(UIUtils.getTextMuted());
         lblAcciones.setAlignmentX(Component.CENTER_ALIGNMENT);
         panelAccionesIzq.add(lblAcciones);
         panelAccionesIzq.add(Box.createVerticalStrut(12));
@@ -204,7 +193,7 @@ public class ModuloInventario {
         panelAccionesIzq.add(btnSalida);
         panelAccionesIzq.add(Box.createVerticalStrut(8));
 
-        JButton btnReload = UIUtils.crearBoton("🔄 Recargar", UIUtils.COLOR_BORDER_DARK);
+        JButton btnReload = UIUtils.crearBoton("Recargar", UIUtils.getBorderColor());
         btnReload.addActionListener(e -> {
             txtBuscarInventario.setText("");
             actualizarComboCategoriasInv();
@@ -214,7 +203,7 @@ public class ModuloInventario {
         panelAccionesIzq.add(btnReload);
         panelAccionesIzq.add(Box.createVerticalStrut(8));
 
-        JButton btnExportar = UIUtils.crearBoton("📊 Exportar CSV", UIUtils.COLOR_ACCENT_PURPLE);
+        JButton btnExportar = UIUtils.crearBoton("Exportar CSV", UIUtils.COLOR_ACCENT_PURPLE);
         btnExportar.addActionListener(e -> exportarInventarioCSV());
         panelAccionesIzq.add(btnExportar);
 
@@ -223,16 +212,16 @@ public class ModuloInventario {
         // Tablas Centrales
         JTabbedPane subTabbedPane = new JTabbedPane();
         subTabbedPane.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        subTabbedPane.setBackground(UIUtils.COLOR_BG_DARK);
-        subTabbedPane.setForeground(Color.WHITE);
+        subTabbedPane.setBackground(UIUtils.getBgColor());
+        subTabbedPane.setForeground(UIUtils.getTextPrimary());
         subTabbedPane.setOpaque(true);
 
         tableInventario = new JTable();
-        UIUtils.estilarTablaOscura(tableInventario);
+        UIUtils.estilarTabla(tableInventario);
         JScrollPane scrollInventario = new JScrollPane(tableInventario);
-        scrollInventario.setBackground(UIUtils.COLOR_BG_DARK);
-        scrollInventario.getViewport().setBackground(UIUtils.COLOR_BG_DARK);
-        scrollInventario.setBorder(BorderFactory.createLineBorder(UIUtils.COLOR_BORDER_DARK, 1));
+        scrollInventario.setBackground(UIUtils.getBgColor());
+        scrollInventario.getViewport().setBackground(UIUtils.getBgColor());
+        scrollInventario.setBorder(BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1));
         subTabbedPane.addTab("Catálogo de Productos y Existencias", scrollInventario);
 
         JPopupMenu popupInv = new JPopupMenu();
@@ -299,12 +288,12 @@ public class ModuloInventario {
         tableInventario.setComponentPopupMenu(popupInv);
 
         tableMovimientos = new JTable();
-        UIUtils.estilarTablaOscura(tableMovimientos);
+        UIUtils.estilarTabla(tableMovimientos);
 
         JScrollPane scrollMovimientos = new JScrollPane(tableMovimientos);
-        scrollMovimientos.setBackground(UIUtils.COLOR_BG_DARK);
-        scrollMovimientos.getViewport().setBackground(UIUtils.COLOR_BG_DARK);
-        scrollMovimientos.setBorder(BorderFactory.createLineBorder(UIUtils.COLOR_BORDER_DARK, 1));
+        scrollMovimientos.setBackground(UIUtils.getBgColor());
+        scrollMovimientos.getViewport().setBackground(UIUtils.getBgColor());
+        scrollMovimientos.setBorder(BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1));
         subTabbedPane.addTab("Historial de Entradas, Salidas y Mermas", scrollMovimientos);
 
         JPanel panelContenido = new JPanel(new BorderLayout(0, 0));
@@ -402,13 +391,13 @@ public class ModuloInventario {
                         }
                         setHorizontalAlignment(SwingConstants.CENTER);
                     } else {
-                        if (row % 2 == 0) c.setBackground(UIUtils.COLOR_PANEL_DARK);
-                        else c.setBackground(UIUtils.COLOR_BG_DARK);
-                        c.setForeground(UIUtils.COLOR_TEXT_PRIMARY);
+                        if (row % 2 == 0) c.setBackground(UIUtils.getPanelColor());
+                        else c.setBackground(UIUtils.getBgColor());
+                        c.setForeground(UIUtils.getTextPrimary());
                         setHorizontalAlignment(column == 0 || column == 4 || column == 5 ? SwingConstants.CENTER : SwingConstants.LEFT);
                     }
                 } else {
-                    c.setBackground(UIUtils.COLOR_ACCENT_BLUE);
+                    c.setBackground(new Color(37, 99, 235));
                     c.setForeground(Color.WHITE);
                 }
                 return c;

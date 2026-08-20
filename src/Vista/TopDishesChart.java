@@ -31,7 +31,7 @@ public class TopDishesChart extends JPanel {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         int w = getWidth(), h = getHeight();
 
-        g2.setColor(new Color(30, 41, 59));
+        g2.setColor(new Color(18, 20, 26));
         g2.fillRoundRect(0, 0, w, h, 16, 16);
         g2.setColor(new Color(71, 85, 105, 120));
         g2.drawRoundRect(0, 0, w - 1, h - 1, 16, 16);

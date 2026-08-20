@@ -39,7 +39,7 @@ public class FrmLockScreen extends JDialog {
 
     private void initUI() {
         JPanel root = new JPanel(new BorderLayout(20, 20));
-        root.setBackground(new Color(15, 23, 42)); // Dark Slate
+        root.setBackground(new Color(8, 9, 12)); // Dark Slate
         root.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(239, 68, 68), 2),
             BorderFactory.createEmptyBorder(25, 25, 25, 25)
@@ -72,10 +72,10 @@ public class FrmLockScreen extends JDialog {
         JPasswordField txtPass = new JPasswordField();
         txtPass.setFont(new Font("Segoe UI", Font.BOLD, 18));
         txtPass.setHorizontalAlignment(JTextField.CENTER);
-        txtPass.setBackground(new Color(30, 41, 59));
+        txtPass.setBackground(new Color(18, 20, 26));
         txtPass.setForeground(Color.WHITE);
         txtPass.setCaretColor(Color.WHITE);
-        txtPass.setBorder(BorderFactory.createLineBorder(new Color(51, 65, 85), 1));
+        txtPass.setBorder(BorderFactory.createLineBorder(new Color(36, 38, 48), 1));
 
         panelBody.add(lblInstruction);
         panelBody.add(txtPass);

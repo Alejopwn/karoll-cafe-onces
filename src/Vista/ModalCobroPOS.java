@@ -87,12 +87,12 @@ public class ModalCobroPOS extends JDialog {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 
-                // Fondo Dark Slate (#0f172a)
-                g2.setColor(new Color(15, 23, 42));
+                // Fondo Dinamico
+                g2.setColor(UIUtils.getBgColor());
                 g2.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 22, 22));
 
                 // Borde suave
-                g2.setColor(new Color(30, 41, 59));
+                g2.setColor(UIUtils.getBorderColor());
                 g2.setStroke(new BasicStroke(1.5f));
                 g2.draw(new RoundRectangle2D.Float(1, 1, getWidth() - 2, getHeight() - 2, 21, 21));
 
@@ -116,20 +116,20 @@ public class ModalCobroPOS extends JDialog {
         
         JLabel badgeMesa = new JLabel("  " + etiquetaMesa + " • " + nombreSala + " (Pedido #" + idPedido + ")  ");
         badgeMesa.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        badgeMesa.setForeground(new Color(56, 189, 248)); // Cyan
+        badgeMesa.setForeground(UIUtils.IS_DARK ? new Color(56, 189, 248) : new Color(2, 132, 199));
         badgeMesa.setOpaque(true);
-        badgeMesa.setBackground(new Color(15, 42, 66));
-        badgeMesa.setBorder(BorderFactory.createLineBorder(new Color(56, 189, 248, 120), 1, true));
+        badgeMesa.setBackground(UIUtils.getPanelColor());
+        badgeMesa.setBorder(BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1, true));
         pnlInfoMesa.add(badgeMesa);
 
         JLabel lblTitulo = new JLabel("FACTURACIÓN Y COBRO");
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        lblTitulo.setForeground(new Color(248, 250, 252));
+        lblTitulo.setForeground(UIUtils.getTextPrimary());
         pnlInfoMesa.add(lblTitulo);
 
         JButton btnCerrar = new JButton("X");
         btnCerrar.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        btnCerrar.setForeground(new Color(148, 163, 184));
+        btnCerrar.setForeground(UIUtils.getTextMuted());
         btnCerrar.setBackground(new Color(0, 0, 0, 0));
         btnCerrar.setBorder(null);
         btnCerrar.setFocusPainted(false);
@@ -260,9 +260,9 @@ public class ModalCobroPOS extends JDialog {
             JButton btnKey = new JButton(k);
             btnKey.setFont(new Font("Segoe UI", Font.BOLD, 22));
             boolean esBorrar = k.equals("C");
-            btnKey.setBackground(esBorrar ? new Color(127, 29, 29) : new Color(30, 41, 59));
-            btnKey.setForeground(esBorrar ? new Color(254, 202, 202) : Color.WHITE);
-            btnKey.setBorder(BorderFactory.createLineBorder(esBorrar ? new Color(239, 68, 68) : new Color(51, 65, 85), 1, true));
+            btnKey.setBackground(esBorrar ? (UIUtils.IS_DARK ? new Color(127, 29, 29) : new Color(254, 226, 226)) : UIUtils.getPanelColor());
+            btnKey.setForeground(esBorrar ? (UIUtils.IS_DARK ? new Color(254, 202, 202) : new Color(185, 28, 28)) : UIUtils.getTextPrimary());
+            btnKey.setBorder(BorderFactory.createLineBorder(esBorrar ? new Color(239, 68, 68) : UIUtils.getBorderColor(), 1, true));
             btnKey.setFocusPainted(false);
             btnKey.setCursor(new Cursor(Cursor.HAND_CURSOR));
             btnKey.addActionListener(e -> procesarNumpad(k));
@@ -291,10 +291,10 @@ public class ModalCobroPOS extends JDialog {
 
         JButton btnCancelar = new JButton("Cancelar");
         btnCancelar.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        btnCancelar.setForeground(new Color(203, 213, 225));
-        btnCancelar.setBackground(new Color(30, 41, 59));
+        btnCancelar.setForeground(UIUtils.getTextPrimary());
+        btnCancelar.setBackground(UIUtils.getPanelColor());
         btnCancelar.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(51, 65, 85), 1, true),
+                BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1, true),
                 BorderFactory.createEmptyBorder(10, 20, 10, 20)
         ));
         btnCancelar.setFocusPainted(false);
@@ -353,9 +353,9 @@ public class ModalCobroPOS extends JDialog {
         // Resetear estilos de botones
         JButton[] btns = { btnMetodoEfectivo, btnMetodoNequi, btnMetodoDaviplata, btnMetodoTarjeta, btnMetodoTransferencia, btnMetodoMixto };
         for (JButton b : btns) {
-            b.setBackground(new Color(30, 41, 59));
-            b.setForeground(new Color(203, 213, 225));
-            b.setBorder(BorderFactory.createLineBorder(new Color(51, 65, 85), 1, true));
+            b.setBackground(UIUtils.getPanelColor());
+            b.setForeground(UIUtils.getTextPrimary());
+            b.setBorder(BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1, true));
         }
 
         // Resaltar seleccionado
@@ -368,9 +368,9 @@ public class ModalCobroPOS extends JDialog {
             case MIXTO: btnActivo = btnMetodoMixto; break;
             default: btnActivo = btnMetodoEfectivo; break;
         }
-        btnActivo.setBackground(new Color(16, 185, 129, 60));
-        btnActivo.setForeground(new Color(52, 211, 153));
-        btnActivo.setBorder(BorderFactory.createLineBorder(new Color(16, 185, 129), 2, true));
+        btnActivo.setBackground(UIUtils.IS_DARK ? new Color(16, 185, 129, 60) : new Color(16, 185, 129, 40));
+        btnActivo.setForeground(UIUtils.IS_DARK ? new Color(52, 211, 153) : new Color(5, 150, 105));
+        btnActivo.setBorder(BorderFactory.createLineBorder(UIUtils.IS_DARK ? new Color(16, 185, 129) : new Color(5, 150, 105), 2, true));
 
         // Actualizar campos de entrada
         pnlCamposPago.removeAll();
@@ -570,8 +570,7 @@ public class ModalCobroPOS extends JDialog {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 
-                // Fondo sólido Dark Slate 800
-                g2.setColor(new Color(24, 33, 53));
+                g2.setColor(UIUtils.getPanelColor());
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 14, 14);
 
                 // Tinte suave
@@ -592,7 +591,7 @@ public class ModalCobroPOS extends JDialog {
 
         JLabel lblT = new JLabel(titulo);
         lblT.setFont(new Font("Segoe UI", Font.BOLD, 11));
-        lblT.setForeground(new Color(148, 163, 184));
+        lblT.setForeground(UIUtils.getTextMuted());
 
         JLabel lblV = new JLabel(valor);
         lblV.setFont(new Font("Segoe UI", Font.BOLD, 18));
@@ -610,8 +609,7 @@ public class ModalCobroPOS extends JDialog {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                // Fondo sólido Dark Slate 800
-                g2.setColor(new Color(24, 33, 53));
+                g2.setColor(UIUtils.getPanelColor());
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 14, 14);
 
                 // Tinte suave
@@ -632,7 +630,7 @@ public class ModalCobroPOS extends JDialog {
 
         JLabel lblT = new JLabel(titulo);
         lblT.setFont(new Font("Segoe UI", Font.BOLD, 11));
-        lblT.setForeground(new Color(148, 163, 184));
+        lblT.setForeground(UIUtils.getTextMuted());
 
         lblValor.setFont(new Font("Segoe UI", Font.BOLD, 18));
         lblValor.setForeground(fgColor);
@@ -649,8 +647,7 @@ public class ModalCobroPOS extends JDialog {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                // Fondo sólido Dark Slate 800
-                g2.setColor(new Color(24, 33, 53));
+                g2.setColor(UIUtils.getPanelColor());
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 14, 14);
 
                 // Tinte suave según cambioColorActual
@@ -670,7 +667,7 @@ public class ModalCobroPOS extends JDialog {
         card.setBorder(new EmptyBorder(10, 14, 10, 14));
 
         lblT.setFont(new Font("Segoe UI", Font.BOLD, 11));
-        lblT.setForeground(new Color(148, 163, 184));
+        lblT.setForeground(UIUtils.getTextMuted());
 
         lblV.setFont(new Font("Segoe UI", Font.BOLD, 18));
         lblV.setForeground(new Color(16, 185, 129));
@@ -683,9 +680,9 @@ public class ModalCobroPOS extends JDialog {
     private JButton crearBotonMetodo(String texto, Runnable onClick) {
         JButton btn = new JButton(texto);
         btn.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        btn.setBackground(new Color(30, 41, 59));
-        btn.setForeground(new Color(203, 213, 225));
-        btn.setBorder(BorderFactory.createLineBorder(new Color(51, 65, 85), 1, true));
+        btn.setBackground(UIUtils.getPanelColor());
+        btn.setForeground(UIUtils.getTextPrimary());
+        btn.setBorder(BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1, true));
         btn.setFocusPainted(false);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btn.addActionListener(e -> onClick.run());
@@ -695,11 +692,11 @@ public class ModalCobroPOS extends JDialog {
     private JTextField crearTextFieldMonto() {
         JTextField tf = new JTextField("0");
         tf.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        tf.setForeground(Color.WHITE);
-        tf.setBackground(new Color(11, 17, 32));
+        tf.setForeground(UIUtils.getTextPrimary());
+        tf.setBackground(UIUtils.getInputBg());
         tf.setCaretColor(new Color(56, 189, 248));
         tf.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(56, 189, 248, 140), 1, true),
+                BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1, true),
                 BorderFactory.createEmptyBorder(6, 12, 6, 12)
         ));
         tf.addFocusListener(new FocusAdapter() {
@@ -723,7 +720,7 @@ public class ModalCobroPOS extends JDialog {
         p.setOpaque(false);
         JLabel lbl = new JLabel(label);
         lbl.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        lbl.setForeground(new Color(203, 213, 225));
+        lbl.setForeground(UIUtils.getTextPrimary());
         p.add(lbl, BorderLayout.NORTH);
         p.add(tf, BorderLayout.CENTER);
         return p;
@@ -734,7 +731,7 @@ public class ModalCobroPOS extends JDialog {
         p.setOpaque(false);
         JLabel lbl = new JLabel(label);
         lbl.setFont(new Font("Segoe UI", Font.BOLD, 11));
-        lbl.setForeground(new Color(148, 163, 184));
+        lbl.setForeground(UIUtils.getTextMuted());
         p.add(lbl, BorderLayout.NORTH);
         p.add(tf, BorderLayout.CENTER);
         return p;
@@ -742,12 +739,12 @@ public class ModalCobroPOS extends JDialog {
 
     private void estilizarTextField(JTextField tf) {
         tf.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        tf.setForeground(Color.WHITE);
-        tf.setBackground(new Color(11, 17, 32));
+        tf.setForeground(UIUtils.getTextPrimary());
+        tf.setBackground(UIUtils.getInputBg());
         tf.setCaretColor(new Color(56, 189, 248));
         tf.setPreferredSize(new Dimension(180, 32));
         tf.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(51, 65, 85), 1, true),
+                BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1, true),
                 BorderFactory.createEmptyBorder(4, 8, 4, 8)
         ));
     }

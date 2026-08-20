@@ -26,7 +26,7 @@ public class ModalAlarma extends JDialog {
         setSize(450, 260);
         setLocationRelativeTo(getParent());
         setLayout(new BorderLayout(15, 15));
-        getContentPane().setBackground(new Color(15, 23, 42));
+        getContentPane().setBackground(new Color(8, 9, 12));
 
         // Top Banner
         JPanel pTop = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));

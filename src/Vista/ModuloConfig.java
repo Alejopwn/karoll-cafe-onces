@@ -91,9 +91,7 @@ public class ModuloConfig {
     }
 
     public void abrirComoVentanaModal() {
-        if (panelMain == null) {
-            inicializar();
-        }
+        inicializar();
         JDialog dialog = new JDialog(parentFrame, "Administración General del Sistema POS", true);
         dialog.setSize(960, 640);
         dialog.setLocationRelativeTo(parentFrame);
@@ -107,7 +105,7 @@ public class ModuloConfig {
 
     private void inicializar() {
         panelMain = new JPanel(new BorderLayout(12, 12));
-        panelMain.setBackground(UIUtils.COLOR_BG_DARK);
+        panelMain.setBackground(UIUtils.getBgColor());
         panelMain.setBorder(BorderFactory.createEmptyBorder(16, 20, 16, 20));
 
         JPanel headerPanel = new JPanel(new BorderLayout(10, 0));
@@ -116,19 +114,19 @@ public class ModuloConfig {
 
         JLabel lblTitle = new JLabel("Administración del Sistema y Configuración");
         lblTitle.setFont(Sistema.getFontBold(18f));
-        lblTitle.setForeground(Color.WHITE);
+        lblTitle.setForeground(UIUtils.getTextPrimary());
 
         JLabel lblSub = new JLabel("Gestiona los parámetros de tu negocio, salas, menú de carta y permisos");
         lblSub.setFont(Sistema.getFontRegular(12f));
-        lblSub.setForeground(new Color(148, 163, 184));
+        lblSub.setForeground(UIUtils.getTextMuted());
 
         headerPanel.add(lblTitle, BorderLayout.NORTH);
         headerPanel.add(lblSub, BorderLayout.SOUTH);
 
         tabbedPane = new JTabbedPane();
         tabbedPane.setFont(Sistema.getFontBold(13f));
-        tabbedPane.setBackground(UIUtils.COLOR_PANEL_DARK);
-        tabbedPane.setForeground(Color.WHITE);
+        tabbedPane.setBackground(UIUtils.getBgColor());
+        tabbedPane.setForeground(UIUtils.getTextPrimary());
 
         tabbedPane.addTab("Datos Empresa", crearPanelEmpresa());
         tabbedPane.addTab("Edición de Salas", crearPanelSalas());
@@ -143,14 +141,14 @@ public class ModuloConfig {
     // --- 1. PANEL EMPRESA ---
     private JPanel crearPanelEmpresa() {
         JPanel panel = new JPanel(new BorderLayout(20, 20));
-        panel.setBackground(UIUtils.COLOR_BG_DARK);
+        panel.setBackground(UIUtils.getBgColor());
         panel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
 
         // Tarjeta central elegante con GridBagLayout
         JPanel card = new JPanel(new GridBagLayout());
-        card.setBackground(UIUtils.COLOR_PANEL_DARK);
+        card.setBackground(UIUtils.getPanelColor());
         card.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(UIUtils.COLOR_BORDER_DARK, 1, true),
+            BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1, true),
             BorderFactory.createEmptyBorder(24, 32, 24, 32)
         ));
 
@@ -185,7 +183,7 @@ public class ModuloConfig {
             gbc.weightx = 0.0;
             JLabel lbl = new JLabel(labels[i]);
             lbl.setFont(Sistema.getFontBold(13f));
-            lbl.setForeground(new Color(226, 232, 240));
+            lbl.setForeground(UIUtils.getTextPrimary());
             lbl.setPreferredSize(new Dimension(180, 36));
             card.add(lbl, gbc);
 
@@ -258,15 +256,15 @@ public class ModuloConfig {
     // --- 2. PANEL SALAS ---
     private JPanel crearPanelSalas() {
         JPanel panel = new JPanel(new BorderLayout(16, 16));
-        panel.setBackground(UIUtils.COLOR_BG_DARK);
+        panel.setBackground(UIUtils.getBgColor());
         panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
         // Formulario izquierdo apilado
         JPanel leftCard = new JPanel();
         leftCard.setLayout(new BoxLayout(leftCard, BoxLayout.Y_AXIS));
-        leftCard.setBackground(UIUtils.COLOR_PANEL_DARK);
+        leftCard.setBackground(UIUtils.getPanelColor());
         leftCard.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(UIUtils.COLOR_BORDER_DARK, 1, true),
+            BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1, true),
             BorderFactory.createEmptyBorder(18, 16, 18, 16)
         ));
         leftCard.setPreferredSize(new Dimension(300, 300));
@@ -275,7 +273,7 @@ public class ModuloConfig {
         txtSalaId.setVisible(false);
 
         JLabel lbl1 = new JLabel("Nombre de Sala:");
-        lbl1.setForeground(new Color(203, 213, 225));
+        lbl1.setForeground(UIUtils.getTextPrimary());
         lbl1.setFont(Sistema.getFontBold(12f));
         lbl1.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -285,7 +283,7 @@ public class ModuloConfig {
         txtSalaNombre.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JLabel lbl2 = new JLabel("Cantidad de Mesas:");
-        lbl2.setForeground(new Color(203, 213, 225));
+        lbl2.setForeground(UIUtils.getTextPrimary());
         lbl2.setFont(Sistema.getFontBold(12f));
         lbl2.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -327,14 +325,14 @@ public class ModuloConfig {
 
         // Tabla derecha estilizada
         tableSalasConfig = new JTable();
-        UIUtils.estilarTablaOscura(tableSalasConfig);
+        UIUtils.estilarTabla(tableSalasConfig);
         tableSalasConfig.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
                 if (!isSelected) {
-                    c.setBackground(row % 2 == 0 ? new Color(15, 23, 42) : new Color(30, 41, 59));
-                    c.setForeground(new Color(241, 245, 249));
+                    c.setBackground(row % 2 == 0 ? UIUtils.getBgColor() : UIUtils.getPanelColor());
+                    c.setForeground(UIUtils.getTextPrimary());
                 } else {
                     c.setBackground(new Color(37, 99, 235));
                     c.setForeground(Color.WHITE);
@@ -366,8 +364,9 @@ public class ModuloConfig {
         });
 
         JScrollPane scroll = new JScrollPane(tableSalasConfig);
-        scroll.getViewport().setBackground(UIUtils.COLOR_BG_DARK);
-        scroll.setBorder(BorderFactory.createLineBorder(UIUtils.COLOR_BORDER_DARK, 1));
+        scroll.getViewport().setBackground(UIUtils.getBgColor());
+        scroll.setBackground(UIUtils.getBgColor());
+        scroll.setBorder(BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1));
 
         panel.add(leftCard, BorderLayout.WEST);
         panel.add(scroll, BorderLayout.CENTER);
@@ -378,15 +377,15 @@ public class ModuloConfig {
     // --- 3. PANEL PLATOS ---
     private JPanel crearPanelPlatos() {
         JPanel panel = new JPanel(new BorderLayout(16, 16));
-        panel.setBackground(UIUtils.COLOR_BG_DARK);
+        panel.setBackground(UIUtils.getBgColor());
         panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
         // Formulario izquierdo apilado
         JPanel leftCard = new JPanel();
         leftCard.setLayout(new BoxLayout(leftCard, BoxLayout.Y_AXIS));
-        leftCard.setBackground(UIUtils.COLOR_PANEL_DARK);
+        leftCard.setBackground(UIUtils.getPanelColor());
         leftCard.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(UIUtils.COLOR_BORDER_DARK, 1, true),
+            BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1, true),
             BorderFactory.createEmptyBorder(18, 16, 18, 16)
         ));
         leftCard.setPreferredSize(new Dimension(300, 300));
@@ -395,7 +394,7 @@ public class ModuloConfig {
         txtPlatoId.setVisible(false);
 
         JLabel lbl1 = new JLabel("Nombre del Plato / Producto:");
-        lbl1.setForeground(new Color(203, 213, 225));
+        lbl1.setForeground(UIUtils.getTextPrimary());
         lbl1.setFont(Sistema.getFontBold(12f));
         lbl1.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -405,7 +404,7 @@ public class ModuloConfig {
         txtPlatoNombre.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JLabel lbl2 = new JLabel("Precio Unitario (COP):");
-        lbl2.setForeground(new Color(203, 213, 225));
+        lbl2.setForeground(UIUtils.getTextPrimary());
         lbl2.setFont(Sistema.getFontBold(12f));
         lbl2.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -447,14 +446,14 @@ public class ModuloConfig {
 
         // Tabla derecha estilizada
         tablePlatosConfig = new JTable();
-        UIUtils.estilarTablaOscura(tablePlatosConfig);
+        UIUtils.estilarTabla(tablePlatosConfig);
         tablePlatosConfig.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
                 if (!isSelected) {
-                    c.setBackground(row % 2 == 0 ? new Color(15, 23, 42) : new Color(30, 41, 59));
-                    c.setForeground(new Color(241, 245, 249));
+                    c.setBackground(row % 2 == 0 ? UIUtils.getBgColor() : UIUtils.getPanelColor());
+                    c.setForeground(UIUtils.getTextPrimary());
                 } else {
                     c.setBackground(new Color(37, 99, 235));
                     c.setForeground(Color.WHITE);
@@ -489,8 +488,9 @@ public class ModuloConfig {
         });
 
         JScrollPane scroll = new JScrollPane(tablePlatosConfig);
-        scroll.getViewport().setBackground(UIUtils.COLOR_BG_DARK);
-        scroll.setBorder(BorderFactory.createLineBorder(UIUtils.COLOR_BORDER_DARK, 1));
+        scroll.getViewport().setBackground(UIUtils.getBgColor());
+        scroll.setBackground(UIUtils.getBgColor());
+        scroll.setBorder(BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1));
 
         panel.add(leftCard, BorderLayout.WEST);
         panel.add(scroll, BorderLayout.CENTER);
@@ -501,15 +501,15 @@ public class ModuloConfig {
     // --- 4. PANEL USUARIOS ---
     private JPanel crearPanelUsuarios() {
         JPanel panel = new JPanel(new BorderLayout(16, 16));
-        panel.setBackground(UIUtils.COLOR_BG_DARK);
+        panel.setBackground(UIUtils.getBgColor());
         panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
         // Formulario izquierdo apilado
         JPanel leftCard = new JPanel();
         leftCard.setLayout(new BoxLayout(leftCard, BoxLayout.Y_AXIS));
-        leftCard.setBackground(UIUtils.COLOR_PANEL_DARK);
+        leftCard.setBackground(UIUtils.getPanelColor());
         leftCard.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(UIUtils.COLOR_BORDER_DARK, 1, true),
+            BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1, true),
             BorderFactory.createEmptyBorder(18, 16, 18, 16)
         ));
         leftCard.setPreferredSize(new Dimension(300, 380));
@@ -532,10 +532,10 @@ public class ModuloConfig {
         txtUserPass.setMaximumSize(new Dimension(Integer.MAX_VALUE, 34));
         cbxUserRol.setMaximumSize(new Dimension(Integer.MAX_VALUE, 34));
 
-        JLabel l1 = new JLabel("Nombre Completo:"); l1.setForeground(new Color(203, 213, 225)); l1.setFont(Sistema.getFontBold(12f)); l1.setAlignmentX(Component.LEFT_ALIGNMENT);
-        JLabel l2 = new JLabel("Correo / Usuario:"); l2.setForeground(new Color(203, 213, 225)); l2.setFont(Sistema.getFontBold(12f)); l2.setAlignmentX(Component.LEFT_ALIGNMENT);
-        JLabel l3 = new JLabel("Contraseña:"); l3.setForeground(new Color(203, 213, 225)); l3.setFont(Sistema.getFontBold(12f)); l3.setAlignmentX(Component.LEFT_ALIGNMENT);
-        JLabel l4 = new JLabel("Rol / Perfil:"); l4.setForeground(new Color(203, 213, 225)); l4.setFont(Sistema.getFontBold(12f)); l4.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JLabel l1 = new JLabel("Nombre Completo:"); l1.setForeground(UIUtils.getTextPrimary()); l1.setFont(Sistema.getFontBold(12f)); l1.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JLabel l2 = new JLabel("Correo / Usuario:"); l2.setForeground(UIUtils.getTextPrimary()); l2.setFont(Sistema.getFontBold(12f)); l2.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JLabel l3 = new JLabel("Contraseña:"); l3.setForeground(UIUtils.getTextPrimary()); l3.setFont(Sistema.getFontBold(12f)); l3.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JLabel l4 = new JLabel("Rol / Perfil:"); l4.setForeground(UIUtils.getTextPrimary()); l4.setFont(Sistema.getFontBold(12f)); l4.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         txtUserNombre.setAlignmentX(Component.LEFT_ALIGNMENT);
         txtUserCorreo.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -575,14 +575,14 @@ public class ModuloConfig {
 
         // Tabla derecha estilizada
         tableUsuariosConfig = new JTable();
-        UIUtils.estilarTablaOscura(tableUsuariosConfig);
+        UIUtils.estilarTabla(tableUsuariosConfig);
         tableUsuariosConfig.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
                 if (!isSelected) {
-                    c.setBackground(row % 2 == 0 ? new Color(15, 23, 42) : new Color(30, 41, 59));
-                    c.setForeground(new Color(241, 245, 249));
+                    c.setBackground(row % 2 == 0 ? UIUtils.getBgColor() : UIUtils.getPanelColor());
+                    c.setForeground(UIUtils.getTextPrimary());
                 } else {
                     c.setBackground(new Color(37, 99, 235));
                     c.setForeground(Color.WHITE);
@@ -622,8 +622,9 @@ public class ModuloConfig {
         });
 
         JScrollPane scroll = new JScrollPane(tableUsuariosConfig);
-        scroll.getViewport().setBackground(UIUtils.COLOR_BG_DARK);
-        scroll.setBorder(BorderFactory.createLineBorder(UIUtils.COLOR_BORDER_DARK, 1));
+        scroll.getViewport().setBackground(UIUtils.getBgColor());
+        scroll.setBackground(UIUtils.getBgColor());
+        scroll.setBorder(BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1));
 
         panel.add(leftCard, BorderLayout.WEST);
         panel.add(scroll, BorderLayout.CENTER);
@@ -924,13 +925,13 @@ public class ModuloConfig {
     // --- 5. PANEL CELULARES / ANDROID ---
     private JPanel crearPanelAndroid() {
         JPanel panel = new JPanel(new BorderLayout(16, 16));
-        panel.setBackground(UIUtils.COLOR_BG_DARK);
+        panel.setBackground(UIUtils.getBgColor());
         panel.setBorder(BorderFactory.createEmptyBorder(18, 20, 18, 20));
 
         JPanel card = new JPanel(new GridBagLayout());
-        card.setBackground(UIUtils.COLOR_PANEL_DARK);
+        card.setBackground(UIUtils.getPanelColor());
         card.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(UIUtils.COLOR_BORDER_DARK, 1, true),
+            BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1, true),
             BorderFactory.createEmptyBorder(20, 24, 20, 24)
         ));
 
@@ -948,7 +949,7 @@ public class ModuloConfig {
         lblDot.setForeground(new Color(16, 185, 129)); // Verde Esmeralda
         JLabel lblStatusText = new JLabel("Servidor Web Activo en Red Local (Puerto " + ServidorWebMesero.getPuerto() + ")");
         lblStatusText.setFont(Sistema.getFontBold(14f));
-        lblStatusText.setForeground(new Color(241, 245, 249));
+        lblStatusText.setForeground(UIUtils.getTextPrimary());
         pnlStatus.add(lblDot);
         pnlStatus.add(lblStatusText);
 
@@ -958,18 +959,18 @@ public class ModuloConfig {
         // Caja destacada de la URL
         JLabel lblUrlTitle = new JLabel("DIRECCIÓN DE ACCESO PARA CELULARES (CHROME / SAFARI):");
         lblUrlTitle.setFont(Sistema.getFontBold(12f));
-        lblUrlTitle.setForeground(new Color(148, 163, 184));
+        lblUrlTitle.setForeground(UIUtils.getTextMuted());
         gbc.gridy = 1;
         card.add(lblUrlTitle, gbc);
 
         JTextField txtUrl = new JTextField(ServidorWebMesero.getUrlAcceso());
         txtUrl.setEditable(false);
         txtUrl.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        txtUrl.setForeground(new Color(56, 189, 248)); // Cyan
-        txtUrl.setBackground(new Color(15, 23, 42)); // Slate 900
+        txtUrl.setForeground(UIUtils.IS_DARK ? new Color(56, 189, 248) : new Color(2, 132, 199));
+        txtUrl.setBackground(UIUtils.getInputBg());
         txtUrl.setHorizontalAlignment(JTextField.CENTER);
         txtUrl.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(56, 189, 248), 1, true),
+            BorderFactory.createLineBorder(UIUtils.IS_DARK ? new Color(56, 189, 248) : new Color(2, 132, 199), 1, true),
             BorderFactory.createEmptyBorder(10, 14, 10, 14)
         ));
         gbc.gridy = 2;
@@ -1024,25 +1025,25 @@ public class ModuloConfig {
         JPanel pnlPasos = new JPanel(new GridLayout(4, 1, 6, 8));
         pnlPasos.setOpaque(false);
         pnlPasos.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(UIUtils.COLOR_BORDER_DARK, 1, true),
+            BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1, true),
             BorderFactory.createEmptyBorder(14, 18, 14, 18)
         ));
 
-        JLabel p1 = new JLabel("📱 1. App Meseros: Abrir la dirección principal para tomar pedidos en mesas.");
+        JLabel p1 = new JLabel("● 1. App Meseros: Abrir la dirección principal para tomar pedidos en mesas.");
         p1.setFont(Sistema.getFontBold(13f));
         p1.setForeground(new Color(56, 189, 248));
 
-        JLabel p2 = new JLabel("🍳 2. Pantalla Cocina (KDS): Ingresar a " + ServidorWebMesero.getUrlAcceso() + "/cocina en la tablet de cocina.");
+        JLabel p2 = new JLabel("● 2. Pantalla Cocina (KDS): Ingresar a " + ServidorWebMesero.getUrlAcceso() + "/cocina en la tablet de cocina.");
         p2.setFont(Sistema.getFontBold(13f));
         p2.setForeground(new Color(251, 191, 36));
 
-        JLabel p3 = new JLabel("📲 3. Menú Digital Clientes: Abrir " + ServidorWebMesero.getUrlAcceso() + "/menu para consultar la carta.");
+        JLabel p3 = new JLabel("● 3. Menú Digital Clientes: Abrir " + ServidorWebMesero.getUrlAcceso() + "/menu para consultar la carta.");
         p3.setFont(Sistema.getFontBold(13f));
         p3.setForeground(new Color(52, 211, 153));
 
-        JLabel p4 = new JLabel("📶 Requisito: Los celulares y tablets deben estar conectados a la misma red WiFi del POS.");
+        JLabel p4 = new JLabel("● Requisito: Los celulares y tablets deben estar conectados a la misma red WiFi del POS.");
         p4.setFont(Sistema.getFontRegular(12f));
-        p4.setForeground(new Color(148, 163, 184));
+        p4.setForeground(UIUtils.getTextMuted());
 
         pnlPasos.add(p1);
         pnlPasos.add(p2);

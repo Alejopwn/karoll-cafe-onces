@@ -85,11 +85,11 @@ public class ModalAlerta extends JDialog {
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 
                 // Sombra y fondo oscuro premium
-                g2.setColor(new Color(15, 23, 42)); // Slate 900
+                g2.setColor(new Color(8, 9, 12)); // Slate 900
                 g2.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 22, 22));
                 
                 // Borde suave con acento sutil
-                g2.setColor(new Color(30, 41, 59)); // Slate 800
+                g2.setColor(new Color(18, 20, 26)); // Slate 800
                 g2.setStroke(new BasicStroke(1.5f));
                 g2.draw(new RoundRectangle2D.Float(1, 1, getWidth() - 2, getHeight() - 2, 20, 20));
 
@@ -219,7 +219,7 @@ public class ModalAlerta extends JDialog {
             txtInput.setBackground(new Color(11, 17, 32));
             txtInput.setCaretColor(accentColor);
             txtInput.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(new Color(51, 65, 85), 1, true),
+                    BorderFactory.createLineBorder(new Color(36, 38, 48), 1, true),
                     BorderFactory.createEmptyBorder(8, 10, 8, 10)
             ));
             txtInput.setMaximumSize(new Dimension(440, 40));
@@ -236,9 +236,9 @@ public class ModalAlerta extends JDialog {
             JButton btnSecundario = new JButton(btnSecundarioTexto);
             btnSecundario.setFont(new Font("Segoe UI", Font.BOLD, 13));
             btnSecundario.setForeground(new Color(148, 163, 184)); // Slate 400
-            btnSecundario.setBackground(new Color(30, 41, 59)); // Slate 800
+            btnSecundario.setBackground(new Color(18, 20, 26)); // Slate 800
             btnSecundario.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(new Color(51, 65, 85), 1, true),
+                    BorderFactory.createLineBorder(new Color(36, 38, 48), 1, true),
                     BorderFactory.createEmptyBorder(9, 18, 9, 18)
             ));
             btnSecundario.setFocusPainted(false);

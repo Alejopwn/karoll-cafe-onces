@@ -11,7 +11,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 /**
- * Módulo de Gestión de Recordatorios adaptado al sistema de diseño Slate.
+ * Módulo de Gestión de Recordatorios adaptado al sistema de diseño dinámico (Oscuro y Claro).
  */
 public class ModuloRecordatorios extends JPanel {
 
@@ -26,7 +26,7 @@ public class ModuloRecordatorios extends JPanel {
 
     public ModuloRecordatorios() {
         setLayout(new BorderLayout(15, 15));
-        setBackground(new Color(15, 23, 42));
+        setBackground(UIUtils.getBgColor());
         setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
         initUI();
@@ -34,7 +34,10 @@ public class ModuloRecordatorios extends JPanel {
     }
 
     public void abrirComoVentanaModal(Frame owner) {
-        JDialog dialog = new JDialog(owner, "⏰ Módulo de Recordatorios POS", true);
+        removeAll();
+        initUI();
+        cargarTabla();
+        JDialog dialog = new JDialog(owner, "Módulo de Recordatorios POS", true);
         dialog.setContentPane(this);
         dialog.setSize(920, 600);
         dialog.setLocationRelativeTo(owner);
@@ -42,10 +45,12 @@ public class ModuloRecordatorios extends JPanel {
     }
 
     private void initUI() {
+        setBackground(UIUtils.getBgColor());
+
         // Header
-        JLabel lblHeader = new JLabel("⏰ Módulo de Recordatorios POS");
-        lblHeader.setFont(new Font("Segoe UI", Font.BOLD, 22));
-        lblHeader.setForeground(Color.WHITE);
+        JLabel lblHeader = new JLabel("Módulo de Recordatorios POS");
+        lblHeader.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        lblHeader.setForeground(UIUtils.getTextPrimary());
         add(lblHeader, BorderLayout.NORTH);
 
         // Panel Izquierdo: Formulario de Creación
@@ -54,44 +59,35 @@ public class ModuloRecordatorios extends JPanel {
         panelForm.setPreferredSize(new Dimension(290, 0));
 
         Font fontLabel = new Font("Segoe UI", Font.BOLD, 13);
-        Color colText = new Color(226, 232, 240);
+        Color colText = UIUtils.getTextPrimary();
 
         JLabel l1 = new JLabel("Título del Recordatorio:");
         l1.setFont(fontLabel); l1.setForeground(colText);
         txtTitulo = new JTextField();
-        txtTitulo.setBackground(new Color(30, 41, 59));
-        txtTitulo.setForeground(Color.WHITE);
-        txtTitulo.setCaretColor(Color.WHITE);
+        UIUtils.estilarCampoTexto(txtTitulo);
 
         JLabel l2 = new JLabel("Descripción / Notas:");
         l2.setFont(fontLabel); l2.setForeground(colText);
         txtDescripcion = new JTextField();
-        txtDescripcion.setBackground(new Color(30, 41, 59));
-        txtDescripcion.setForeground(Color.WHITE);
-        txtDescripcion.setCaretColor(Color.WHITE);
+        UIUtils.estilarCampoTexto(txtDescripcion);
 
         JLabel l3 = new JLabel("Fecha (YYYY-MM-DD):");
         l3.setFont(fontLabel); l3.setForeground(colText);
         txtFecha = new JTextField(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
-        txtFecha.setBackground(new Color(30, 41, 59));
-        txtFecha.setForeground(Color.WHITE);
-        txtFecha.setCaretColor(Color.WHITE);
+        UIUtils.estilarCampoTexto(txtFecha);
 
         JLabel l4 = new JLabel("Hora (HH:mm):");
         l4.setFont(fontLabel); l4.setForeground(colText);
         txtHora = new JTextField(new SimpleDateFormat("HH:mm").format(new Date()));
-        txtHora.setBackground(new Color(30, 41, 59));
-        txtHora.setForeground(Color.WHITE);
-        txtHora.setCaretColor(Color.WHITE);
+        UIUtils.estilarCampoTexto(txtHora);
 
         JLabel l5 = new JLabel("Prioridad:");
         l5.setFont(fontLabel); l5.setForeground(colText);
         comboPrioridad = new JComboBox<>(new String[]{"ALTA", "MEDIA", "BAJA"});
-        comboPrioridad.setBackground(new Color(30, 41, 59));
-        comboPrioridad.setForeground(Color.WHITE);
+        UIUtils.estilarCombo(comboPrioridad);
 
-        JButton btnGuardar = new JButton("💾 Guardar Recordatorio");
-        btnGuardar.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        JButton btnGuardar = new JButton("Guardar Recordatorio");
+        btnGuardar.setFont(new Font("Segoe UI", Font.BOLD, 13));
         btnGuardar.setBackground(new Color(16, 185, 129));
         btnGuardar.setForeground(Color.WHITE);
         btnGuardar.setFocusPainted(false);
@@ -120,13 +116,7 @@ public class ModuloRecordatorios extends JPanel {
         };
 
         tabla = new JTable(modelo);
-        tabla.setRowHeight(44);
-        tabla.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        tabla.setBackground(new Color(30, 41, 59));
-        tabla.setForeground(Color.WHITE);
-        tabla.getTableHeader().setBackground(new Color(15, 23, 42));
-        tabla.getTableHeader().setForeground(new Color(226, 232, 240));
-        tabla.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
+        UIUtils.estilarTabla(tabla);
 
         tabla.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
@@ -135,34 +125,39 @@ public class ModuloRecordatorios extends JPanel {
                 String prio = String.valueOf(t.getValueAt(row, 5));
                 if (!isSelected) {
                     if ("ALTA".equalsIgnoreCase(prio)) {
-                        c.setBackground(new Color(127, 29, 29));
-                        c.setForeground(new Color(254, 202, 202));
+                        c.setBackground(UIUtils.IS_DARK ? new Color(127, 29, 29) : new Color(254, 226, 226));
+                        c.setForeground(UIUtils.IS_DARK ? new Color(254, 202, 202) : new Color(153, 27, 27));
                     } else if ("MEDIA".equalsIgnoreCase(prio)) {
-                        c.setBackground(new Color(120, 53, 15));
-                        c.setForeground(new Color(253, 230, 138));
+                        c.setBackground(UIUtils.IS_DARK ? new Color(120, 53, 15) : new Color(254, 243, 199));
+                        c.setForeground(UIUtils.IS_DARK ? new Color(253, 230, 138) : new Color(146, 64, 14));
                     } else {
-                        c.setBackground(new Color(30, 41, 59));
-                        c.setForeground(Color.WHITE);
+                        c.setBackground(row % 2 == 0 ? UIUtils.getBgColor() : UIUtils.getPanelColor());
+                        c.setForeground(UIUtils.getTextPrimary());
                     }
                 } else {
-                    c.setBackground(new Color(59, 130, 246));
+                    c.setBackground(UIUtils.IS_DARK ? new Color(59, 130, 246) : new Color(37, 99, 235));
                     c.setForeground(Color.WHITE);
                 }
                 return c;
             }
         });
 
-        TouchScrollHelper.aplicar(new JScrollPane(tabla));
-        add(new JScrollPane(tabla), BorderLayout.CENTER);
+        JScrollPane scroll = new JScrollPane(tabla);
+        scroll.getViewport().setBackground(UIUtils.getBgColor());
+        scroll.setBackground(UIUtils.getBgColor());
+        scroll.setBorder(BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1));
+        TouchScrollHelper.aplicar(scroll);
+        add(scroll, BorderLayout.CENTER);
 
         // Panel Inferior: Botones de Acción
         JPanel pBot = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
         pBot.setOpaque(false);
 
-        JButton btnCompletar = new JButton("✅ Marcar Completado");
+        JButton btnCompletar = new JButton("Marcar Completado");
         btnCompletar.setFont(new Font("Segoe UI", Font.BOLD, 13));
         btnCompletar.setBackground(new Color(59, 130, 246));
         btnCompletar.setForeground(Color.WHITE);
+        btnCompletar.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnCompletar.addActionListener(e -> {
             int row = tabla.getSelectedRow();
             if (row != -1) {
@@ -172,10 +167,11 @@ public class ModuloRecordatorios extends JPanel {
             }
         });
 
-        JButton btnEliminar = new JButton("🗑️ Eliminar");
+        JButton btnEliminar = new JButton("Eliminar");
         btnEliminar.setFont(new Font("Segoe UI", Font.BOLD, 13));
         btnEliminar.setBackground(new Color(220, 38, 38));
         btnEliminar.setForeground(Color.WHITE);
+        btnEliminar.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnEliminar.addActionListener(e -> {
             int row = tabla.getSelectedRow();
             if (row != -1) {
@@ -222,7 +218,7 @@ public class ModuloRecordatorios extends JPanel {
                 r.getFecha(),
                 r.getHora(),
                 r.getPrioridad(),
-                r.isCompletado() ? "COMPLETADO ✅" : "PENDIENTE ⏳"
+                r.isCompletado() ? "● COMPLETADO" : "● PENDIENTE"
             });
         }
     }

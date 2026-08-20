@@ -70,8 +70,10 @@ public class ModuloCaja {
     public void abrirComoVentanaModal(JFrame parent) {
         if (panelCajaMain == null) {
             inicializar();
+        } else {
+            inicializar(); // refrescar componentes y estilos con el tema actual
         }
-        JDialog dialog = new JDialog(parent, "💰 Control de Caja Chica y Arqueo POS", true);
+        JDialog dialog = new JDialog(parent, "Control de Caja Chica y Arqueo POS", true);
         dialog.setSize(980, 640);
         dialog.setLocationRelativeTo(parent);
         dialog.setContentPane(panelCajaMain);
@@ -81,7 +83,7 @@ public class ModuloCaja {
 
     public void inicializar() {
         panelCajaMain = new JPanel(new BorderLayout(15, 15));
-        panelCajaMain.setBackground(UIUtils.COLOR_BG_DARK);
+        panelCajaMain.setBackground(UIUtils.getBgColor());
         panelCajaMain.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
         JPanel panelTop = new JPanel(new BorderLayout(15, 15));
@@ -90,16 +92,16 @@ public class ModuloCaja {
         JPanel panelHeader = new JPanel(new BorderLayout(10, 0));
         panelHeader.setOpaque(false);
 
-        JLabel lblTitle = new JLabel("💰 Control de Caja Chica y Arqueo POS");
+        JLabel lblTitle = new JLabel("Control de Caja Chica y Arqueo POS");
         lblTitle.setFont(Sistema.getFontBold(18f));
-        lblTitle.setForeground(Color.WHITE);
+        lblTitle.setForeground(UIUtils.getTextPrimary());
 
         lblEstadoCaja = new JLabel("ESTADO: CARGANDO...");
         lblEstadoCaja.setFont(Sistema.getFontBold(13f));
         lblEstadoCaja.setOpaque(true);
         lblEstadoCaja.setBorder(BorderFactory.createEmptyBorder(6, 14, 6, 14));
-        lblEstadoCaja.setBackground(UIUtils.COLOR_PANEL_DARK);
-        lblEstadoCaja.setForeground(Color.WHITE);
+        lblEstadoCaja.setBackground(UIUtils.getPanelColor());
+        lblEstadoCaja.setForeground(UIUtils.getTextPrimary());
 
         panelHeader.add(lblTitle, BorderLayout.WEST);
         panelHeader.add(lblEstadoCaja, BorderLayout.EAST);
@@ -125,36 +127,36 @@ public class ModuloCaja {
 
         JPanel panelAccionesIzq = new JPanel();
         panelAccionesIzq.setLayout(new BoxLayout(panelAccionesIzq, BoxLayout.Y_AXIS));
-        panelAccionesIzq.setBackground(new Color(22, 30, 50));
+        panelAccionesIzq.setBackground(UIUtils.getPanelColor());
         panelAccionesIzq.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(0, 0, 0, 1, UIUtils.COLOR_BORDER_DARK),
+            BorderFactory.createMatteBorder(0, 0, 0, 1, UIUtils.getBorderColor()),
             BorderFactory.createEmptyBorder(12, 8, 12, 8)
         ));
         panelAccionesIzq.setPreferredSize(new Dimension(185, 0));
 
         JLabel lblAcciones = new JLabel("Operaciones");
         lblAcciones.setFont(Sistema.getFontBold(14f));
-        lblAcciones.setForeground(UIUtils.COLOR_TEXT_MUTED);
+        lblAcciones.setForeground(UIUtils.getTextMuted());
         lblAcciones.setAlignmentX(Component.CENTER_ALIGNMENT);
         panelAccionesIzq.add(lblAcciones);
         panelAccionesIzq.add(Box.createVerticalStrut(12));
 
-        btnAbrirCajaUI = UIUtils.crearBoton("🔓 Abrir Turno Caja", UIUtils.COLOR_ACCENT_GREEN);
+        btnAbrirCajaUI = UIUtils.crearBoton("Abrir Turno Caja", UIUtils.COLOR_ACCENT_GREEN);
         btnAbrirCajaUI.addActionListener(e -> abrirModalAperturaCaja());
         panelAccionesIzq.add(btnAbrirCajaUI);
         panelAccionesIzq.add(Box.createVerticalStrut(10));
 
-        btnGastoCajaUI = UIUtils.crearBoton("💸 Registrar Gasto", UIUtils.COLOR_ACCENT_ORANGE);
+        btnGastoCajaUI = UIUtils.crearBoton("Registrar Gasto", UIUtils.COLOR_ACCENT_ORANGE);
         btnGastoCajaUI.addActionListener(e -> abrirModalGastoCaja());
         panelAccionesIzq.add(btnGastoCajaUI);
         panelAccionesIzq.add(Box.createVerticalStrut(10));
 
-        btnCerrarCajaUI = UIUtils.crearBoton("🔒 Cerrar / Arqueo", UIUtils.COLOR_ACCENT_RED);
+        btnCerrarCajaUI = UIUtils.crearBoton("Cerrar / Arqueo", UIUtils.COLOR_ACCENT_RED);
         btnCerrarCajaUI.addActionListener(e -> abrirModalCierreCaja());
         panelAccionesIzq.add(btnCerrarCajaUI);
         panelAccionesIzq.add(Box.createVerticalStrut(10));
 
-        JButton btnRefrescar = UIUtils.crearBoton("🔄 Refrescar Datos", UIUtils.COLOR_BORDER_DARK);
+        JButton btnRefrescar = UIUtils.crearBoton("Refrescar Datos", UIUtils.getBorderColor());
         btnRefrescar.addActionListener(e -> actualizarEstadoCajaUI());
         panelAccionesIzq.add(btnRefrescar);
 
@@ -162,23 +164,23 @@ public class ModuloCaja {
 
         JTabbedPane subTabs = new JTabbedPane();
         subTabs.setFont(Sistema.getFontBold(13f));
-        subTabs.setBackground(UIUtils.COLOR_BG_DARK);
-        subTabs.setForeground(Color.WHITE);
+        subTabs.setBackground(UIUtils.getBgColor());
+        subTabs.setForeground(UIUtils.getTextPrimary());
 
         tableGastosCaja = new JTable();
-        UIUtils.estilarTablaOscura(tableGastosCaja);
+        UIUtils.estilarTabla(tableGastosCaja);
         JScrollPane scrollGastos = new JScrollPane(tableGastosCaja);
-        scrollGastos.setBackground(UIUtils.COLOR_BG_DARK);
-        scrollGastos.getViewport().setBackground(UIUtils.COLOR_BG_DARK);
-        scrollGastos.setBorder(BorderFactory.createLineBorder(UIUtils.COLOR_BORDER_DARK, 1));
+        scrollGastos.setBackground(UIUtils.getBgColor());
+        scrollGastos.getViewport().setBackground(UIUtils.getBgColor());
+        scrollGastos.setBorder(BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1));
         subTabs.addTab("Gastos / Egresos del Turno Actual", scrollGastos);
 
         tableHistorialCaja = new JTable();
-        UIUtils.estilarTablaOscura(tableHistorialCaja);
+        UIUtils.estilarTabla(tableHistorialCaja);
         JScrollPane scrollHistorial = new JScrollPane(tableHistorialCaja);
-        scrollHistorial.setBackground(UIUtils.COLOR_BG_DARK);
-        scrollHistorial.getViewport().setBackground(UIUtils.COLOR_BG_DARK);
-        scrollHistorial.setBorder(BorderFactory.createLineBorder(UIUtils.COLOR_BORDER_DARK, 1));
+        scrollHistorial.setBackground(UIUtils.getBgColor());
+        scrollHistorial.getViewport().setBackground(UIUtils.getBgColor());
+        scrollHistorial.setBorder(BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1));
         subTabs.addTab("Historial de Cierres y Arqueos Anteriores", scrollHistorial);
 
         JPanel panelCenter = new JPanel(new BorderLayout(0, 0));
@@ -338,7 +340,7 @@ public class ModuloCaja {
         for (String d : denoms) {
             JButton bD = new JButton("$" + String.format("%,d", Integer.parseInt(d)));
             bD.setFont(Sistema.getFontBold(11f));
-            bD.setBackground(new Color(30, 41, 59));
+            bD.setBackground(new Color(18, 20, 26));
             bD.setForeground(new Color(56, 189, 248));
             bD.setFocusPainted(false);
             bD.addActionListener(e -> txtMonto.setText(d));
@@ -445,7 +447,7 @@ public class ModuloCaja {
         for (String[] g : gastos) {
             JButton bG = new JButton(g[0]);
             bG.setFont(Sistema.getFontBold(10f));
-            bG.setBackground(new Color(30, 41, 59));
+            bG.setBackground(new Color(18, 20, 26));
             bG.setForeground(new Color(251, 146, 60)); // Orange accent
             bG.setFocusPainted(false);
             bG.addActionListener(e -> {

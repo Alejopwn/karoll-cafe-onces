@@ -27,7 +27,7 @@ public class FrmSplitBillModal extends JDialog {
     private final int numMesa;
 
     public FrmSplitBillModal(JFrame parent, int numMesa, double totalMesa) {
-        super(parent, "💳 División de Cuenta — Mesa " + numMesa, true);
+        super(parent, "División de Cuenta — Mesa " + numMesa, true);
         this.numMesa = numMesa;
         this.totalMesa = totalMesa;
 
@@ -39,12 +39,12 @@ public class FrmSplitBillModal extends JDialog {
 
     private void initUI() {
         JPanel root = new JPanel(new BorderLayout(15, 15));
-        root.setBackground(UIUtils.COLOR_BG_DARK);
+        root.setBackground(UIUtils.getBgColor());
         root.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        JLabel lblTitle = new JLabel("💳 División de Cuenta (Split Check)");
+        JLabel lblTitle = new JLabel("División de Cuenta (Split Check)");
         lblTitle.setFont(Sistema.getFontBold(18f));
-        lblTitle.setForeground(Color.WHITE);
+        lblTitle.setForeground(UIUtils.getTextPrimary());
 
         DecimalFormat df = new DecimalFormat("$ #,##0.00");
 
@@ -53,21 +53,21 @@ public class FrmSplitBillModal extends JDialog {
 
         JLabel l1 = new JLabel("Mesa N°:");
         l1.setFont(Sistema.getFontBold(14f));
-        l1.setForeground(UIUtils.COLOR_TEXT_MUTED);
+        l1.setForeground(UIUtils.getTextMuted());
         JLabel v1 = new JLabel(String.valueOf(numMesa));
         v1.setFont(Sistema.getFontBold(16f));
-        v1.setForeground(Color.WHITE);
+        v1.setForeground(UIUtils.getTextPrimary());
 
         JLabel l2 = new JLabel("Total Consumo ($):");
         l2.setFont(Sistema.getFontBold(14f));
-        l2.setForeground(UIUtils.COLOR_TEXT_MUTED);
+        l2.setForeground(UIUtils.getTextMuted());
         JLabel v2 = new JLabel(df.format(totalMesa));
         v2.setFont(Sistema.getFontBold(18f));
         v2.setForeground(UIUtils.COLOR_ACCENT_GREEN);
 
         JLabel l3 = new JLabel("Número de Personas:");
         l3.setFont(Sistema.getFontBold(14f));
-        l3.setForeground(Color.WHITE);
+        l3.setForeground(UIUtils.getTextPrimary());
 
         JSpinner spinnerPersonas = new JSpinner(new SpinnerNumberModel(2, 2, 20, 1));
         spinnerPersonas.setFont(Sistema.getFontBold(16f));
@@ -78,7 +78,7 @@ public class FrmSplitBillModal extends JDialog {
 
         JLabel lblResultado = new JLabel("Cuota por Persona: " + df.format(totalMesa / 2));
         lblResultado.setFont(Sistema.getFontBold(16f));
-        lblResultado.setForeground(new Color(96, 165, 250));
+        lblResultado.setForeground(UIUtils.IS_DARK ? new Color(96, 165, 250) : new Color(37, 99, 235));
         lblResultado.setHorizontalAlignment(SwingConstants.CENTER);
 
         spinnerPersonas.addChangeListener(e -> {
@@ -90,7 +90,7 @@ public class FrmSplitBillModal extends JDialog {
         JPanel panelBtn = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         panelBtn.setOpaque(false);
 
-        JButton btnCerrar = UIUtils.crearBoton("Cerrar", new Color(107, 114, 128));
+        JButton btnCerrar = UIUtils.crearBoton("Cerrar", UIUtils.getBorderColor());
         btnCerrar.addActionListener(e -> dispose());
 
         JButton btnAplicar = UIUtils.crearBoton("Aceptar División", UIUtils.COLOR_ACCENT_BLUE);

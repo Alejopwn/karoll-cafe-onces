@@ -81,7 +81,7 @@ public class ModuloUsuarios {
             if (u != null) abrirModalNuevoUsuario(u);
         });
 
-        JButton btnRefrescar = UIUtils.crearBoton("🔄 Refrescar", new Color(51, 65, 85));
+        JButton btnRefrescar = UIUtils.crearBoton("🔄 Refrescar", new Color(36, 38, 48));
         btnRefrescar.addActionListener(e -> cargarTabla());
 
         panelAcciones.add(btnNuevo);

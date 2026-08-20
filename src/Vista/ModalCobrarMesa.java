@@ -16,6 +16,7 @@ import javax.swing.table.DefaultTableModel;
  * 2. Partes Iguales
  * 3. Por Rondas
  * 4. Cada Quien lo Suyo (Por Persona)
+ * Totalmente adaptativo a Modo Oscuro y Modo Claro.
  */
 public class ModalCobrarMesa extends JDialog {
 
@@ -69,7 +70,7 @@ public class ModalCobrarMesa extends JDialog {
         setSize(980, 590);
         setLocationRelativeTo(parentFrame);
         setLayout(new BorderLayout(10, 10));
-        getContentPane().setBackground(new Color(15, 23, 42));
+        getContentPane().setBackground(UIUtils.getBgColor());
 
         // --- Header ---
         JPanel pHeader = new JPanel(new BorderLayout());
@@ -78,11 +79,11 @@ public class ModalCobrarMesa extends JDialog {
 
         JLabel lblTitle = new JLabel(etiquetaMesa + " (" + listaRondas.size() + " ronda" + (listaRondas.size() > 1 ? "s" : "") + ")");
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 22));
-        lblTitle.setForeground(Color.WHITE);
+        lblTitle.setForeground(UIUtils.getTextPrimary());
 
         JLabel lblTotal = new JLabel(String.format("Total Consolidado: $%,.0f COP", totalAcumulado));
         lblTotal.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        lblTotal.setForeground(new Color(52, 211, 153));
+        lblTotal.setForeground(new Color(16, 185, 129));
 
         pHeader.add(lblTitle, BorderLayout.WEST);
         pHeader.add(lblTotal, BorderLayout.EAST);
@@ -91,6 +92,8 @@ public class ModalCobrarMesa extends JDialog {
         // --- Tabbed Pane de Modos ---
         JTabbedPane tabs = new JTabbedPane();
         tabs.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        tabs.setBackground(UIUtils.getBgColor());
+        tabs.setForeground(UIUtils.getTextPrimary());
         tabs.addTab("Por Rondas", crearPanelRondas());
         tabs.addTab("Cada quien lo suyo (Por Persona)", crearPanelPorPersona());
 
@@ -186,8 +189,8 @@ public class ModalCobrarMesa extends JDialog {
 
         JButton btnCerrar = new JButton("Cerrar");
         btnCerrar.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        btnCerrar.setBackground(new Color(71, 85, 105));
-        btnCerrar.setForeground(Color.WHITE);
+        btnCerrar.setBackground(UIUtils.getBorderColor());
+        btnCerrar.setForeground(UIUtils.getTextPrimary());
         btnCerrar.setPreferredSize(new Dimension(80, 48));
         btnCerrar.setFocusPainted(false);
         btnCerrar.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -203,7 +206,7 @@ public class ModalCobrarMesa extends JDialog {
 
     private JPanel crearPanelRondas() {
         JPanel p = new JPanel(new BorderLayout(10, 10));
-        p.setOpaque(false);
+        p.setBackground(UIUtils.getBgColor());
         p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         String[] cols = {"Ronda", "Fecha / Hora", "Estado", "Total Ronda"};
@@ -223,13 +226,7 @@ public class ModalCobrarMesa extends JDialog {
         }
 
         table = new JTable(model);
-        table.setRowHeight(42);
-        table.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        table.setBackground(new Color(30, 41, 59));
-        table.setForeground(Color.WHITE);
-        table.getTableHeader().setBackground(new Color(15, 23, 42));
-        table.getTableHeader().setForeground(new Color(226, 232, 240));
-        table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
+        UIUtils.estilarTabla(table);
 
         // Renderizado con color en la columna "Estado"
         table.getColumnModel().getColumn(2).setCellRenderer(new DefaultTableCellRenderer() {
@@ -240,21 +237,25 @@ public class ModalCobrarMesa extends JDialog {
                 setHorizontalAlignment(SwingConstants.CENTER);
                 setFont(new Font("Segoe UI", Font.BOLD, 13));
                 if ("PREPARADO".equalsIgnoreCase(estadoStr)) {
-                    c.setBackground(new Color(120, 53, 15)); // Amber oscuro
-                    c.setForeground(new Color(252, 211, 77)); // Amber claro
+                    c.setBackground(UIUtils.IS_DARK ? new Color(120, 53, 15) : new Color(254, 243, 199));
+                    c.setForeground(UIUtils.IS_DARK ? new Color(252, 211, 77) : new Color(146, 64, 14));
                 } else if ("FINALIZADO".equalsIgnoreCase(estadoStr)) {
-                    c.setBackground(new Color(6, 78, 59)); // Verde oscuro
-                    c.setForeground(new Color(52, 211, 153)); // Verde claro
+                    c.setBackground(UIUtils.IS_DARK ? new Color(6, 78, 59) : new Color(220, 252, 231));
+                    c.setForeground(UIUtils.IS_DARK ? new Color(52, 211, 153) : new Color(22, 101, 52));
                 } else {
-                    c.setBackground(new Color(127, 29, 29)); // Rojo oscuro
-                    c.setForeground(new Color(252, 165, 165)); // Rojo claro
+                    c.setBackground(UIUtils.IS_DARK ? new Color(127, 29, 29) : new Color(254, 226, 226));
+                    c.setForeground(UIUtils.IS_DARK ? new Color(252, 165, 165) : new Color(153, 27, 27));
                 }
                 return c;
             }
         });
 
-        TouchScrollHelper.aplicar(new JScrollPane(table));
-        p.add(new JScrollPane(table), BorderLayout.CENTER);
+        JScrollPane scroll = new JScrollPane(table);
+        scroll.getViewport().setBackground(UIUtils.getBgColor());
+        scroll.setBackground(UIUtils.getBgColor());
+        scroll.setBorder(BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1));
+        TouchScrollHelper.aplicar(scroll);
+        p.add(scroll, BorderLayout.CENTER);
 
         JPanel pActions = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
         pActions.setOpaque(false);
@@ -268,7 +269,7 @@ public class ModalCobrarMesa extends JDialog {
         btnNuevaRonda.addActionListener(e -> {
             Modelo.CajaDao cajaDao = new Modelo.CajaDao();
             if (!cajaDao.hayCajaAbierta()) {
-                ToastNotification.advertencia(parentFrame, "⚠️ La caja está cerrada. Debe abrir caja para agregar rondas.");
+                ToastNotification.advertencia(parentFrame, "La caja está cerrada. Debe abrir caja para agregar rondas.");
                 return;
             }
             dispose();
@@ -282,14 +283,14 @@ public class ModalCobrarMesa extends JDialog {
 
     private JPanel crearPanelPorPersona() {
         JPanel p = new JPanel(new BorderLayout(10, 10));
-        p.setOpaque(false);
+        p.setBackground(UIUtils.getBgColor());
         p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // Control de comensales
         JPanel pTop = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 5));
         pTop.setOpaque(false);
         JLabel lblNumPer = new JLabel("Comensales:");
-        lblNumPer.setForeground(Color.WHITE);
+        lblNumPer.setForeground(UIUtils.getTextPrimary());
         lblNumPer.setFont(new Font("Segoe UI", Font.BOLD, 14));
 
         SpinnerNumberModel spinnerModel = new SpinnerNumberModel(2, 2, 20, 1);
@@ -315,18 +316,16 @@ public class ModalCobrarMesa extends JDialog {
             });
         }
 
-        JTable table = new JTable(model);
-        table.setRowHeight(40);
-        table.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        table.setBackground(new Color(30, 41, 59));
-        table.setForeground(Color.WHITE);
-        table.getTableHeader().setBackground(new Color(15, 23, 42));
-        table.getTableHeader().setForeground(new Color(226, 232, 240));
-        table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
+        JTable tablePer = new JTable(model);
+        UIUtils.estilarTabla(tablePer);
 
-        TouchScrollHelper.aplicar(new JScrollPane(table));
+        JScrollPane scroll = new JScrollPane(tablePer);
+        scroll.getViewport().setBackground(UIUtils.getBgColor());
+        scroll.setBackground(UIUtils.getBgColor());
+        scroll.setBorder(BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1));
+        TouchScrollHelper.aplicar(scroll);
         p.add(pTop, BorderLayout.NORTH);
-        p.add(new JScrollPane(table), BorderLayout.CENTER);
+        p.add(scroll, BorderLayout.CENTER);
 
         return p;
     }

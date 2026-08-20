@@ -83,15 +83,15 @@ public final class Sistema extends javax.swing.JFrame {
         initComponents();
         cargarPedidosDelDia(); // Cargar pedidos al iniciar la aplicación
         cargarSalasCombo(); // AÃ±ade esta lÃ­nea
-        ImageIcon img = new ImageIcon(getClass().getResource("/Img/pizzeria.png"));
+        ImageIcon img = new ImageIcon(getClass().getResource("/Img/as_symbol_clean.png"));
 
         jTabbedPane1.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 jTabbedPane1StateChanged(evt);
             }
         });
-        int logoW = labelLogo.getWidth() > 0 ? labelLogo.getWidth() : 199;
-        int logoH = labelLogo.getHeight() > 0 ? labelLogo.getHeight() : 150;
+        int logoW = labelLogo.getWidth() > 0 ? labelLogo.getWidth() : 180;
+        int logoH = labelLogo.getHeight() > 0 ? labelLogo.getHeight() : 130;
         Image igmEscalada = img.getImage().getScaledInstance(logoW, logoH, Image.SCALE_SMOOTH);
         Icon icono = new ImageIcon(igmEscalada);
         labelLogo.setIcon(icono);
@@ -102,7 +102,7 @@ public final class Sistema extends javax.swing.JFrame {
         btnEfectivo.setVisible(false);
         btnTransaccion.setVisible(false);
         jComboSalas.setVisible(false);
-        this.setTitle("Panel de Administración");
+        this.setTitle("AS Business Systems — POS");
 
         btnModificarUsua.setEnabled(false);
 
@@ -112,8 +112,8 @@ public final class Sistema extends javax.swing.JFrame {
         javax.swing.JButton[] btnsPrincipales = { btnSala, btnCaja, btnInventario, btnUsuarios, btnConfig, btnPlatos,
                 btnVentas };
         for (javax.swing.JButton btn : btnsPrincipales) {
-            btn.setBackground(new java.awt.Color(60, 63, 65));
-            btn.setForeground(java.awt.Color.WHITE);
+            btn.setBackground(new java.awt.Color(18, 20, 26)); // Deep Titanium
+            btn.setForeground(new java.awt.Color(240, 240, 245));
             btn.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 14));
             btn.setPreferredSize(new java.awt.Dimension(160, 55));
             btn.setFocusPainted(false);
@@ -122,12 +122,12 @@ public final class Sistema extends javax.swing.JFrame {
             btn.addMouseListener(new java.awt.event.MouseAdapter() {
                 @Override
                 public void mouseEntered(java.awt.event.MouseEvent evt) {
-                    btn.setBackground(new java.awt.Color(90, 93, 95));
+                    btn.setBackground(new java.awt.Color(32, 35, 46));
                 }
 
                 @Override
                 public void mouseExited(java.awt.event.MouseEvent evt) {
-                    btn.setBackground(new java.awt.Color(60, 63, 65));
+                    btn.setBackground(new java.awt.Color(18, 20, 26));
                 }
             });
         }
@@ -160,7 +160,7 @@ public final class Sistema extends javax.swing.JFrame {
         // Reloj en tiempo real
         javax.swing.Timer timerReloj = new javax.swing.Timer(1000, e -> {
             java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-            jLabel38.setText("COMUNEROS - " + sdf.format(new java.util.Date()));
+            jLabel38.setText("AS BUSINESS SYSTEMS - " + sdf.format(new java.util.Date()));
         });
         timerReloj.start();
 
@@ -232,15 +232,15 @@ public final class Sistema extends javax.swing.JFrame {
                     java.awt.Point p = table.getMousePosition();
                     int hoverRow = p != null ? table.rowAtPoint(p) : -1;
                     if (row == hoverRow) {
-                        c.setBackground(new java.awt.Color(51, 65, 85)); // Hover (Slate 700)
+                        c.setBackground(UIUtils.getCardHover());
                     } else if (row % 2 == 0) {
-                        c.setBackground(new java.awt.Color(30, 41, 59)); // Cebra par (Slate 800)
+                        c.setBackground(UIUtils.getPanelColor());
                     } else {
-                        c.setBackground(new java.awt.Color(15, 23, 42)); // Cebra impar (Slate 900)
+                        c.setBackground(UIUtils.getBgColor());
                     }
-                    c.setForeground(new java.awt.Color(241, 245, 249)); // Texto claro
+                    c.setForeground(UIUtils.getTextPrimary());
                 } else {
-                    c.setBackground(new java.awt.Color(59, 130, 246)); // Fila seleccionada (Azul)
+                    c.setBackground(UIUtils.IS_DARK ? new java.awt.Color(59, 130, 246) : new java.awt.Color(37, 99, 235));
                     c.setForeground(java.awt.Color.WHITE);
                 }
                 return c;
@@ -256,11 +256,11 @@ public final class Sistema extends javax.swing.JFrame {
                 java.awt.Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 if (!isSelected) {
                     if (row % 2 == 0) {
-                        c.setBackground(new java.awt.Color(15, 23, 42)); // Slate 900
+                        c.setBackground(UIUtils.getBgColor());
                     } else {
-                        c.setBackground(new java.awt.Color(30, 41, 59)); // Slate 800
+                        c.setBackground(UIUtils.getPanelColor());
                     }
-                    c.setForeground(new java.awt.Color(241, 245, 249));
+                    c.setForeground(UIUtils.getTextPrimary());
                 } else {
                     c.setBackground(new java.awt.Color(37, 99, 235)); // Azul activo
                     c.setForeground(java.awt.Color.WHITE);
@@ -274,7 +274,7 @@ public final class Sistema extends javax.swing.JFrame {
                     setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
                     setFont(getFontBold(13f));
                     if (column == 4 && !isSelected) {
-                        c.setForeground(new java.awt.Color(56, 189, 248)); // Cyan
+                        c.setForeground(UIUtils.IS_DARK ? new java.awt.Color(56, 189, 248) : new java.awt.Color(2, 132, 199));
                     }
                     if (value instanceof Number) {
                         setText(String.format("$ %,.0f", ((Number) value).doubleValue()));
@@ -293,16 +293,19 @@ public final class Sistema extends javax.swing.JFrame {
         });
         tblTemPlatos.setDefaultRenderer(Object.class, zebraRenderer);
 
-        // Validaciones numÃ©ricas para prevenir crashes
+        // Validaciones numéricas para prevenir crashes
         aplicarFiltroNumerico(txtMesas, false); // Solo enteros
         aplicarFiltroNumerico(txtPrecioPlato, true); // Permite decimales
 
-        // UX: Letras blancas sobre fondo oscuro en inputs
+        // UX: Textos de inputs acordes al tema
         javax.swing.JTextField[] camposInput = { txtNombreSala, txtMesas, txtTelefonoConfig, txtDireccionConfig,
                 txtMensaje, txtRucConfig, txtNombreConfig, txtCorreo, txtPass, txtNombre, txtNombrePlato,
                 txtPrecioPlato, txtBuscarPlato };
         for (javax.swing.JTextField campo : camposInput) {
-            campo.setForeground(java.awt.Color.WHITE);
+            if (campo != null) {
+                campo.setForeground(UIUtils.getTextPrimary());
+                campo.setBackground(UIUtils.getInputBg());
+            }
         }
 
         decorarSistemaUI();
@@ -522,12 +525,12 @@ public final class Sistema extends javax.swing.JFrame {
                 java.awt.Graphics2D g2 = (java.awt.Graphics2D) g.create();
                 g2.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING,
                         java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
-                java.awt.GradientPaint gp = new java.awt.GradientPaint(0, 0, new java.awt.Color(15, 23, 42), getWidth(),
-                        getHeight(), new java.awt.Color(30, 64, 175));
+                java.awt.GradientPaint gp = new java.awt.GradientPaint(0, 0, new java.awt.Color(5, 5, 8), getWidth(),
+                        getHeight(), new java.awt.Color(18, 20, 26));
                 g2.setPaint(gp);
                 g2.fillRect(0, 0, getWidth(), getHeight());
-                // CÃ­rculo decorativo
-                g2.setColor(new java.awt.Color(255, 255, 255, 10));
+                // Círculo decorativo
+                g2.setColor(new java.awt.Color(255, 255, 255, 6));
                 g2.fillOval(-50, 500, 200, 200);
                 g2.dispose();
             }
@@ -703,7 +706,7 @@ public final class Sistema extends javax.swing.JFrame {
             }
         });
 
-        btnSala.setBackground(new java.awt.Color(60, 63, 65));
+        btnSala.setBackground(new java.awt.Color(18, 20, 26));
         btnSala.setForeground(new java.awt.Color(255, 255, 255));
         btnSala.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/sala.png"))); // NOI18N
         btnSala.setText("      Salas");
@@ -716,7 +719,7 @@ public final class Sistema extends javax.swing.JFrame {
             }
         });
 
-        btnVentas.setBackground(new java.awt.Color(60, 63, 65));
+        btnVentas.setBackground(new java.awt.Color(18, 20, 26));
         btnVentas.setForeground(new java.awt.Color(255, 255, 255));
         btnVentas.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/pedidos.png"))); // NOI18N
         btnVentas.setText("      Pedidos");
@@ -728,7 +731,7 @@ public final class Sistema extends javax.swing.JFrame {
             }
         });
 
-        btnConfig.setBackground(new java.awt.Color(60, 63, 65));
+        btnConfig.setBackground(new java.awt.Color(18, 20, 26));
         btnConfig.setForeground(new java.awt.Color(255, 255, 255));
         btnConfig.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/config.png"))); // NOI18N
         btnConfig.setText("F5  Config");
@@ -745,7 +748,7 @@ public final class Sistema extends javax.swing.JFrame {
 
         tipo.setForeground(new java.awt.Color(255, 255, 255));
 
-        btnUsuarios.setBackground(new java.awt.Color(60, 63, 65));
+        btnUsuarios.setBackground(new java.awt.Color(18, 20, 26));
         btnUsuarios.setForeground(new java.awt.Color(255, 255, 255));
         btnUsuarios.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/usuarios.png"))); // NOI18N
         btnUsuarios.setText("F4  Usuarios");
@@ -757,7 +760,7 @@ public final class Sistema extends javax.swing.JFrame {
             }
         });
 
-        btnPlatos.setBackground(new java.awt.Color(60, 63, 65));
+        btnPlatos.setBackground(new java.awt.Color(18, 20, 26));
         btnPlatos.setForeground(new java.awt.Color(255, 255, 255));
         btnPlatos.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/platos.png"))); // NOI18N
         btnPlatos.setText("F1  Carta");
@@ -769,14 +772,14 @@ public final class Sistema extends javax.swing.JFrame {
             }
         });
 
-        btnInventario.setBackground(new java.awt.Color(60, 63, 65));
+        btnInventario.setBackground(new java.awt.Color(18, 20, 26));
         btnInventario.setForeground(new java.awt.Color(255, 255, 255));
         btnInventario.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/config.png"))); // NOI18N
         btnInventario.setText("F3  Inventario");
         btnInventario.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnInventario.setFocusable(false);
 
-        btnCaja.setBackground(new java.awt.Color(60, 63, 65));
+        btnCaja.setBackground(new java.awt.Color(18, 20, 26));
         btnCaja.setForeground(new java.awt.Color(255, 255, 255));
         btnCaja.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/config.png"))); // NOI18N
         btnCaja.setText("F2  Caja / Arqueo");
@@ -850,10 +853,14 @@ public final class Sistema extends javax.swing.JFrame {
         jLabel38.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
         getContentPane().add(jLabel38, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 0, 820, 90));
 
-        jScrollPane8.setBackground(new java.awt.Color(60, 63, 65));
+        jScrollPane8.setBackground(new java.awt.Color(8, 9, 12));
+        jScrollPane8.getViewport().setBackground(new java.awt.Color(8, 9, 12));
+        jScrollPane8.setBorder(null);
 
-        PanelSalas.setForeground(new java.awt.Color(0, 0, 0));
-        PanelSalas.setLayout(new java.awt.GridLayout(0, 5));
+        PanelSalas.setBackground(new java.awt.Color(8, 9, 12));
+        PanelSalas.setForeground(new java.awt.Color(255, 255, 255));
+        PanelSalas.setLayout(new java.awt.GridLayout(0, 5, 14, 14));
+        PanelSalas.setBorder(javax.swing.BorderFactory.createEmptyBorder(16, 16, 16, 16));
         jScrollPane8.setViewportView(PanelSalas);
 
         javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
@@ -875,7 +882,7 @@ public final class Sistema extends javax.swing.JFrame {
 
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jScrollPane3.setBackground(new java.awt.Color(60, 63, 65));
+        jScrollPane3.setBackground(new java.awt.Color(18, 20, 26));
 
         tableSala.setModel(new javax.swing.table.DefaultTableModel(
                 new Object[][] {},
@@ -1000,7 +1007,14 @@ public final class Sistema extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Salas", jPanel4);
 
-        PanelMesas.setLayout(new java.awt.GridLayout(0, 5));
+        jScrollPane9.setBackground(new java.awt.Color(8, 9, 12));
+        jScrollPane9.getViewport().setBackground(new java.awt.Color(8, 9, 12));
+        jScrollPane9.setBorder(null);
+
+        PanelMesas.setBackground(new java.awt.Color(8, 9, 12));
+        PanelMesas.setForeground(new java.awt.Color(255, 255, 255));
+        PanelMesas.setLayout(new java.awt.GridLayout(0, 5, 14, 14));
+        PanelMesas.setBorder(javax.swing.BorderFactory.createEmptyBorder(16, 16, 16, 16));
         jScrollPane9.setViewportView(PanelMesas);
 
         javax.swing.GroupLayout jPanel22Layout = new javax.swing.GroupLayout(jPanel22);
@@ -1266,7 +1280,7 @@ public final class Sistema extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Platos", jPanel23);
 
-        jPanel25.setBackground(new java.awt.Color(15, 23, 42)); // Slate 900
+        jPanel25.setBackground(new java.awt.Color(8, 9, 12)); // Slate 900
         jPanel25.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         tableFinalizar.setModel(new javax.swing.table.DefaultTableModel(
@@ -1285,8 +1299,8 @@ public final class Sistema extends javax.swing.JFrame {
         tableFinalizar.setRowHeight(32);
         UIUtils.estilarTablaOscura(tableFinalizar);
         jScrollPane13.setViewportView(tableFinalizar);
-        jScrollPane13.setBackground(new java.awt.Color(15, 23, 42));
-        jScrollPane13.getViewport().setBackground(new java.awt.Color(15, 23, 42));
+        jScrollPane13.setBackground(new java.awt.Color(8, 9, 12));
+        jScrollPane13.getViewport().setBackground(new java.awt.Color(8, 9, 12));
         if (tableFinalizar.getColumnModel().getColumnCount() > 0) {
             tableFinalizar.getColumnModel().getColumn(0).setMinWidth(40);
             tableFinalizar.getColumnModel().getColumn(0).setPreferredWidth(40);
@@ -1340,7 +1354,7 @@ public final class Sistema extends javax.swing.JFrame {
 
         totalFinalizar.setFont(new java.awt.Font("Segoe UI", 1, 24));
         totalFinalizar.setForeground(new java.awt.Color(52, 211, 153));
-        totalFinalizar.setBackground(new java.awt.Color(30, 41, 59));
+        totalFinalizar.setBackground(new java.awt.Color(18, 20, 26));
         totalFinalizar.setOpaque(true);
         totalFinalizar.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         totalFinalizar.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(16, 185, 129), 1, true));
@@ -1376,7 +1390,7 @@ public final class Sistema extends javax.swing.JFrame {
         btnEliminarPlatoFinalizar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jPanel25.add(btnEliminarPlatoFinalizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(885, 422, 335, 44));
 
-        btnPdfPedido.setBackground(new java.awt.Color(51, 65, 85));
+        btnPdfPedido.setBackground(new java.awt.Color(36, 38, 48));
         btnPdfPedido.setFont(new java.awt.Font("Segoe UI", 1, 13));
         btnPdfPedido.setForeground(new java.awt.Color(255, 255, 255));
         btnPdfPedido.setText("Reimprimir Ticket PDF");
@@ -1405,7 +1419,7 @@ public final class Sistema extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Finalizar Pedido", jPanel25);
 
-        jPanel6.setBackground(new java.awt.Color(70, 73, 75));
+        jPanel6.setBackground(new java.awt.Color(18, 20, 26));
         jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         TablePedidos.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -1449,21 +1463,21 @@ public final class Sistema extends javax.swing.JFrame {
         jLabel16.setVisible(false); // Ocultar para evitar solapamiento con los botones superiores
 
         txtTotalDiaTrans.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
-        txtTotalDiaTrans.setBackground(new java.awt.Color(30, 41, 59));
+        txtTotalDiaTrans.setBackground(new java.awt.Color(18, 20, 26));
         txtTotalDiaTrans.setForeground(new java.awt.Color(56, 189, 248));
         txtTotalDiaTrans.setEditable(false);
         txtTotalDiaTrans.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         jPanel6.add(txtTotalDiaTrans, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 552, 110, 36));
 
         txtTotalDia.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
-        txtTotalDia.setBackground(new java.awt.Color(30, 41, 59));
+        txtTotalDia.setBackground(new java.awt.Color(18, 20, 26));
         txtTotalDia.setForeground(new java.awt.Color(52, 211, 153));
         txtTotalDia.setEditable(false);
         txtTotalDia.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         jPanel6.add(txtTotalDia, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 552, 110, 36));
 
         txtPedidosDia.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
-        txtPedidosDia.setBackground(new java.awt.Color(30, 41, 59));
+        txtPedidosDia.setBackground(new java.awt.Color(18, 20, 26));
         txtPedidosDia.setForeground(new java.awt.Color(251, 191, 36));
         txtPedidosDia.setEditable(false);
         txtPedidosDia.setHorizontalAlignment(javax.swing.JTextField.CENTER);
@@ -1518,7 +1532,7 @@ public final class Sistema extends javax.swing.JFrame {
         jLabel32.setText("DATOS DE LA EMPRESA");
         jPanel7.add(jLabel32, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 40, -1, -1));
 
-        jPanel8.setBackground(new java.awt.Color(70, 73, 75));
+        jPanel8.setBackground(new java.awt.Color(18, 20, 26));
         jPanel8.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         txtIdConfig.addActionListener(new java.awt.event.ActionListener() {
@@ -1688,8 +1702,8 @@ public final class Sistema extends javax.swing.JFrame {
 
         jPanel12.add(jScrollPane6, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 40, 660, 520));
 
-        jPanel15.setBackground(new java.awt.Color(70, 73, 75));
-        jPanel15.setForeground(new java.awt.Color(70, 73, 75));
+        jPanel15.setBackground(new java.awt.Color(18, 20, 26));
+        jPanel15.setForeground(new java.awt.Color(18, 20, 26));
         jPanel15.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel34.setFont(new java.awt.Font("Times New Roman", 3, 14)); // NOI18N
@@ -1809,7 +1823,7 @@ public final class Sistema extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Usuarios", jPanel12);
 
-        jPanel11.setBackground(new java.awt.Color(70, 73, 75));
+        jPanel11.setBackground(new java.awt.Color(18, 20, 26));
         jPanel11.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel23.setFont(new java.awt.Font("Tahoma", 3, 12)); // NOI18N
@@ -2005,7 +2019,7 @@ public final class Sistema extends javax.swing.JFrame {
         dialogSalas.setSize(600, 400);
         dialogSalas.setLocationRelativeTo(this);
         dialogSalas.setLayout(new java.awt.BorderLayout(10, 10));
-        dialogSalas.getContentPane().setBackground(new java.awt.Color(30, 41, 59));
+        dialogSalas.getContentPane().setBackground(new java.awt.Color(18, 20, 26));
 
         javax.swing.JLabel titulo = new javax.swing.JLabel("Seleccione una Sala", javax.swing.SwingConstants.CENTER);
         titulo.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 20));
@@ -2020,12 +2034,12 @@ public final class Sistema extends javax.swing.JFrame {
         for (Sala s : salas) {
             JButton boton = new JButton(s.getNombre());
             boton.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 16));
-            boton.setBackground(new java.awt.Color(6, 78, 59));
-            boton.setForeground(new java.awt.Color(52, 211, 153));
+            boton.setBackground(new java.awt.Color(18, 20, 26));
+            boton.setForeground(java.awt.Color.WHITE);
             boton.setFocusPainted(false);
             boton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
             boton.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-                    javax.swing.BorderFactory.createLineBorder(new java.awt.Color(5, 150, 105), 2, true),
+                    javax.swing.BorderFactory.createLineBorder(new java.awt.Color(36, 38, 48), 2, true),
                     javax.swing.BorderFactory.createEmptyBorder(20, 15, 20, 15)));
             final int idSala = s.getId();
             final int cantMesas = s.getMesas();
@@ -2352,7 +2366,7 @@ public final class Sistema extends javax.swing.JFrame {
 
         javax.swing.JDialog dialog = new javax.swing.JDialog(this, "Detalle de Comanda - Pedido #" + id_pedido, true);
         dialog.setLayout(new java.awt.BorderLayout());
-        dialog.getContentPane().setBackground(new java.awt.Color(15, 23, 42));
+        dialog.getContentPane().setBackground(new java.awt.Color(8, 9, 12));
 
         javax.swing.JPanel header = new javax.swing.JPanel(new java.awt.GridLayout(2, 1, 4, 4));
         header.setOpaque(false);
@@ -2412,7 +2426,7 @@ public final class Sistema extends javax.swing.JFrame {
         javax.swing.JPanel pnlBtns = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 10, 0));
         pnlBtns.setOpaque(false);
 
-        javax.swing.JButton btnCerrar = UIUtils.crearBoton("Cerrar", new java.awt.Color(51, 65, 85));
+        javax.swing.JButton btnCerrar = UIUtils.crearBoton("Cerrar", new java.awt.Color(36, 38, 48));
         btnCerrar.addActionListener(e -> dialog.dispose());
 
         javax.swing.JButton btnReimp = UIUtils.crearBoton("🖨 Reimprimir PDF", UIUtils.COLOR_ACCENT_BLUE);
@@ -2445,20 +2459,20 @@ public final class Sistema extends javax.swing.JFrame {
         final javax.swing.JDialog dialog = new javax.swing.JDialog(this, "Buscar y Agregar Plato", true);
         dialog.setSize(600, 450);
         dialog.setLocationRelativeTo(this);
-        dialog.getContentPane().setBackground(new java.awt.Color(15, 23, 42)); // Slate 900
+        dialog.getContentPane().setBackground(new java.awt.Color(8, 9, 12)); // Slate 900
         dialog.setLayout(new java.awt.BorderLayout(10, 10));
 
         // Colors & Fonts
         final java.awt.Color slate100 = new java.awt.Color(241, 245, 249);
         final java.awt.Color slate300 = new java.awt.Color(203, 213, 225);
-        final java.awt.Color slate700 = new java.awt.Color(51, 65, 85);
-        final java.awt.Color slate800 = new java.awt.Color(30, 41, 59);
+        final java.awt.Color slate700 = new java.awt.Color(36, 38, 48);
+        final java.awt.Color slate800 = new java.awt.Color(18, 20, 26);
         java.awt.Font fontGeneral = new java.awt.Font("Outfit", java.awt.Font.PLAIN, 14);
         java.awt.Font fontBold = new java.awt.Font("Outfit", java.awt.Font.BOLD, 14);
 
         // Top search panel
         javax.swing.JPanel pnlTop = new javax.swing.JPanel(new java.awt.BorderLayout(5, 5));
-        pnlTop.setBackground(new java.awt.Color(15, 23, 42));
+        pnlTop.setBackground(new java.awt.Color(8, 9, 12));
         pnlTop.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         javax.swing.JLabel lblBuscar = new javax.swing.JLabel("Buscar Plato: ");
@@ -2495,7 +2509,7 @@ public final class Sistema extends javax.swing.JFrame {
 
         // Scroll pane
         javax.swing.JScrollPane scrollPane = new javax.swing.JScrollPane(tblPlatos);
-        scrollPane.getViewport().setBackground(new java.awt.Color(15, 23, 42));
+        scrollPane.getViewport().setBackground(new java.awt.Color(8, 9, 12));
         scrollPane.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 10, 0, 10));
         dialog.add(scrollPane, java.awt.BorderLayout.CENTER);
 
@@ -2529,7 +2543,7 @@ public final class Sistema extends javax.swing.JFrame {
         // Bottom action panel
         javax.swing.JPanel pnlBottom = new javax.swing.JPanel(
                 new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 10, 10));
-        pnlBottom.setBackground(new java.awt.Color(15, 23, 42));
+        pnlBottom.setBackground(new java.awt.Color(8, 9, 12));
 
         final javax.swing.JButton btnAgregar = new javax.swing.JButton("Agregar");
         btnAgregar.setBackground(new java.awt.Color(34, 197, 94));
@@ -2609,8 +2623,8 @@ public final class Sistema extends javax.swing.JFrame {
                 int idDetalle = Integer
                         .parseInt(tableFinalizar.getValueAt(tableFinalizar.getSelectedRow(), 0).toString());
                 if (pedDao.eliminarDetalle(idDetalle)) {
-                    modelo = (DefaultTableModel) tableFinalizar.getModel();
-                    modelo.removeRow(tableFinalizar.getSelectedRow());
+                    DefaultTableModel modFin = (DefaultTableModel) tableFinalizar.getModel();
+                    modFin.removeRow(tableFinalizar.getSelectedRow());
                     TotalPagar(tableFinalizar, totalFinalizar);
                     ToastNotification.exito(this, "Plato eliminado del pedido");
                 } else {
@@ -2726,9 +2740,11 @@ public final class Sistema extends javax.swing.JFrame {
     }
 
     private void btnEliminarTempPlatoActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnEliminarTempPlatoActionPerformed
-        modelo = (DefaultTableModel) tableMenu.getModel();
-        modelo.removeRow(tableMenu.getSelectedRow());
-        TotalPagar(tableMenu, totalMenu);
+        if (tableMenu.getSelectedRow() >= 0) {
+            DefaultTableModel modMenu = (DefaultTableModel) tableMenu.getModel();
+            modMenu.removeRow(tableMenu.getSelectedRow());
+            TotalPagar(tableMenu, totalMenu);
+        }
     }// GEN-LAST:event_btnEliminarTempPlatoActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton2ActionPerformed
@@ -3432,10 +3448,13 @@ public final class Sistema extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     private void TotalPagar(JTable tabla, JLabel label) {
+        if (tabla == null) return;
         double consumo = 0.0;
-        double pagado = 0.0;
         int numFila = tabla.getRowCount();
         boolean esFinalizar = (tabla == tableFinalizar);
+
+        // Validar que la tabla tenga al menos 5 columnas para evitar leer índices erróneos
+        if (tabla.getColumnCount() < 5) return;
 
         for (int i = 0; i < numFila; i++) {
             Object objNom = tabla.getValueAt(i, 1);
@@ -3444,15 +3463,13 @@ public final class Sistema extends javax.swing.JFrame {
             double subtotal = 0.0;
             if (objSub != null) {
                 try {
-                    String s = objSub.toString().replaceAll("[^0-9.]", "");
+                    String s = objSub.toString().replace("$", "").replace(",", "").trim();
                     if (!s.isEmpty()) {
                         subtotal = Double.parseDouble(s);
                     }
                 } catch (Exception ignored) {}
             }
-            if (nombre.equalsIgnoreCase("PAGO EFECTIVO") || nombre.equalsIgnoreCase("PAGO TRANSACCION")) {
-                pagado += subtotal;
-            } else {
+            if (!nombre.equalsIgnoreCase("PAGO EFECTIVO") && !nombre.equalsIgnoreCase("PAGO TRANSACCION")) {
                 consumo += subtotal;
             }
         }
@@ -3468,10 +3485,9 @@ public final class Sistema extends javax.swing.JFrame {
     }
 
     private void LimpiarTableMenu() {
-        tmp = (DefaultTableModel) tableMenu.getModel();
-        int fila = tableMenu.getRowCount();
-        for (int i = 0; i < fila; i++) {
-            tmp.removeRow(0);
+        if (tableMenu != null && tableMenu.getModel() instanceof DefaultTableModel) {
+            DefaultTableModel mod = (DefaultTableModel) tableMenu.getModel();
+            mod.setRowCount(0);
         }
     }
 
@@ -3510,8 +3526,8 @@ public final class Sistema extends javax.swing.JFrame {
                 try {
                     java.util.List<Pedido> Listar = get();
                     EstiloTablas color = new EstiloTablas();
-                    modelo = (DefaultTableModel) TablePedidos.getModel();
-                    modelo.setRowCount(0);
+                    DefaultTableModel mod = (DefaultTableModel) TablePedidos.getModel();
+                    mod.setRowCount(0);
                     txtPedidosDia.setText(Listar.size() + " pedidos");
                     // Identificar el número de ronda para mesas con múltiples pedidos en el turno
                     java.util.Map<String, java.util.List<Integer>> mesaPedidosMap = new java.util.HashMap<>();
@@ -3546,7 +3562,7 @@ public final class Sistema extends javax.swing.JFrame {
                         ob[6] = Listar.get(i).getEstado();
                         ob[7] = Listar.get(i).getPago_efectivo();
                         ob[8] = Listar.get(i).getPago_transaccion();
-                        modelo.addRow(ob);
+                        mod.addRow(ob);
                     }
                     // Ocultar columnas auxiliares de pago (col 7 y 8)
                     TablePedidos.getColumnModel().getColumn(7).setMinWidth(0);
@@ -3555,9 +3571,9 @@ public final class Sistema extends javax.swing.JFrame {
                     TablePedidos.getColumnModel().getColumn(8).setMinWidth(0);
                     TablePedidos.getColumnModel().getColumn(8).setMaxWidth(0);
                     TablePedidos.getColumnModel().getColumn(8).setWidth(0);
-                    colorHeader(TablePedidos);
+                    UIUtils.estilarTabla(TablePedidos);
                     TablePedidos.setDefaultRenderer(Object.class, color);
-                    // Actualizar totales DESPUÃ‰S de que la conexiÃ³n anterior ya fue liberada
+                    // Actualizar totales DESPUÉS de que la conexión anterior ya fue liberada
                     actualizarTotalDia();
                 } catch (Exception e) {
                     System.out.println("Error al listar pedidos: " + e.getMessage());
@@ -3567,47 +3583,44 @@ public final class Sistema extends javax.swing.JFrame {
     }
 
     public void LimpiarTable() {
-        for (int i = 0; i < modelo.getRowCount(); i++) {
-            modelo.removeRow(i);
-            i = i - 1;
+        if (TablePlatos != null && TablePlatos.getModel() instanceof DefaultTableModel) {
+            ((DefaultTableModel) TablePlatos.getModel()).setRowCount(0);
         }
     }
 
     private void ListarUsuarios() {
         List<Login> Listar = lgDao.ListarUsuarios();
-        modelo = (DefaultTableModel) TableUsuarios.getModel();
-        modelo.setRowCount(0);
+        DefaultTableModel mod = (DefaultTableModel) TableUsuarios.getModel();
+        mod.setRowCount(0);
         Object[] ob = new Object[4];
         for (int i = 0; i < Listar.size(); i++) {
             ob[0] = Listar.get(i).getId();
             ob[1] = Listar.get(i).getNombre();
             ob[2] = Listar.get(i).getCorreo();
             ob[3] = Listar.get(i).getRol();
-            modelo.addRow(ob);
+            mod.addRow(ob);
         }
-        colorHeader(TableUsuarios);
+        UIUtils.estilarTabla(TableUsuarios);
     }
 
     private void ListarSalas() {
         List<Sala> Listar = slDao.Listar();
-        modelo = (DefaultTableModel) tableSala.getModel();
-        modelo.setRowCount(0);
+        DefaultTableModel mod = (DefaultTableModel) tableSala.getModel();
+        mod.setRowCount(0);
         Object[] ob = new Object[3];
         for (int i = 0; i < Listar.size(); i++) {
             ob[0] = Listar.get(i).getId();
             ob[1] = Listar.get(i).getNombre();
             ob[2] = Listar.get(i).getMesas();
-            modelo.addRow(ob);
+            mod.addRow(ob);
         }
-        colorHeader(tableSala);
+        UIUtils.estilarTabla(tableSala);
     }
 
     private void colorHeader(JTable tabla) {
-        tabla.setModel(modelo);
-        JTableHeader header = tabla.getTableHeader();
-        header.setOpaque(false);
-        header.setBackground(new Color(0, 110, 255));
-        header.setForeground(Color.white);
+        if (tabla != null) {
+            UIUtils.estilarTabla(tabla);
+        }
     }
 
     private void LimpiarSala() {
@@ -3728,15 +3741,15 @@ public final class Sistema extends javax.swing.JFrame {
         for (javax.swing.JTable t : tablas) {
             if (t == null)
                 continue;
-            t.setBackground(new java.awt.Color(15, 23, 42));
+            t.setBackground(new java.awt.Color(8, 9, 12));
             t.setFillsViewportHeight(true);
             if (t.getParent() instanceof javax.swing.JViewport) {
-                t.getParent().setBackground(new java.awt.Color(15, 23, 42));
+                t.getParent().setBackground(new java.awt.Color(8, 9, 12));
             }
             javax.swing.table.JTableHeader header = t.getTableHeader();
             if (header != null) {
                 header.setFont(getFontBold(13f));
-                header.setBackground(new java.awt.Color(30, 41, 59)); // Azul oscuro pizarra
+                header.setBackground(new java.awt.Color(18, 20, 26)); // Azul oscuro pizarra
                 header.setForeground(java.awt.Color.WHITE);
                 header.setReorderingAllowed(false);
 
@@ -3746,12 +3759,12 @@ public final class Sistema extends javax.swing.JFrame {
                             boolean isSelected, boolean hasFocus, int row, int column) {
                         java.awt.Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
                                 row, column);
-                        c.setBackground(new java.awt.Color(30, 41, 59));
+                        c.setBackground(new java.awt.Color(18, 20, 26));
                         c.setForeground(java.awt.Color.WHITE);
                         setFont(getFontBold(13f));
                         setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                         setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 1,
-                                new java.awt.Color(51, 65, 85)));
+                                new java.awt.Color(36, 38, 48)));
                         return c;
                     }
                 });
@@ -3764,7 +3777,7 @@ public final class Sistema extends javax.swing.JFrame {
                 txtPrecioPlato, txtBuscarPlato };
         for (javax.swing.JTextField tf : camposInput) {
             tf.setFont(getFontRegular(14f));
-            tf.setBackground(new java.awt.Color(51, 65, 85)); // Slate 700
+            tf.setBackground(new java.awt.Color(36, 38, 48)); // Slate 700
             tf.setForeground(java.awt.Color.WHITE);
             tf.setCaretColor(new java.awt.Color(96, 165, 250)); // Azul brillante
             tf.setBorder(javax.swing.BorderFactory.createCompoundBorder(
@@ -3793,15 +3806,15 @@ public final class Sistema extends javax.swing.JFrame {
 
         // --- 5. JComboBox Moderno ---
         cbxRol.setFont(getFontRegular(14f));
-        cbxRol.setBackground(new java.awt.Color(51, 65, 85)); // Slate 700
+        cbxRol.setBackground(new java.awt.Color(36, 38, 48)); // Slate 700
         cbxRol.setForeground(java.awt.Color.WHITE);
 
         // --- 6. Paneles estilo "Card" (Tarjetas) ---
         javax.swing.JPanel[] cards = { jPanel10, jPanel15, jPanel2, jPanel8 };
         for (javax.swing.JPanel p : cards) {
-            p.setBackground(new java.awt.Color(30, 41, 59)); // Slate 800
+            p.setBackground(new java.awt.Color(18, 20, 26)); // Slate 800
             p.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-                    new RoundedBorder(12, new java.awt.Color(51, 65, 85), new java.awt.Insets(12, 12, 12, 12)), // Borde
+                    new RoundedBorder(12, new java.awt.Color(36, 38, 48), new java.awt.Insets(12, 12, 12, 12)), // Borde
                                                                                                                 // Slate
                                                                                                                 // 600
                     javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0)));
@@ -3910,20 +3923,20 @@ public final class Sistema extends javax.swing.JFrame {
             }
         });
 
-        // --- 9. Estilo General de Fondos y Transparencias (Modo Oscuro Slate) ---
-        java.awt.Color darkSlate = new java.awt.Color(15, 23, 42); // Slate 900
-        this.getContentPane().setBackground(darkSlate);
-        jTabbedPane1.setBackground(darkSlate);
+        // --- 9. Estilo General de Fondos y Transparencias (AS Business Systems Monochrome) ---
+        java.awt.Color darkObsidian = UIUtils.COLOR_BG_DARK;
+        this.getContentPane().setBackground(darkObsidian);
+        jTabbedPane1.setBackground(darkObsidian);
         jTabbedPane1.setOpaque(true);
         labelLogo.setOpaque(false);
         LabelVendedor.setOpaque(false);
 
-        // Iterar de forma segura sobre todas las pestaÃ±as registradas para cambiar su
+        // Iterar de forma segura sobre todas las pestañas registradas para cambiar su
         // fondo y estilizar subcomponentes
         for (int i = 0; i < jTabbedPane1.getTabCount(); i++) {
             java.awt.Component tabComponent = jTabbedPane1.getComponentAt(i);
             if (tabComponent != null) {
-                tabComponent.setBackground(darkSlate);
+                tabComponent.setBackground(darkObsidian);
                 if (tabComponent instanceof javax.swing.JComponent) {
                     ((javax.swing.JComponent) tabComponent).setOpaque(true);
                 }
@@ -3933,14 +3946,17 @@ public final class Sistema extends javax.swing.JFrame {
             }
         }
 
-        // --- 10. CatÃ¡logo Visual de Platos (Grid de Tarjetas) ---
+        // --- 10. Catálogo Visual de Platos (Grid de Tarjetas) ---
         panelCardPlatos = new javax.swing.JPanel(new java.awt.BorderLayout());
-        panelCardPlatos.setBackground(new java.awt.Color(15, 23, 42)); // Slate 900
+        panelCardPlatos.setBackground(UIUtils.getBgColor());
         gridPanelPlatos = new javax.swing.JPanel(new java.awt.GridLayout(0, 2, 8, 8));
-        gridPanelPlatos.setBackground(new java.awt.Color(15, 23, 42));
+        gridPanelPlatos.setBackground(UIUtils.getBgColor());
         gridPanelPlatos.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 8, 8, 8));
         panelCardPlatos.add(gridPanelPlatos, java.awt.BorderLayout.NORTH);
         jScrollPane10.setViewportView(panelCardPlatos);
+        jScrollPane10.getViewport().setBackground(UIUtils.getBgColor());
+        jScrollPane10.setBackground(UIUtils.getBgColor());
+        jScrollPane10.setBorder(javax.swing.BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1));
         jScrollPane10.getVerticalScrollBar().setUnitIncrement(16);
 
         // --- 11. Dashboard de Ventas ---
@@ -3970,19 +3986,18 @@ public final class Sistema extends javax.swing.JFrame {
     }
 
     private void styleComponentsRecursively(java.awt.Container container) {
-        java.awt.Color bgDark = new java.awt.Color(15, 23, 42); // Slate 900
-        java.awt.Color bgCard = new java.awt.Color(30, 41, 59); // Slate 800
-        java.awt.Color bgInput = new java.awt.Color(51, 65, 85); // Slate 700
-        java.awt.Color textLight = new java.awt.Color(241, 245, 249); // Slate 100
+        if (container == null) return;
+        java.awt.Color bgDark = UIUtils.getBgColor();
+        java.awt.Color bgCard = UIUtils.getPanelColor();
+        java.awt.Color bgInput = UIUtils.getInputBg();
+        java.awt.Color textLight = UIUtils.getTextPrimary();
+        java.awt.Color borderCol = UIUtils.getBorderColor();
 
         for (java.awt.Component child : container.getComponents()) {
             if (child instanceof javax.swing.JPanel) {
                 javax.swing.JPanel p = (javax.swing.JPanel) child;
-                if (p != jPanel10 && p != jPanel15 && p != jPanel2 && p != jPanel8 && p != jPanel1) {
+                if (p != topNavbarPOS && p != jPanel9) {
                     p.setBackground(bgDark);
-                    p.setOpaque(true);
-                } else if (p != jPanel1) {
-                    p.setBackground(bgCard);
                     p.setOpaque(true);
                 }
             } else if (child instanceof javax.swing.JTabbedPane) {
@@ -3991,15 +4006,47 @@ public final class Sistema extends javax.swing.JFrame {
                 tp.setForeground(textLight);
                 tp.setOpaque(true);
             } else if (child instanceof javax.swing.JLabel) {
-                if (child.getParent() != jPanel1 && child != jLabel38) {
+                if (child == totalFinalizar) {
+                    totalFinalizar.setBackground(bgCard);
+                    totalFinalizar.setForeground(UIUtils.IS_DARK ? new java.awt.Color(52, 211, 153) : new java.awt.Color(5, 150, 105));
+                    totalFinalizar.setBorder(javax.swing.BorderFactory.createLineBorder(
+                            UIUtils.IS_DARK ? new java.awt.Color(16, 185, 129) : new java.awt.Color(5, 150, 105), 2, true));
+                } else if (child == totalMenu) {
+                    totalMenu.setForeground(UIUtils.IS_DARK ? new java.awt.Color(52, 211, 153) : new java.awt.Color(5, 150, 105));
+                } else if (child.getParent() != topNavbarPOS && child != jLabel38) {
                     child.setForeground(textLight);
-                    child.setFont(getFontBold(13f));
+                }
+            } else if (child instanceof javax.swing.JButton) {
+                javax.swing.JButton btn = (javax.swing.JButton) child;
+                if (btn.getParent() != topNavbarPOS && btn.getParent() != PanelMesas && btn.getParent() != PanelSalas) {
+                    if (btn == btnFinalizar || btn == btnGenerarPedido) {
+                        btn.setBackground(new java.awt.Color(16, 185, 129));
+                        btn.setForeground(java.awt.Color.WHITE);
+                    } else if (btn == btnEliminarPlatoFinalizar || btn == btnEliminarTempPlato || btn == btnEliminarPedido) {
+                        btn.setBackground(new java.awt.Color(220, 38, 38));
+                        btn.setForeground(java.awt.Color.WHITE);
+                    } else if (btn == btnAddPlatoFinalizar || btn == jButton2) {
+                        btn.setBackground(UIUtils.IS_DARK ? new java.awt.Color(37, 99, 235) : new java.awt.Color(2, 132, 199));
+                        btn.setForeground(java.awt.Color.WHITE);
+                    } else if (btn == btnPdfPedido || btn == BtnImprimirDia) {
+                        btn.setBackground(UIUtils.IS_DARK ? new java.awt.Color(36, 38, 48) : new java.awt.Color(226, 232, 240));
+                        btn.setForeground(textLight);
+                        btn.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+                                javax.swing.BorderFactory.createLineBorder(borderCol, 1, true),
+                                javax.swing.BorderFactory.createEmptyBorder(6, 12, 6, 12)));
+                    } else {
+                        btn.setBackground(bgCard);
+                        btn.setForeground(textLight);
+                        btn.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+                                javax.swing.BorderFactory.createLineBorder(borderCol, 1, true),
+                                javax.swing.BorderFactory.createEmptyBorder(6, 12, 6, 12)));
+                    }
                 }
             } else if (child instanceof javax.swing.JScrollPane) {
                 child.setBackground(bgDark);
                 javax.swing.JScrollPane sp = (javax.swing.JScrollPane) child;
                 sp.getViewport().setBackground(bgDark);
-                sp.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(51, 65, 85), 1));
+                sp.setBorder(javax.swing.BorderFactory.createLineBorder(borderCol, 1));
             } else if (child instanceof javax.swing.JViewport) {
                 child.setBackground(bgDark);
             } else if (child instanceof javax.swing.JTable) {
@@ -4007,26 +4054,34 @@ public final class Sistema extends javax.swing.JFrame {
                 t.setBackground(bgDark);
                 t.setForeground(textLight);
                 t.setFont(getFontRegular(14f));
-                t.setGridColor(new java.awt.Color(51, 65, 85));
+                t.setGridColor(borderCol);
                 t.setFillsViewportHeight(true);
-                t.setSelectionBackground(new java.awt.Color(30, 64, 175));
-                t.setSelectionForeground(java.awt.Color.WHITE);
+                t.setSelectionBackground(UIUtils.IS_DARK ? new java.awt.Color(38, 42, 54) : new java.awt.Color(226, 232, 240));
+                t.setSelectionForeground(textLight);
                 if (t.getTableHeader() != null) {
                     t.getTableHeader().setBackground(bgCard);
-                    t.getTableHeader().setForeground(java.awt.Color.WHITE);
+                    t.getTableHeader().setForeground(textLight);
                 }
             } else if (child instanceof javax.swing.JTextField || child instanceof javax.swing.JPasswordField) {
                 child.setBackground(bgInput);
-                child.setForeground(textLight);
+                if (child == txtNumMesaFinalizar || child == txtPedidosDia) {
+                    child.setForeground(UIUtils.IS_DARK ? new java.awt.Color(251, 191, 36) : new java.awt.Color(217, 119, 6));
+                } else if (child == txtTotalDia) {
+                    child.setForeground(UIUtils.IS_DARK ? new java.awt.Color(52, 211, 153) : new java.awt.Color(5, 150, 105));
+                } else if (child == txtTotalDiaTrans) {
+                    child.setForeground(UIUtils.IS_DARK ? new java.awt.Color(56, 189, 248) : new java.awt.Color(2, 132, 199));
+                } else {
+                    child.setForeground(textLight);
+                }
                 child.setFont(getFontRegular(14f));
                 if (child instanceof javax.swing.JTextField) {
-                    ((javax.swing.JTextField) child).setCaretColor(new java.awt.Color(96, 165, 250));
+                    ((javax.swing.JTextField) child).setCaretColor(textLight);
                 }
             } else if (child instanceof javax.swing.JTextPane) {
                 child.setBackground(bgInput);
                 child.setForeground(textLight);
                 child.setFont(getFontRegular(14f));
-                ((javax.swing.JTextPane) child).setCaretColor(new java.awt.Color(96, 165, 250));
+                ((javax.swing.JTextPane) child).setCaretColor(textLight);
             } else if (child instanceof javax.swing.JComboBox) {
                 child.setBackground(bgInput);
                 child.setForeground(textLight);
@@ -4074,23 +4129,28 @@ public final class Sistema extends javax.swing.JFrame {
     }
 
     private void panelSalas() {
+        if (PanelSalas != null) {
+            PanelSalas.removeAll();
+            PanelSalas.setBackground(UIUtils.getBgColor());
+            PanelSalas.setOpaque(true);
+        }
         List<Sala> Listar = slDao.Listar();
         for (int i = 0; i < Listar.size(); i++) {
             int id = Listar.get(i).getId();
             int cantidad = Listar.get(i).getMesas();
             JButton boton = new JButton(Listar.get(i).getNombre(),
-                    new ImageIcon(getClass().getResource("/Img/salas.png"))) {
+                    IconManager.getIcon("salas", 36)) {
                 @Override
                 protected void paintComponent(java.awt.Graphics g) {
                     java.awt.Graphics2D g2 = (java.awt.Graphics2D) g.create();
                     g2.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING,
                             java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
                     if (getModel().isPressed()) {
-                        g2.setColor(new java.awt.Color(15, 23, 42)); // Slate 900
+                        g2.setColor(UIUtils.getBgColor());
                     } else if (getModel().isRollover()) {
-                        g2.setColor(new java.awt.Color(51, 65, 85)); // Slate 700
+                        g2.setColor(UIUtils.getCardHover());
                     } else {
-                        g2.setColor(new java.awt.Color(30, 41, 59)); // Slate 800
+                        g2.setColor(UIUtils.getPanelColor());
                     }
                     g2.fillRoundRect(0, 0, getWidth(), getHeight(), 16, 16);
                     g2.dispose();
@@ -4101,8 +4161,8 @@ public final class Sistema extends javax.swing.JFrame {
             boton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
             boton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
             boton.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 14));
-            boton.setForeground(new java.awt.Color(241, 245, 249)); // Slate 100
-            boton.setBorder(new RoundedBorder(16, new java.awt.Color(51, 65, 85), new java.awt.Insets(12, 12, 12, 12)));
+            boton.setForeground(UIUtils.getTextPrimary());
+            boton.setBorder(new RoundedBorder(16, UIUtils.getBorderColor(), new java.awt.Insets(12, 12, 12, 12)));
             boton.setFocusPainted(false);
             boton.setOpaque(false);
             boton.setContentAreaFilled(false);
@@ -4118,7 +4178,7 @@ public final class Sistema extends javax.swing.JFrame {
                 @Override
                 public void mouseExited(java.awt.event.MouseEvent evt) {
                     boton.setBorder(
-                            new RoundedBorder(16, new java.awt.Color(51, 65, 85), new java.awt.Insets(12, 12, 12, 12)));
+                            new RoundedBorder(16, UIUtils.getBorderColor(), new java.awt.Insets(12, 12, 12, 12)));
                 }
             });
 
@@ -4132,19 +4192,63 @@ public final class Sistema extends javax.swing.JFrame {
         }
     }
 
+    private void aplicarEstadoBotonMesa(JButton boton, int verificar, String estadoPed, boolean todasListas, String textoBtn) {
+        boton.putClientProperty("verificar", verificar);
+        boton.putClientProperty("estadoPed", estadoPed);
+        boton.putClientProperty("todasListas", todasListas);
+
+        if (!textoBtn.equals(boton.getText())) {
+            boton.setText(textoBtn);
+        }
+
+        if (verificar > 0) {
+            if (todasListas || "PREPARADO".equalsIgnoreCase(estadoPed)) {
+                boton.setBackground(UIUtils.IS_DARK ? new java.awt.Color(28, 24, 16) : new java.awt.Color(254, 243, 199));
+                boton.setForeground(UIUtils.IS_DARK ? new java.awt.Color(254, 240, 138) : new java.awt.Color(120, 53, 15));
+                boton.setBorder(new RoundedBorder(16, new java.awt.Color(245, 158, 11),
+                        new java.awt.Insets(12, 12, 12, 12)));
+                boton.setToolTipText("Todas las rondas listas. Click para cobrar.");
+            } else {
+                boton.setBackground(UIUtils.IS_DARK ? new java.awt.Color(28, 18, 22) : new java.awt.Color(255, 228, 230));
+                boton.setForeground(UIUtils.IS_DARK ? new java.awt.Color(254, 205, 211) : new java.awt.Color(136, 19, 55));
+                boton.setBorder(new RoundedBorder(16, new java.awt.Color(244, 63, 94),
+                        new java.awt.Insets(12, 12, 12, 12)));
+                boton.setToolTipText("Mesa ocupada. Click para ver comanda.");
+            }
+        } else {
+            boton.setBackground(UIUtils.getPanelColor());
+            boton.setForeground(UIUtils.getTextPrimary());
+            boton.setBorder(new RoundedBorder(16, UIUtils.getBorderColor(),
+                    new java.awt.Insets(12, 12, 12, 12)));
+            boton.setToolTipText("Mesa libre. Click para tomar pedido.");
+        }
+        boton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+    }
+
     // crear mesas
     private void panelMesas(int id_sala, int cant) {
         salaActivaId = id_sala;
         salaActivaCant = cant;
         final int cantFinal = (cant < 4) ? 4 : cant;
+        if (PanelMesas != null) {
+            PanelMesas.removeAll();
+            PanelMesas.setBackground(UIUtils.getBgColor());
+            PanelMesas.setOpaque(true);
+        }
 
-        // 1. Crear todos los botones primero (sin consultas a BD)
+        final boolean isDark = UIUtils.IS_DARK;
+        final String titleColor = isDark ? "#ffffff" : "#0f172a";
+        final String freeColor = isDark ? "#34D399" : "#059669";
+        final String occColor = isDark ? "#FB7185" : "#E11D48";
+        final String readyColor = isDark ? "#FCD34D" : "#D97706";
+
+        // 1. Crear todos los botones primero (con colores del tema activo)
         JButton[] botones = new JButton[cantFinal];
         for (int i = 0; i < cantFinal; i++) {
-            int num_mesa = i + 1;
-            String etiqueta = (num_mesa > cantFinal - 4) ? "DOMICILIO N\u00b0: " + num_mesa
+            final int num_mesa = i + 1;
+            final String etiqueta = (num_mesa > cantFinal - 4) ? "DOMICILIO N\u00b0: " + num_mesa
                     : "MESA N\u00b0: " + num_mesa;
-            JButton boton = new JButton(etiqueta, new ImageIcon(getClass().getResource(""))) {
+            JButton boton = new JButton(etiqueta) {
                 @Override
                 protected void paintComponent(java.awt.Graphics g) {
                     java.awt.Graphics2D g2 = (java.awt.Graphics2D) g.create();
@@ -4159,14 +4263,75 @@ public final class Sistema extends javax.swing.JFrame {
             boton.setOpaque(false);
             boton.setContentAreaFilled(false);
             boton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-            boton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-            boton.setBackground(new java.awt.Color(30, 41, 59)); // Slate 800
-            boton.setForeground(new java.awt.Color(148, 163, 184)); // Slate 400
-            boton.setBorder(new RoundedBorder(16, new java.awt.Color(51, 65, 85), new java.awt.Insets(10, 10, 10, 10)));
+            boton.setVerticalTextPosition(javax.swing.SwingConstants.CENTER);
+            boton.setBackground(UIUtils.getPanelColor());
+            boton.setForeground(UIUtils.getTextPrimary());
+            boton.setBorder(new RoundedBorder(16, UIUtils.getBorderColor(), new java.awt.Insets(12, 12, 12, 12)));
             boton.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 14));
             boton.setFocusable(false);
-            boton.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
-            boton.setToolTipText("Cargando estado...");
+            boton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+            boton.setText("<html><center><font size='4' color='" + titleColor + "'><b>" + etiqueta + "</b></font><br><font size='2' color='" + freeColor + "'>LIBRE</font></center></html>");
+            boton.putClientProperty("verificar", 0);
+
+            // Listener permanente basado en estado dinámico del botón
+            boton.addActionListener((ActionEvent e) -> {
+                int idPedidoActual = (boton.getClientProperty("verificar") instanceof Integer)
+                        ? (Integer) boton.getClientProperty("verificar") : 0;
+                if (idPedidoActual > 0) {
+                    ModalCobrarMesa modalCobro = new ModalCobrarMesa(Sistema.this, Sistema.this, num_mesa, id_sala, etiqueta);
+                    modalCobro.setVisible(true);
+                } else {
+                    Modelo.CajaDao cajaDao = new Modelo.CajaDao();
+                    if (!cajaDao.hayCajaAbierta()) {
+                        boolean abrir = ModalAlerta.confirmar(Sistema.this,
+                                "Caja Cerrada - Apertura Requerida",
+                                "La <b>CAJA</b> se encuentra cerrada.<br><br>No es posible tomar pedidos ni abrir mesas sin un turno de caja abierto.<br>¿Desea realizar la <b>Apertura de Caja</b> ahora?",
+                                "Sí, Abrir Caja",
+                                "Cancelar");
+                        if (abrir && moduloCaja != null) {
+                            moduloCaja.abrirComoVentanaModal(Sistema.this);
+                        }
+                        return;
+                    }
+
+                    if (id_sala == 3) {
+                        txtTempIdSala.setText("" + id_sala);
+                        txtTempNumMesa.setText("" + num_mesa);
+                        ped.setId_sala(id_sala);
+                        ped.setNum_mesa(num_mesa);
+                        ped.setTotal(0.0);
+                        ped.setUsuario(LabelVendedor.getText());
+                        int id_pedido = pedDao.RegistrarPedido(ped);
+                        if (id_pedido != -1) {
+                            verPedido(id_pedido);
+                            verPedidoDetalle(id_pedido);
+                            btnFinalizar.setEnabled(true);
+                            btnPdfPedido.setEnabled(false);
+                            jTabbedPane1.setSelectedIndex(4);
+                            JOptionPane.showMessageDialog(null,
+                                    "Pedido creado para " + etiqueta + " en Sala 3");
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Error al crear el pedido: verifique que la caja esté abierta.");
+                        }
+                    } else {
+                        txtBuscarPlato.setText("");
+                        LimpiarTableMenu();
+                        ListarPlatos(tblTemPlatos);
+                        jTabbedPane1.setSelectedIndex(3);
+                        txtTempIdSala.setText("" + id_sala);
+                        txtTempNumMesa.setText("" + num_mesa);
+                        String nomSala = "SALA " + id_sala;
+                        for (Sala s : slDao.Listar()) {
+                            if (s.getId() == id_sala) {
+                                nomSala = s.getNombre();
+                                break;
+                            }
+                        }
+                        actualizarBannerMesaComanda(num_mesa, nomSala);
+                    }
+                }
+            });
+
             botones[i] = boton;
             PanelMesas.add(boton);
         }
@@ -4174,43 +4339,42 @@ public final class Sistema extends javax.swing.JFrame {
         PanelMesas.revalidate();
         PanelMesas.repaint();
 
-        // 2. Verificar estado de mesas en hilo de fondo (0 queries en el hilo UI)
+        // 2. Verificar estado de mesas en hilo de fondo (1 sola query SQL rápida)
         new javax.swing.SwingWorker<Object[][], Void>() {
             @Override
             protected Object[][] doInBackground() {
                 Object[][] datos = new Object[cantFinal][6];
+                java.util.Map<Integer, Modelo.PedidosDao.InfoMesaActiva> mapa = pedDao.obtenerEstadoMesasSala(id_sala);
+
                 for (int i = 0; i < cantFinal; i++) {
                     int num_mesa = i + 1;
                     String etiqueta = (num_mesa > cantFinal - 4) ? "DOMICILIO N\u00b0: " + num_mesa
                             : "MESA N\u00b0: " + num_mesa;
-                    String[] info = pedDao.verificarStadoInfo(num_mesa, id_sala);
-                    int verificar = Integer.parseInt(info[0]);
-                    String estadoPed = info[1];
+                    Modelo.PedidosDao.InfoMesaActiva info = mapa.get(num_mesa);
+                    int verificar = (info != null) ? info.idPedidoPrincipal : 0;
+                    String estadoPed = (info != null) ? info.ultimoEstado : "";
                     boolean ocupada = (verificar > 0);
-                    boolean todasListas = false;
-                    String textoBtn = etiqueta;
+                    boolean todasListas = (info != null && info.todasListas);
+                    String textoBtn;
 
                     if (ocupada) {
-                        int[] avance = pedDao.getAvanceRondasMesa(num_mesa, id_sala);
-                        int preparadas = avance[0];
-                        int totalRondas = avance[1];
-                        todasListas = (totalRondas > 0 && preparadas == totalRondas);
-
-                        try {
-                            Modelo.Pedido p = pedDao.verPedido(verificar);
-                            if (p != null && p.getFecha() != null) {
+                        String tiempoStr = "";
+                        if (info.fechaApertura != null) {
+                            try {
                                 java.util.Date fechaApertura = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-                                        .parse(p.getFecha());
+                                        .parse(info.fechaApertura);
                                 long minutos = (System.currentTimeMillis() - fechaApertura.getTime()) / 60000;
-                                String tiempoStr = minutos < 60 ? minutos + " min"
+                                tiempoStr = minutos < 60 ? minutos + " min"
                                         : (minutos / 60) + "h " + (minutos % 60) + "m";
-                                String tagEstado = todasListas ? " \u2022 \ud83d\udfe1 PREPARADO" : (totalRondas > 1 ? " \u2022 (" + preparadas + "/" + totalRondas + " Listas)" : "");
-                                textoBtn = "<html><center>" + etiqueta + "<br><font size='2' color='#FCD34D'>\u23f1 "
-                                        + tiempoStr + tagEstado + "</font></center></html>";
-                            }
-                        } catch (Exception ex) {
-                            textoBtn = etiqueta;
+                            } catch (Exception ignored) {}
                         }
+                        String tagEstado = todasListas ? " &bull; LISTO" : (info.totalRondas > 1 ? " &bull; (" + info.preparadas + "/" + info.totalRondas + ")" : "");
+                        String colorChip = todasListas ? readyColor : occColor;
+                        String tiempoParte = tiempoStr.isEmpty() ? "" : " &bull; " + tiempoStr;
+                        textoBtn = "<html><center><font size='4' color='" + titleColor + "'><b>" + etiqueta + "</b></font><br><font size='2' color='" + colorChip + "'>"
+                                + (todasListas ? "LISTA" : "OCUPADA") + tiempoParte + tagEstado + "</font></center></html>";
+                    } else {
+                        textoBtn = "<html><center><font size='4' color='" + titleColor + "'><b>" + etiqueta + "</b></font><br><font size='2' color='" + freeColor + "'>LIBRE</font></center></html>";
                     }
 
                     datos[i][0] = verificar;
@@ -4230,98 +4394,12 @@ public final class Sistema extends javax.swing.JFrame {
                     for (int i = 0; i < cantFinal; i++) {
                         final int verificar = (int) datos[i][0];
                         final String estadoPed = (String) datos[i][1];
-                        final String etiqueta = (String) datos[i][2];
                         final boolean todasListas = (boolean) datos[i][3];
                         final String textoBtn = (String) datos[i][4];
-                        final int num_mesa = (int) datos[i][5];
                         JButton boton = botones[i];
                         if (boton == null) continue;
 
-                        boton.setText(textoBtn);
-
-                        if (verificar > 0) {
-                            if (todasListas || "PREPARADO".equalsIgnoreCase(estadoPed)) {
-                                boton.setBackground(new java.awt.Color(120, 53, 15));
-                                boton.setForeground(new java.awt.Color(252, 211, 77));
-                                boton.setBorder(new RoundedBorder(16, new java.awt.Color(245, 158, 11),
-                                        new java.awt.Insets(10, 10, 10, 10)));
-                                boton.setToolTipText("¡Todas las rondas listas! Click para cobrar");
-                            } else {
-                                boton.setBackground(new java.awt.Color(127, 29, 29));
-                                boton.setForeground(new java.awt.Color(252, 165, 165));
-                                boton.setBorder(new RoundedBorder(16, new java.awt.Color(220, 38, 38),
-                                        new java.awt.Insets(10, 10, 10, 10)));
-                                boton.setToolTipText("Ocupada en cocina - Click para ver o administrar rondas");
-                            }
-                        } else {
-                            boton.setBackground(new java.awt.Color(6, 78, 59));
-                            boton.setForeground(new java.awt.Color(52, 211, 153));
-                            boton.setBorder(new RoundedBorder(16, new java.awt.Color(5, 150, 105),
-                                    new java.awt.Insets(10, 10, 10, 10)));
-                            boton.setToolTipText("Libre - Click para tomar pedido");
-                        }
-                        boton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-
-                        // Limpiar listeners previos
-                        for (ActionListener al : boton.getActionListeners()) {
-                            boton.removeActionListener(al);
-                        }
-
-                        boton.addActionListener((ActionEvent e) -> {
-                            if (verificar > 0) {
-                                ModalCobrarMesa modalCobro = new ModalCobrarMesa(Sistema.this, Sistema.this, num_mesa, id_sala, etiqueta);
-                                modalCobro.setVisible(true);
-                            } else {
-                                Modelo.CajaDao cajaDao = new Modelo.CajaDao();
-                                if (!cajaDao.hayCajaAbierta()) {
-                                    boolean abrir = ModalAlerta.confirmar(Sistema.this,
-                                            "Caja Cerrada - Apertura Requerida",
-                                            "La <b>CAJA</b> se encuentra cerrada.<br><br>No es posible tomar pedidos ni abrir mesas sin un turno de caja abierto.<br>¿Desea realizar la <b>Apertura de Caja</b> ahora?",
-                                            "Sí, Abrir Caja",
-                                            "Cancelar");
-                                    if (abrir && moduloCaja != null) {
-                                        moduloCaja.abrirComoVentanaModal(Sistema.this);
-                                    }
-                                    return;
-                                }
-
-                                if (id_sala == 3) {
-                                    txtTempIdSala.setText("" + id_sala);
-                                    txtTempNumMesa.setText("" + num_mesa);
-                                    ped.setId_sala(id_sala);
-                                    ped.setNum_mesa(num_mesa);
-                                    ped.setTotal(0.0);
-                                    ped.setUsuario(LabelVendedor.getText());
-                                    int id_pedido = pedDao.RegistrarPedido(ped);
-                                    if (id_pedido != -1) {
-                                        verPedido(id_pedido);
-                                        verPedidoDetalle(id_pedido);
-                                        btnFinalizar.setEnabled(true);
-                                        btnPdfPedido.setEnabled(false);
-                                        jTabbedPane1.setSelectedIndex(4);
-                                        JOptionPane.showMessageDialog(null,
-                                                "Pedido creado para " + etiqueta + " en Sala 3");
-                                    } else {
-                                        JOptionPane.showMessageDialog(null, "Error al crear el pedido: verifique que la caja esté abierta.");
-                                    }
-                                } else {
-                                    txtBuscarPlato.setText("");
-                                    LimpiarTableMenu();
-                                    ListarPlatos(tblTemPlatos);
-                                    jTabbedPane1.setSelectedIndex(3);
-                                    txtTempIdSala.setText("" + id_sala);
-                                    txtTempNumMesa.setText("" + num_mesa);
-                                    String nomSala = "SALA " + id_sala;
-                                    for (Sala s : slDao.Listar()) {
-                                        if (s.getId() == id_sala) {
-                                            nomSala = s.getNombre();
-                                            break;
-                                        }
-                                    }
-                                    actualizarBannerMesaComanda(num_mesa, nomSala);
-                                }
-                            }
-                        });
+                        aplicarEstadoBotonMesa(boton, verificar, estadoPed, todasListas, textoBtn);
                     }
                     PanelMesas.revalidate();
                     PanelMesas.repaint();
@@ -4334,7 +4412,7 @@ public final class Sistema extends javax.swing.JFrame {
 
     public void actualizarBannerMesaComanda(int numMesa, String nomSala) {
         if (lblBannerMesaComanda != null) {
-            lblBannerMesaComanda.setText("🍽️ COMANDA ACTIVA: MESA N° " + numMesa + " (" + (nomSala != null ? nomSala : "SALA") + ")");
+            lblBannerMesaComanda.setText("COMANDA ACTIVA: MESA N° " + numMesa + " (" + (nomSala != null ? nomSala : "SALA") + ")");
         }
     }
 
@@ -4415,7 +4493,7 @@ public final class Sistema extends javax.swing.JFrame {
     public void crearNuevaRondaMesa(int numMesa, int idSala) {
         Modelo.CajaDao cajaDao = new Modelo.CajaDao();
         if (!cajaDao.hayCajaAbierta()) {
-            ToastNotification.advertencia(this, "⚠️ La caja está cerrada. Debe abrir la caja para registrar rondas.");
+            ToastNotification.advertencia(this, "La caja está cerrada. Debe abrir la caja para registrar rondas.");
             return;
         }
         txtBuscarPlato.setText("");
@@ -4428,45 +4506,90 @@ public final class Sistema extends javax.swing.JFrame {
 
     /**
      * Refresca el estado de mesas con UNA sola query a la BD (en lugar de N).
-     * Solo actúa si la pestaña de Mesas es visible. El timer se auto-pausa
-     * cuando la ventana pierde foco (ver inicializarFooterEstado).
+     * Solo actúa si la pestaña de Mesas es visible.
+     * Actualiza los botones in-place sin parpadeos ni reconstrucción de interfaz.
      */
     private void refreshEstadosMesas() {
-        if (salaActivaId <= 0 || botonesActuales.length == 0) return;
+        if (salaActivaId <= 0 || botonesActuales == null || botonesActuales.length == 0) return;
         if (jTabbedPane1.getSelectedIndex() != 2) return;
 
         final int idSala = salaActivaId;
         final int cantFinal = botonesActuales.length;
         final javax.swing.JButton[] botonesRef = botonesActuales;
 
-        new javax.swing.SwingWorker<java.util.Map<Integer, String[]>, Void>() {
+        new javax.swing.SwingWorker<Object[][], Void>() {
             @Override
-            protected java.util.Map<Integer, String[]> doInBackground() {
-                return pedDao.getMesasOcupadasConEstado(idSala);
+            protected Object[][] doInBackground() {
+                java.util.Map<Integer, Modelo.PedidosDao.InfoMesaActiva> mapa = pedDao.obtenerEstadoMesasSala(idSala);
+                Object[][] datos = new Object[cantFinal][5];
+                final boolean isDark = UIUtils.IS_DARK;
+                final String titleColor = isDark ? "#ffffff" : "#0f172a";
+                final String freeColor = isDark ? "#34D399" : "#059669";
+                final String occColor = isDark ? "#FB7185" : "#E11D48";
+                final String readyColor = isDark ? "#FCD34D" : "#D97706";
+
+                for (int i = 0; i < cantFinal; i++) {
+                    int num_mesa = i + 1;
+                    String etiqueta = (num_mesa > cantFinal - 4) ? "DOMICILIO N\u00b0: " + num_mesa
+                            : "MESA N\u00b0: " + num_mesa;
+                    Modelo.PedidosDao.InfoMesaActiva info = (mapa != null) ? mapa.get(num_mesa) : null;
+                    int verificar = (info != null) ? info.idPedidoPrincipal : 0;
+                    String estadoPed = (info != null) ? info.ultimoEstado : "";
+                    boolean ocupada = (verificar > 0);
+                    boolean todasListas = (info != null && info.todasListas);
+                    String textoBtn;
+
+                    if (ocupada) {
+                        String tiempoStr = "";
+                        if (info.fechaApertura != null) {
+                            try {
+                                java.util.Date fechaApertura = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                                        .parse(info.fechaApertura);
+                                long minutos = (System.currentTimeMillis() - fechaApertura.getTime()) / 60000;
+                                tiempoStr = minutos < 60 ? minutos + " min"
+                                        : (minutos / 60) + "h " + (minutos % 60) + "m";
+                            } catch (Exception ignored) {}
+                        }
+                        String tagEstado = todasListas ? " &bull; LISTO" : (info.totalRondas > 1 ? " &bull; (" + info.preparadas + "/" + info.totalRondas + ")" : "");
+                        String colorChip = todasListas ? readyColor : occColor;
+                        String tiempoParte = tiempoStr.isEmpty() ? "" : " &bull; " + tiempoStr;
+                        textoBtn = "<html><center><font size='4' color='" + titleColor + "'><b>" + etiqueta + "</b></font><br><font size='2' color='" + colorChip + "'>"
+                                + (todasListas ? "LISTA" : "OCUPADA") + tiempoParte + tagEstado + "</font></center></html>";
+                    } else {
+                        textoBtn = "<html><center><font size='4' color='" + titleColor + "'><b>" + etiqueta + "</b></font><br><font size='2' color='" + freeColor + "'>LIBRE</font></center></html>";
+                    }
+
+                    datos[i][0] = verificar;
+                    datos[i][1] = estadoPed;
+                    datos[i][2] = todasListas;
+                    datos[i][3] = textoBtn;
+                    datos[i][4] = num_mesa;
+                }
+                return datos;
             }
 
             @Override
             protected void done() {
                 try {
-                    java.util.Map<Integer, String[]> ocupadas = get();
-
-                    boolean cambio = false;
+                    Object[][] datos = get();
                     for (int i = 0; i < cantFinal; i++) {
-                        int numMesa = i + 1;
-                        boolean debeEstarOcupada = ocupadas.containsKey(numMesa);
-                        javax.swing.JButton boton = botonesRef[i];
+                        final int verificar = (int) datos[i][0];
+                        final String estadoPed = (String) datos[i][1];
+                        final boolean todasListas = (boolean) datos[i][2];
+                        final String textoBtn = (String) datos[i][3];
+                        JButton boton = botonesRef[i];
                         if (boton == null) continue;
-                        java.awt.Color bg = boton.getBackground();
-                        boolean estaOcupada = bg != null && (bg.getRed() > 100 || bg.getGreen() > 100);
-                        if (estaOcupada != debeEstarOcupada) { 
-                            cambio = true; 
-                            break; 
-                        }
-                    }
 
-                    if (cambio) {
-                        PanelMesas.removeAll();
-                        panelMesas(idSala, salaActivaCant);
+                        Integer curVerificar = (Integer) boton.getClientProperty("verificar");
+                        String curEstadoPed = (String) boton.getClientProperty("estadoPed");
+                        Boolean curTodas = (Boolean) boton.getClientProperty("todasListas");
+                        String curText = boton.getText();
+
+                        if (curVerificar == null || curVerificar != verificar || !textoBtn.equals(curText)
+                                || (estadoPed != null && !estadoPed.equals(curEstadoPed))
+                                || curTodas == null || curTodas != todasListas) {
+                            aplicarEstadoBotonMesa(boton, verificar, estadoPed, todasListas, textoBtn);
+                        }
                     }
                 } catch (Exception e) { /* ignorar */ }
             }
@@ -4475,17 +4598,18 @@ public final class Sistema extends javax.swing.JFrame {
 
     // platos
     private void ListarPlatos(JTable tabla) {
-        List<Plato> Listar = plaDao.Listar(txtBuscarPlato.getText());
-        modelo = (DefaultTableModel) tabla.getModel();
-        modelo.setRowCount(0); // Limpiar la tabla antes de cargar
+        if (tabla == null) return;
+        List<Plato> Listar = plaDao.Listar(txtBuscarPlato != null ? txtBuscarPlato.getText() : "");
+        DefaultTableModel mod = (DefaultTableModel) tabla.getModel();
+        mod.setRowCount(0); // Limpiar la tabla antes de cargar
         Object[] ob = new Object[3];
         for (int i = 0; i < Listar.size(); i++) {
             ob[0] = Listar.get(i).getId();
             ob[1] = Listar.get(i).getNombre();
             ob[2] = Listar.get(i).getPrecio();
-            modelo.addRow(ob);
+            mod.addRow(ob);
         }
-        colorHeader(tabla);
+        UIUtils.estilarTabla(tabla);
 
         // Poblar el Grid de Tarjetas Visuales
         if (gridPanelPlatos != null) {
@@ -4561,8 +4685,8 @@ public final class Sistema extends javax.swing.JFrame {
 
     public void verPedidoDetalle(int id_pedido) {
         List<DetallePedido> Listar = pedDao.verPedidoDetalle(id_pedido);
-        modelo = (DefaultTableModel) tableFinalizar.getModel();
-        modelo.setRowCount(0); // Limpiar tabla antes de recargar
+        DefaultTableModel mod = (DefaultTableModel) tableFinalizar.getModel();
+        mod.setRowCount(0); // Limpiar tabla antes de recargar
         Object[] ob = new Object[6];
         for (int i = 0; i < Listar.size(); i++) {
             ob[0] = Listar.get(i).getId();
@@ -4571,9 +4695,9 @@ public final class Sistema extends javax.swing.JFrame {
             ob[3] = Listar.get(i).getPrecio();
             ob[4] = Listar.get(i).getCantidad() * Listar.get(i).getPrecio();
             ob[5] = Listar.get(i).getComentario() != null ? Listar.get(i).getComentario() : "";
-            modelo.addRow(ob);
+            mod.addRow(ob);
         }
-        colorHeader(tableFinalizar);
+        UIUtils.estilarTabla(tableFinalizar);
         TotalPagar(tableFinalizar, totalFinalizar);
     }
 
@@ -4713,17 +4837,17 @@ public final class Sistema extends javax.swing.JFrame {
                 setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 13));
                 if ("PREPARADO".equalsIgnoreCase(estadoStr)) {
-                    c.setBackground(new java.awt.Color(120, 53, 15)); // Amber oscuro
-                    c.setForeground(new java.awt.Color(252, 211, 77)); // Amber claro
+                    c.setBackground(new java.awt.Color(28, 24, 16));
+                    c.setForeground(new java.awt.Color(254, 240, 138));
                 } else if ("FINALIZADO".equalsIgnoreCase(estadoStr)) {
-                    c.setBackground(new java.awt.Color(6, 78, 59)); // Verde oscuro
-                    c.setForeground(new java.awt.Color(52, 211, 153)); // Verde claro
+                    c.setBackground(new java.awt.Color(16, 28, 22));
+                    c.setForeground(new java.awt.Color(52, 211, 153));
                 } else if ("ANULADO".equalsIgnoreCase(estadoStr)) {
-                    c.setBackground(new java.awt.Color(51, 65, 85)); // Slate 700
-                    c.setForeground(new java.awt.Color(148, 163, 184)); // Slate 400
+                    c.setBackground(new java.awt.Color(24, 26, 34));
+                    c.setForeground(new java.awt.Color(161, 161, 170));
                 } else {
-                    c.setBackground(new java.awt.Color(127, 29, 29)); // Rojo oscuro
-                    c.setForeground(new java.awt.Color(252, 165, 165)); // Rojo claro
+                    c.setBackground(new java.awt.Color(28, 18, 22));
+                    c.setForeground(new java.awt.Color(254, 205, 211));
                 }
                 return c;
             }
@@ -4774,14 +4898,11 @@ public final class Sistema extends javax.swing.JFrame {
     }
 
     private void cargarTablaPlatos() {
-        DefaultTableModel modelo = (DefaultTableModel) tableMenu.getModel();
-        modelo.setRowCount(0); // Limpiar tabla
-        PlatosDao platosDao = new PlatosDao();
-        List<Plato> platos = platosDao.Listar(""); // Lista todos los platos
-        System.out.println("NÃºmero de platos cargados: " + platos.size()); // DepuraciÃ³n
-        for (Plato pl : platos) {
-            Object[] fila = { pl.getId(), pl.getNombre(), pl.getPrecio() };
-            modelo.addRow(fila);
+        if (TablePlatos != null) {
+            ListarPlatos(TablePlatos);
+        }
+        if (tblTemPlatos != null) {
+            ListarPlatos(tblTemPlatos);
         }
     }
 
@@ -4861,7 +4982,7 @@ public final class Sistema extends javax.swing.JFrame {
             protected void paintComponent(java.awt.Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(new Color(30, 41, 59));
+                g2.setColor(new Color(18, 20, 26));
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 16, 16);
                 g2.setColor(new Color(accentColor.getRed(), accentColor.getGreen(), accentColor.getBlue(), 150));
                 g2.setStroke(new BasicStroke(2.0f));
@@ -4989,7 +5110,7 @@ public final class Sistema extends javax.swing.JFrame {
 
         JButton btnExportCSV = new JButton("Exportar CSV");
         btnExportCSV.setFont(getFontBold(11f));
-        btnExportCSV.setBackground(new Color(30, 41, 59));
+        btnExportCSV.setBackground(new Color(18, 20, 26));
         btnExportCSV.setForeground(new Color(56, 189, 248));
         btnExportCSV.setFocusPainted(false);
         btnExportCSV.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -5027,7 +5148,7 @@ public final class Sistema extends javax.swing.JFrame {
             int w = chipWidths[i];
             JButton btnChip = new JButton(chip[0]);
             btnChip.setFont(getFontBold(11f));
-            btnChip.setBackground(i == 0 ? new Color(37, 99, 235) : new Color(30, 41, 59));
+            btnChip.setBackground(i == 0 ? new Color(37, 99, 235) : new Color(18, 20, 26));
             btnChip.setForeground(i == 0 ? Color.WHITE : new Color(203, 213, 225));
             btnChip.setFocusPainted(false);
             btnChip.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -5040,7 +5161,7 @@ public final class Sistema extends javax.swing.JFrame {
                         b.setBackground(new Color(37, 99, 235));
                         b.setForeground(Color.WHITE);
                     } else {
-                        b.setBackground(new Color(30, 41, 59));
+                        b.setBackground(new Color(18, 20, 26));
                         b.setForeground(new Color(203, 213, 225));
                     }
                 }
@@ -5114,7 +5235,7 @@ public final class Sistema extends javax.swing.JFrame {
         // Botón Exportar CSV
         btnExportCSV = new JButton("Exportar CSV");
         btnExportCSV.setFont(getFontBold(11f));
-        btnExportCSV.setBackground(new Color(30, 41, 59));
+        btnExportCSV.setBackground(new Color(18, 20, 26));
         btnExportCSV.setForeground(new Color(56, 189, 248));
         btnExportCSV.setFocusPainted(false);
         btnExportCSV.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -5259,7 +5380,7 @@ public final class Sistema extends javax.swing.JFrame {
 
     private void actualizarEstiloToggle(boolean dashActivo) {
         Color actBg = new Color(30, 64, 175);
-        Color inBg = new Color(30, 41, 59);
+        Color inBg = new Color(18, 20, 26);
         Color actFg = Color.WHITE;
         Color inFg = new Color(148, 163, 184);
         btnToggleDashboard.setBackground(dashActivo ? actBg : inBg);
@@ -5410,7 +5531,14 @@ public final class Sistema extends javax.swing.JFrame {
     private javax.swing.JButton btnNavCaja;
     private javax.swing.JButton btnNavInv;
     private javax.swing.JButton btnNavAdmin;
+    private javax.swing.JButton btnNavRecordatorios;
+    private javax.swing.JButton btnNavTareas;
     private javax.swing.JButton btnNavSonido;
+    private javax.swing.JButton btnNavTema;
+    private javax.swing.JButton btnCambiarCuenta;
+    private javax.swing.JButton btnSalirApp;
+    private javax.swing.JLabel lblNavUser;
+    private javax.swing.JLabel lblNavLogo;
 
     private void actualizarEstadoNavbarActivo() {
         int idx = jTabbedPane1.getSelectedIndex();
@@ -5419,65 +5547,182 @@ public final class Sistema extends javax.swing.JFrame {
         else if (idx == 1 || idx == 2 || idx == 3 || idx == 4) activo = btnNavSalas;
         else if (idx == 5) activo = btnNavPedidos;
 
-        javax.swing.JButton[] btns = { btnNavHome, btnNavSalas, btnNavPedidos, btnNavCaja, btnNavInv, btnNavAdmin, btnNavSonido };
+        javax.swing.JButton[] btns = { 
+            btnNavHome, btnNavSalas, btnNavPedidos, btnNavCaja, btnNavInv, 
+            btnNavAdmin, btnNavSonido, btnNavRecordatorios, btnNavTareas, 
+            btnNavTema, btnCambiarCuenta 
+        };
+
         for (javax.swing.JButton b : btns) {
             if (b != null) {
                 if (b == activo) {
-                    b.setBackground(new java.awt.Color(37, 99, 235)); // Azul brillante activo
-                    b.setForeground(java.awt.Color.WHITE);
+                    b.putClientProperty("isNavActive", true);
+                    b.setBackground(UIUtils.IS_DARK ? java.awt.Color.WHITE : new java.awt.Color(37, 99, 235));
+                    b.setForeground(UIUtils.IS_DARK ? java.awt.Color.BLACK : java.awt.Color.WHITE);
+                    b.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+                            javax.swing.BorderFactory.createLineBorder(UIUtils.IS_DARK ? java.awt.Color.WHITE : new java.awt.Color(37, 99, 235), 2, true),
+                            javax.swing.BorderFactory.createEmptyBorder(6, 12, 6, 12)));
                 } else {
-                    b.setBackground(new java.awt.Color(30, 41, 59));
-                    b.setForeground(new java.awt.Color(203, 213, 225));
+                    b.putClientProperty("isNavActive", false);
+                    b.putClientProperty("customBg", null);
+                    b.setBackground(UIUtils.getPanelColor());
+                    b.setForeground(UIUtils.getTextPrimary());
+                    b.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+                            javax.swing.BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1, true),
+                            javax.swing.BorderFactory.createEmptyBorder(6, 12, 6, 12)));
                 }
             }
         }
+
+        if (btnNavRecordatorios != null && btnNavRecordatorios != activo) {
+            btnNavRecordatorios.setForeground(UIUtils.IS_DARK ? new java.awt.Color(251, 191, 36) : new java.awt.Color(217, 119, 6));
+        }
+        if (btnNavTareas != null && btnNavTareas != activo) {
+            btnNavTareas.setForeground(UIUtils.IS_DARK ? new java.awt.Color(192, 132, 252) : new java.awt.Color(147, 51, 234));
+        }
+        if (btnSalirApp != null) {
+            java.awt.Color salirBg = UIUtils.IS_DARK ? new java.awt.Color(28, 18, 22) : new java.awt.Color(255, 228, 230);
+            btnSalirApp.setBackground(salirBg);
+            btnSalirApp.putClientProperty("customBg", salirBg);
+            btnSalirApp.setForeground(UIUtils.IS_DARK ? new java.awt.Color(244, 63, 94) : new java.awt.Color(225, 29, 72));
+            btnSalirApp.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+                    javax.swing.BorderFactory.createLineBorder(new java.awt.Color(244, 63, 94), 1, true),
+                    javax.swing.BorderFactory.createEmptyBorder(6, 12, 6, 12)));
+        }
+    }
+
+    public void alternarTemaGlobal() {
+        UIUtils.alternarTema();
+        aplicarTemaGlobal();
+    }
+
+    public void aplicarTemaGlobal() {
+        if (btnNavTema != null) {
+            btnNavTema.setText(UIUtils.IS_DARK ? "Modo Claro" : "Modo Oscuro");
+            btnNavTema.setBackground(UIUtils.getPanelColor());
+            btnNavTema.setForeground(UIUtils.getTextPrimary());
+            btnNavTema.putClientProperty("customBg", null);
+        }
+
+        if (topNavbarPOS != null) {
+            topNavbarPOS.setBackground(UIUtils.getPanelColor());
+            topNavbarPOS.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+                    javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, UIUtils.getBorderColor()),
+                    javax.swing.BorderFactory.createEmptyBorder(6, 12, 6, 12)));
+        }
+
+        if (lblNavLogo != null) {
+            lblNavLogo.setIcon(UIUtils.getLogoSymbol(26));
+        }
+
+        actualizarEstadoNavbarActivo();
+        inicializarLandingPanel();
+        styleComponentsRecursively(getContentPane());
+
+        try {
+            if (TablePedidos != null) UIUtils.estilarTabla(TablePedidos);
+            if (TableUsuarios != null) UIUtils.estilarTabla(TableUsuarios);
+            if (TablePlatos != null) UIUtils.estilarTabla(TablePlatos);
+            if (tableSala != null) UIUtils.estilarTabla(tableSala);
+            if (tableMenu != null) UIUtils.estilarTabla(tableMenu);
+            if (tableFinalizar != null) UIUtils.estilarTabla(tableFinalizar);
+            if (tblTemPlatos != null) UIUtils.estilarTabla(tblTemPlatos);
+        } catch (Exception ignored) {}
+
+        // Estilizar específicamente componentes de Finalizar Pedido (Tab 4)
+        if (totalFinalizar != null) {
+            totalFinalizar.setBackground(UIUtils.getPanelColor());
+            totalFinalizar.setForeground(UIUtils.IS_DARK ? new java.awt.Color(52, 211, 153) : new java.awt.Color(5, 150, 105));
+            totalFinalizar.setBorder(javax.swing.BorderFactory.createLineBorder(
+                    UIUtils.IS_DARK ? new java.awt.Color(16, 185, 129) : new java.awt.Color(5, 150, 105), 2, true));
+        }
+        if (btnPdfPedido != null) {
+            btnPdfPedido.setBackground(UIUtils.IS_DARK ? new java.awt.Color(36, 38, 48) : new java.awt.Color(226, 232, 240));
+            btnPdfPedido.setForeground(UIUtils.getTextPrimary());
+            btnPdfPedido.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+                    javax.swing.BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1, true),
+                    javax.swing.BorderFactory.createEmptyBorder(6, 12, 6, 12)));
+        }
+        if (txtFechaHora != null) UIUtils.estilarCampoTexto(txtFechaHora);
+        if (txtSalaFinalizar != null) UIUtils.estilarCampoTexto(txtSalaFinalizar);
+        if (txtNumMesaFinalizar != null) {
+            UIUtils.estilarCampoTexto(txtNumMesaFinalizar);
+            txtNumMesaFinalizar.setForeground(UIUtils.IS_DARK ? new java.awt.Color(251, 191, 36) : new java.awt.Color(217, 119, 6));
+        }
+        if (txtTotalDiaTrans != null) {
+            txtTotalDiaTrans.setBackground(UIUtils.getInputBg());
+            txtTotalDiaTrans.setForeground(UIUtils.IS_DARK ? new java.awt.Color(56, 189, 248) : new java.awt.Color(2, 132, 199));
+        }
+        if (txtTotalDia != null) {
+            txtTotalDia.setBackground(UIUtils.getInputBg());
+            txtTotalDia.setForeground(UIUtils.IS_DARK ? new java.awt.Color(52, 211, 153) : new java.awt.Color(5, 150, 105));
+        }
+        if (txtPedidosDia != null) {
+            txtPedidosDia.setBackground(UIUtils.getInputBg());
+            txtPedidosDia.setForeground(UIUtils.IS_DARK ? new java.awt.Color(251, 191, 36) : new java.awt.Color(217, 119, 6));
+        }
+
+        try {
+            initPanelComandaVisual();
+            if (tblTemPlatos != null) {
+                ListarPlatos(tblTemPlatos);
+            }
+        } catch (Exception ignored) {}
+
+        try {
+            panelSalas();
+            if (PanelMesas != null && salaActivaId > 0) {
+                panelMesas(salaActivaId, salaActivaCant > 0 ? salaActivaCant : 12);
+            }
+        } catch (Exception ignored) {}
+
+        revalidate();
+        repaint();
     }
 
     private void construirTopNavbarPOS() {
-        topNavbarPOS = new javax.swing.JPanel(new java.awt.BorderLayout(15, 0));
-        topNavbarPOS.setBackground(UIUtils.COLOR_PANEL_DARK);
+        topNavbarPOS = new javax.swing.JPanel(new java.awt.BorderLayout(10, 0));
+        topNavbarPOS.setBackground(UIUtils.getPanelColor());
         topNavbarPOS.setPreferredSize(new java.awt.Dimension(1280, 50));
         topNavbarPOS.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-                javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, UIUtils.COLOR_BORDER_DARK),
-                javax.swing.BorderFactory.createEmptyBorder(6, 15, 6, 15)));
+                javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, UIUtils.getBorderColor()),
+                javax.swing.BorderFactory.createEmptyBorder(6, 12, 6, 12)));
 
-        // 1. Izquierda: Logo + Botones de Navegación POS
+        // 1. Izquierda: Logo + Botones de Navegación POS (Nombres claros, sin emojis)
         javax.swing.JPanel navBtnsPanel = new javax.swing.JPanel(
-                new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 8, 0));
+                new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 6, 0));
         navBtnsPanel.setOpaque(false);
 
         // Logo pequeño
-        javax.swing.JLabel lblNavLogo = new javax.swing.JLabel();
-        try {
-            java.awt.Image img = new javax.swing.ImageIcon(getClass().getResource("/Img/pizzeria.png")).getImage()
-                    .getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH);
-            lblNavLogo.setIcon(new javax.swing.ImageIcon(img));
-        } catch (Exception e) {
-        }
+        lblNavLogo = new javax.swing.JLabel();
+        lblNavLogo.setIcon(UIUtils.getLogoSymbol(26));
+        lblNavLogo.setPreferredSize(new java.awt.Dimension(32, 32));
+        lblNavLogo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblNavLogo.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        lblNavLogo.setToolTipText("Acerca de AS Business Systems");
         lblNavLogo.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
-                jTabbedPane1.setSelectedIndex(0);
+                new ModalAcercaDe(Sistema.this).setVisible(true);
             }
         });
         navBtnsPanel.add(lblNavLogo);
 
         // Botón Inicio (ESC)
-        btnNavHome = UIUtils.crearBoton("Inicio", new java.awt.Color(30, 41, 59));
+        btnNavHome = UIUtils.crearBoton("Inicio");
         btnNavHome.setFont(getFontBold(12f));
         btnNavHome.setToolTipText("Regresar a la Pantalla Principal (ESC)");
         btnNavHome.addActionListener(e -> jTabbedPane1.setSelectedIndex(0));
         navBtnsPanel.add(btnNavHome);
 
         // Botón Salas [F1]
-        btnNavSalas = UIUtils.crearBoton("Salas [F1]", new java.awt.Color(30, 41, 59));
+        btnNavSalas = UIUtils.crearBoton("Salas [F1]");
         btnNavSalas.setFont(getFontBold(12f));
         btnNavSalas.addActionListener(e -> btnSala.doClick());
         navBtnsPanel.add(btnNavSalas);
 
         // Botón Pedidos
-        btnNavPedidos = UIUtils.crearBoton("Pedidos", new java.awt.Color(30, 41, 59));
+        btnNavPedidos = UIUtils.crearBoton("Pedidos");
         btnNavPedidos.setFont(getFontBold(12f));
         btnNavPedidos.addActionListener(e -> {
             ListarPedidos();
@@ -5485,13 +5730,8 @@ public final class Sistema extends javax.swing.JFrame {
         });
         navBtnsPanel.add(btnNavPedidos);
 
-        // Separador
-        javax.swing.JLabel sep1 = new javax.swing.JLabel(" | ");
-        sep1.setForeground(UIUtils.COLOR_BORDER_DARK);
-        navBtnsPanel.add(sep1);
-
         // Botón Caja [F2]
-        btnNavCaja = UIUtils.crearBoton("Caja [F2]", new java.awt.Color(30, 41, 59));
+        btnNavCaja = UIUtils.crearBoton("Caja [F2]");
         btnNavCaja.setFont(getFontBold(12f));
         btnNavCaja.addActionListener(e -> {
             if (moduloCaja != null)
@@ -5500,7 +5740,7 @@ public final class Sistema extends javax.swing.JFrame {
         navBtnsPanel.add(btnNavCaja);
 
         // Botón Inventario [F3]
-        btnNavInv = UIUtils.crearBoton("Inventario [F3]", new java.awt.Color(30, 41, 59));
+        btnNavInv = UIUtils.crearBoton("Inventario [F3]");
         btnNavInv.setFont(getFontBold(12f));
         btnNavInv.addActionListener(e -> {
             if (!esAdmin()) {
@@ -5514,9 +5754,8 @@ public final class Sistema extends javax.swing.JFrame {
         });
         navBtnsPanel.add(btnNavInv);
 
-        // Botón Admin [F4/F5] (Config Unificada: Empresa + Salas + Carta + Usuarios -
-        // Solo Admin)
-        btnNavAdmin = UIUtils.crearBoton("Admin [F5]", new java.awt.Color(30, 41, 59));
+        // Botón Admin [F5]
+        btnNavAdmin = UIUtils.crearBoton("Admin [F5]");
         btnNavAdmin.setFont(getFontBold(12f));
         btnNavAdmin.addActionListener(e -> {
             if (!esAdmin()) {
@@ -5530,14 +5769,9 @@ public final class Sistema extends javax.swing.JFrame {
         });
         navBtnsPanel.add(btnNavAdmin);
 
-        // Separador
-        javax.swing.JLabel sep2 = new javax.swing.JLabel(" | ");
-        sep2.setForeground(UIUtils.COLOR_BORDER_DARK);
-        navBtnsPanel.add(sep2);
-
         // Botón Recordatorios
-        javax.swing.JButton btnNavRecordatorios = UIUtils.crearBoton("Recordatorios", new java.awt.Color(234, 179, 8));
-        btnNavRecordatorios.setForeground(new java.awt.Color(15, 23, 42));
+        btnNavRecordatorios = UIUtils.crearBoton("Recordatorios");
+        btnNavRecordatorios.setForeground(UIUtils.IS_DARK ? new java.awt.Color(251, 191, 36) : new java.awt.Color(217, 119, 6));
         btnNavRecordatorios.setFont(getFontBold(12f));
         btnNavRecordatorios.setToolTipText("Recordatorios POS con Fecha, Hora y Prioridad");
         btnNavRecordatorios.addActionListener(e -> {
@@ -5547,8 +5781,8 @@ public final class Sistema extends javax.swing.JFrame {
         navBtnsPanel.add(btnNavRecordatorios);
 
         // Botón Tareas Empleados
-        javax.swing.JButton btnNavTareas = UIUtils.crearBoton("Tareas", new java.awt.Color(99, 102, 241));
-        btnNavTareas.setForeground(java.awt.Color.WHITE);
+        btnNavTareas = UIUtils.crearBoton("Tareas");
+        btnNavTareas.setForeground(UIUtils.IS_DARK ? new java.awt.Color(192, 132, 252) : new java.awt.Color(147, 51, 234));
         btnNavTareas.setFont(getFontBold(12f));
         btnNavTareas.setToolTipText("Asignación de Tareas y Checklists para Empleados");
         btnNavTareas.addActionListener(e -> {
@@ -5558,7 +5792,7 @@ public final class Sistema extends javax.swing.JFrame {
         navBtnsPanel.add(btnNavTareas);
 
         // Botón Sonidos POS (Exclusivo Administrador)
-        btnNavSonido = UIUtils.crearBoton("Sonidos", new java.awt.Color(30, 41, 59));
+        btnNavSonido = UIUtils.crearBoton("Sonidos");
         btnNavSonido.setFont(getFontBold(12f));
         btnNavSonido.setToolTipText("Configurar Sonidos de Cobro, Clics y Voz Sintetizada (Solo Admin)");
         btnNavSonido.addActionListener(e -> {
@@ -5575,40 +5809,30 @@ public final class Sistema extends javax.swing.JFrame {
         jTabbedPane1.addChangeListener(e -> actualizarEstadoNavbarActivo());
         actualizarEstadoNavbarActivo();
 
-        // 2. Derecha: Operador, Reloj, Cambiar Usuario y Salir
+        // 2. Derecha: Botón de Tema, Cambiar Usuario y Salir (Sin reloj)
         javax.swing.JPanel rightPanel = new javax.swing.JPanel(
-                new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 8, 0));
+                new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 10, 0));
         rightPanel.setOpaque(false);
 
-        javax.swing.JLabel lblNavUser = new javax.swing.JLabel(
-                (LabelVendedor != null ? LabelVendedor.getText().trim() : "Admin"));
-        lblNavUser.setFont(getFontBold(12f));
-        lblNavUser.setForeground(new java.awt.Color(56, 189, 248));
-
-        javax.swing.JLabel lblNavClock = new javax.swing.JLabel();
-        lblNavClock.setFont(new java.awt.Font("Consolas", java.awt.Font.BOLD, 13));
-        lblNavClock.setForeground(java.awt.Color.WHITE);
-        new javax.swing.Timer(1000, e -> {
-            lblNavClock.setText(new java.text.SimpleDateFormat("hh:mm:ss a", new java.util.Locale("es", "ES"))
-                    .format(new java.util.Date()));
-        }).start();
-        lblNavClock.setText(new java.text.SimpleDateFormat("hh:mm:ss a", new java.util.Locale("es", "ES"))
-                .format(new java.util.Date()));
+        // Botón Cambiar Tema
+        btnNavTema = UIUtils.crearBoton(UIUtils.IS_DARK ? "Modo Claro" : "Modo Oscuro");
+        btnNavTema.setFont(getFontBold(11.5f));
+        btnNavTema.setToolTipText("Alternar entre Modo Oscuro y Modo Claro");
+        btnNavTema.addActionListener(e -> alternarTemaGlobal());
 
         // Botón Cambiar Usuario / Cerrar Sesión
-        javax.swing.JButton btnCambiarCuenta = UIUtils.crearBoton("Cambiar Usuario", new java.awt.Color(30, 41, 59));
-        btnCambiarCuenta.setFont(getFontBold(11f));
+        btnCambiarCuenta = UIUtils.crearBoton("Cambiar Usuario");
+        btnCambiarCuenta.setFont(getFontBold(11.5f));
         btnCambiarCuenta.setToolTipText("Cerrar sesión actual e ingresar con otra cuenta");
         btnCambiarCuenta.addActionListener(e -> cerrarSesionYCambiarUsuario());
 
         // Botón Salir del Sistema
-        javax.swing.JButton btnSalirApp = UIUtils.crearBoton("Salir", new java.awt.Color(185, 28, 28));
-        btnSalirApp.setFont(getFontBold(11f));
+        btnSalirApp = UIUtils.crearBoton("Salir");
+        btnSalirApp.setFont(getFontBold(11.5f));
         btnSalirApp.setToolTipText("Cerrar completamente la aplicación POS");
         btnSalirApp.addActionListener(e -> salirDelSistema());
 
-        rightPanel.add(lblNavUser);
-        rightPanel.add(lblNavClock);
+        rightPanel.add(btnNavTema);
         rightPanel.add(btnCambiarCuenta);
         rightPanel.add(btnSalirApp);
 
@@ -5652,14 +5876,14 @@ public final class Sistema extends javax.swing.JFrame {
 
         jPanel9.removeAll();
         jPanel9.setLayout(new java.awt.BorderLayout(20, 20));
-        jPanel9.setBackground(UIUtils.COLOR_BG_DARK);
+        jPanel9.setBackground(UIUtils.getBgColor());
         jPanel9.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 25, 25, 25));
 
         // 1. Hero Header Banner
         javax.swing.JPanel heroHeader = new javax.swing.JPanel(new java.awt.BorderLayout(15, 0));
-        heroHeader.setBackground(UIUtils.COLOR_PANEL_DARK);
+        heroHeader.setBackground(UIUtils.getPanelColor());
         heroHeader.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-                javax.swing.BorderFactory.createLineBorder(UIUtils.COLOR_BORDER_DARK, 1, true),
+                javax.swing.BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1, true),
                 javax.swing.BorderFactory.createEmptyBorder(15, 20, 15, 20)));
 
         // Left Branding (Logo + Titles)
@@ -5668,23 +5892,20 @@ public final class Sistema extends javax.swing.JFrame {
         brandPanel.setOpaque(false);
 
         javax.swing.JLabel lblLogoHero = new javax.swing.JLabel();
-        try {
-            java.awt.Image img = new javax.swing.ImageIcon(getClass().getResource("/Img/pizzeria.png")).getImage()
-                    .getScaledInstance(60, 60, java.awt.Image.SCALE_SMOOTH);
-            lblLogoHero.setIcon(new javax.swing.ImageIcon(img));
-        } catch (Exception e) {
-        }
+        lblLogoHero.setIcon(UIUtils.getLogoSymbol(52));
+        lblLogoHero.setPreferredSize(new java.awt.Dimension(56, 56));
+        lblLogoHero.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 
-        javax.swing.JPanel titleBox = new javax.swing.JPanel(new java.awt.GridLayout(2, 1, 0, 2));
+        javax.swing.JPanel titleBox = new javax.swing.JPanel(new java.awt.GridLayout(2, 1, 0, 4));
         titleBox.setOpaque(false);
 
-        javax.swing.JLabel lblMainTitle = new javax.swing.JLabel("RESTAURANTE Y PIZZERÍA COMUNEROS");
+        javax.swing.JLabel lblMainTitle = new javax.swing.JLabel("AS BUSINESS SYSTEMS");
         lblMainTitle.setFont(getFontBold(20f));
-        lblMainTitle.setForeground(java.awt.Color.WHITE);
+        lblMainTitle.setForeground(UIUtils.getTextPrimary());
 
-        javax.swing.JLabel lblSubTitle = new javax.swing.JLabel("Sistema POS & Gestión — Puente Nacional");
+        javax.swing.JLabel lblSubTitle = new javax.swing.JLabel("Business Software Solutions — POS Karoll Café");
         lblSubTitle.setFont(getFontRegular(13f));
-        lblSubTitle.setForeground(UIUtils.COLOR_TEXT_MUTED);
+        lblSubTitle.setForeground(UIUtils.getTextMuted());
 
         titleBox.add(lblMainTitle);
         titleBox.add(lblSubTitle);
@@ -5696,15 +5917,17 @@ public final class Sistema extends javax.swing.JFrame {
         javax.swing.JPanel rightText = new javax.swing.JPanel(new java.awt.GridLayout(2, 1, 0, 4));
         rightText.setOpaque(false);
 
+        String nombreUser = (LabelVendedor != null && !LabelVendedor.getText().trim().isEmpty())
+                ? LabelVendedor.getText().trim() : "Usuario";
         javax.swing.JLabel lblUserBadge = new javax.swing.JLabel(
-                "Operador: " + (LabelVendedor != null ? LabelVendedor.getText().trim() : "Usuario"),
-                javax.swing.SwingConstants.RIGHT);
+                nombreUser, IconManager.getIcon("user", 18), javax.swing.SwingConstants.RIGHT);
         lblUserBadge.setFont(getFontBold(13f));
-        lblUserBadge.setForeground(new java.awt.Color(56, 189, 248)); // Sky blue
+        lblUserBadge.setIconTextGap(6);
+        lblUserBadge.setForeground(UIUtils.IS_DARK ? new java.awt.Color(56, 189, 248) : new java.awt.Color(2, 132, 199));
 
         javax.swing.JLabel lblClock = new javax.swing.JLabel("", javax.swing.SwingConstants.RIGHT);
         lblClock.setFont(new java.awt.Font("Consolas", java.awt.Font.BOLD, 14));
-        lblClock.setForeground(java.awt.Color.WHITE);
+        lblClock.setForeground(UIUtils.getTextPrimary());
 
         // Reloj en vivo
         new javax.swing.Timer(1000, e -> {
@@ -5725,27 +5948,27 @@ public final class Sistema extends javax.swing.JFrame {
         javax.swing.JPanel cardsGrid = new javax.swing.JPanel(new java.awt.GridLayout(2, 3, 20, 20));
         cardsGrid.setOpaque(false);
 
-        // Card 1: Mesas (operación directa)
-        cardsGrid.add(crearHeroCard("/Img/sala.png", "Mesas & Comandas",
+        // Card 1: Mesas (operación directa con vector icon 100% transparente)
+        cardsGrid.add(crearHeroCard("mesas", "Mesas & Comandas",
                 "Mapa visual de mesas, atención a comensales y control de ocupación en vivo.", "F1",
                 () -> btnSala.doClick()));
 
         // Card 2: Pedidos Activos
-        cardsGrid.add(crearHeroCard("/Img/pedidos.png", "Pedidos & Historial",
+        cardsGrid.add(crearHeroCard("pedidos", "Pedidos & Historial",
                 "Listado general de comandas del turno, entregas y estados.", null, () -> {
                     ListarPedidos();
                     jTabbedPane1.setSelectedIndex(5);
                 }));
 
         // Card 3: Caja & Arqueo
-        cardsGrid.add(crearHeroCard("/Img/money.png", "Caja & Arqueo",
+        cardsGrid.add(crearHeroCard("caja", "Caja & Arqueo",
                 "Control de apertura, movimientos de efectivo, registro de gastos y cierre.", "F2", () -> {
                     if (moduloCaja != null)
                         moduloCaja.abrirComoVentanaModal(Sistema.this);
                 }));
 
         // Card 4: Inventario
-        cardsGrid.add(crearHeroCard("/Img/inventario.png", "Inventario & Stock",
+        cardsGrid.add(crearHeroCard("inventario", "Inventario & Stock",
                 "Control de existencias, kardex de insumos, entradas y mermas.", "F3", () -> {
                     if (!esAdmin()) {
                         JOptionPane.showMessageDialog(Sistema.this,
@@ -5757,9 +5980,8 @@ public final class Sistema extends javax.swing.JFrame {
                         moduloInventario.abrirComoVentanaModal(Sistema.this);
                 }));
 
-        // Card 5: Administración General (Config F5 = Empresa + Salas + Carta +
-        // Usuarios)
-        cardsGrid.add(crearHeroCard("/Img/config.png", "Administración",
+        // Card 5: Administración General
+        cardsGrid.add(crearHeroCard("admin", "Administración",
                 "Datos del restaurante, salas, carta de platos, usuarios y roles del sistema.", "F5", () -> {
                     if (!esAdmin()) {
                         JOptionPane.showMessageDialog(Sistema.this,
@@ -5778,30 +6000,24 @@ public final class Sistema extends javax.swing.JFrame {
         jPanel9.repaint();
     }
 
-    private javax.swing.JPanel crearHeroCard(String iconPath, String titulo, String descripcion, String badgeTecla,
+    private javax.swing.JPanel crearHeroCard(String iconKey, String titulo, String descripcion, String badgeTecla,
             Runnable onClick) {
         javax.swing.JPanel card = new javax.swing.JPanel(new java.awt.BorderLayout(10, 10));
-        card.setBackground(UIUtils.COLOR_PANEL_DARK);
+        card.setBackground(UIUtils.getPanelColor());
         card.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-                javax.swing.BorderFactory.createLineBorder(UIUtils.COLOR_BORDER_DARK, 1, true),
+                javax.swing.BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1, true),
                 javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20)));
         card.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
-        // Header de la Card (Icono + Título + Badge Tecla)
-        javax.swing.JPanel topPanel = new javax.swing.JPanel(new java.awt.BorderLayout(10, 0));
+        // Header de la Card (Icono Vectorial + Título + Badge Tecla)
+        javax.swing.JPanel topPanel = new javax.swing.JPanel(new java.awt.BorderLayout(12, 0));
         topPanel.setOpaque(false);
 
-        javax.swing.JLabel lblIcon = new javax.swing.JLabel();
-        try {
-            java.awt.Image img = new javax.swing.ImageIcon(getClass().getResource(iconPath)).getImage()
-                    .getScaledInstance(36, 36, java.awt.Image.SCALE_SMOOTH);
-            lblIcon.setIcon(new javax.swing.ImageIcon(img));
-        } catch (Exception e) {
-        }
+        javax.swing.JLabel lblIcon = new javax.swing.JLabel(IconManager.getIcon(iconKey, 36));
 
         javax.swing.JLabel lblTitle = new javax.swing.JLabel(titulo);
         lblTitle.setFont(getFontBold(16f));
-        lblTitle.setForeground(java.awt.Color.WHITE);
+        lblTitle.setForeground(UIUtils.getTextPrimary());
 
         topPanel.add(lblIcon, java.awt.BorderLayout.WEST);
         topPanel.add(lblTitle, java.awt.BorderLayout.CENTER);
@@ -5809,17 +6025,17 @@ public final class Sistema extends javax.swing.JFrame {
         if (badgeTecla != null && !badgeTecla.isEmpty()) {
             javax.swing.JLabel lblBadge = new javax.swing.JLabel(" " + badgeTecla + " ");
             lblBadge.setFont(new java.awt.Font("Consolas", java.awt.Font.BOLD, 12));
-            lblBadge.setForeground(new java.awt.Color(56, 189, 248));
-            lblBadge.setBackground(new java.awt.Color(15, 23, 42));
+            lblBadge.setForeground(UIUtils.IS_DARK ? new java.awt.Color(56, 189, 248) : new java.awt.Color(37, 99, 235));
+            lblBadge.setBackground(UIUtils.IS_DARK ? new java.awt.Color(8, 9, 12) : new java.awt.Color(226, 232, 240));
             lblBadge.setOpaque(true);
-            lblBadge.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(56, 189, 248, 100), 1));
+            lblBadge.setBorder(javax.swing.BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1));
             topPanel.add(lblBadge, java.awt.BorderLayout.EAST);
         }
 
         javax.swing.JLabel lblDesc = new javax.swing.JLabel(
                 "<html><body style='width:180px;'>" + descripcion + "</body></html>");
         lblDesc.setFont(getFontRegular(12f));
-        lblDesc.setForeground(UIUtils.COLOR_TEXT_MUTED);
+        lblDesc.setForeground(UIUtils.getTextMuted());
 
         card.add(topPanel, java.awt.BorderLayout.NORTH);
         card.add(lblDesc, java.awt.BorderLayout.CENTER);
@@ -5827,7 +6043,7 @@ public final class Sistema extends javax.swing.JFrame {
         card.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseEntered(java.awt.event.MouseEvent e) {
-                card.setBackground(new java.awt.Color(40, 53, 76));
+                card.setBackground(UIUtils.getCardHover());
                 card.setBorder(javax.swing.BorderFactory.createCompoundBorder(
                         javax.swing.BorderFactory.createLineBorder(new java.awt.Color(56, 189, 248), 1, true),
                         javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20)));
@@ -5835,9 +6051,9 @@ public final class Sistema extends javax.swing.JFrame {
 
             @Override
             public void mouseExited(java.awt.event.MouseEvent e) {
-                card.setBackground(UIUtils.COLOR_PANEL_DARK);
+                card.setBackground(UIUtils.getPanelColor());
                 card.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-                        javax.swing.BorderFactory.createLineBorder(UIUtils.COLOR_BORDER_DARK, 1, true),
+                        javax.swing.BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1, true),
                         javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20)));
             }
 
@@ -5857,7 +6073,7 @@ public final class Sistema extends javax.swing.JFrame {
 
         jPanel23.removeAll();
         jPanel23.setLayout(new java.awt.BorderLayout(10, 10));
-        jPanel23.setBackground(new java.awt.Color(15, 23, 42)); // Slate 900
+        jPanel23.setBackground(UIUtils.getBgColor());
         jPanel23.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 15, 15, 15));
 
         // --- 1. BARRA SUPERIOR DE ACCIONES RÁPIDAS POS ---
@@ -5869,15 +6085,18 @@ public final class Sistema extends javax.swing.JFrame {
         pCats.setOpaque(false);
         javax.swing.JLabel lblCat = new javax.swing.JLabel("Categorías: ");
         lblCat.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 12));
-        lblCat.setForeground(new java.awt.Color(148, 163, 184));
+        lblCat.setForeground(UIUtils.getTextMuted());
         pCats.add(lblCat);
 
         String[] categorias = { "Todos", "Pizzas", "Bebidas", "Entradas", "Postres" };
         for (String cat : categorias) {
             javax.swing.JButton bCat = new javax.swing.JButton(cat);
             bCat.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 11));
-            bCat.setBackground(new java.awt.Color(30, 41, 59));
-            bCat.setForeground(new java.awt.Color(56, 189, 248)); // Sky blue
+            bCat.setBackground(UIUtils.getPanelColor());
+            bCat.setForeground(UIUtils.IS_DARK ? new java.awt.Color(56, 189, 248) : new java.awt.Color(2, 132, 199));
+            bCat.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+                    javax.swing.BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1, true),
+                    javax.swing.BorderFactory.createEmptyBorder(4, 10, 4, 10)));
             bCat.setFocusPainted(false);
             bCat.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
             bCat.addActionListener(e -> {
@@ -5969,7 +6188,7 @@ public final class Sistema extends javax.swing.JFrame {
         pChips.setOpaque(false);
         javax.swing.JLabel lblObs = new javax.swing.JLabel("Notas Rápidas: ");
         lblObs.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 12));
-        lblObs.setForeground(new java.awt.Color(148, 163, 184));
+        lblObs.setForeground(UIUtils.getTextMuted());
         pChips.add(lblObs);
 
         String[] observaciones = { "Para llevar", "Sin cebolla", "Sin hielo", "Bien cocido", "Salsa aparte",
@@ -5977,8 +6196,11 @@ public final class Sistema extends javax.swing.JFrame {
         for (String obs : observaciones) {
             javax.swing.JButton bObs = new javax.swing.JButton("+ " + obs);
             bObs.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 11));
-            bObs.setBackground(new java.awt.Color(51, 65, 85));
-            bObs.setForeground(java.awt.Color.WHITE);
+            bObs.setBackground(UIUtils.getPanelColor());
+            bObs.setForeground(UIUtils.getTextPrimary());
+            bObs.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+                    javax.swing.BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1, true),
+                    javax.swing.BorderFactory.createEmptyBorder(4, 8, 4, 8)));
             bObs.setFocusPainted(false);
             bObs.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
             bObs.addActionListener(e -> {
@@ -5998,10 +6220,11 @@ public final class Sistema extends javax.swing.JFrame {
 
         lblBannerMesaComanda = new javax.swing.JLabel("🍽️ COMANDA ACTIVA - SELECCIONE PRODUCTOS");
         lblBannerMesaComanda.setFont(new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 15));
-        lblBannerMesaComanda.setForeground(new java.awt.Color(56, 189, 248)); // Sky Blue
+        lblBannerMesaComanda.setForeground(UIUtils.IS_DARK ? new java.awt.Color(56, 189, 248) : new java.awt.Color(2, 132, 199)); // Sky Blue
 
-        javax.swing.JButton btnVolverMesas = UIUtils.crearBoton("⬅ Volver a Mesas", new java.awt.Color(51, 65, 85));
+        javax.swing.JButton btnVolverMesas = UIUtils.crearBoton("⬅ Volver a Mesas", UIUtils.getPanelColor());
         btnVolverMesas.setFont(getFontBold(12f));
+        btnVolverMesas.setForeground(UIUtils.getTextPrimary());
         btnVolverMesas.addActionListener(e -> {
             btnSala.doClick();
         });
@@ -6024,6 +6247,11 @@ public final class Sistema extends javax.swing.JFrame {
         // Lado Izquierdo: Comanda Actual + Comentarios + Total
         javax.swing.JPanel pIzquierda = new javax.swing.JPanel(new java.awt.BorderLayout(0, 10));
         pIzquierda.setOpaque(false);
+        if (jScrollPane11 != null) {
+            jScrollPane11.getViewport().setBackground(UIUtils.getBgColor());
+            jScrollPane11.setBackground(UIUtils.getBgColor());
+            jScrollPane11.setBorder(javax.swing.BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1));
+        }
         pIzquierda.add(jScrollPane11, java.awt.BorderLayout.CENTER);
 
         // Pie Izquierdo (Comentarios + Botón Realizar Pedido)
@@ -6032,6 +6260,19 @@ public final class Sistema extends javax.swing.JFrame {
 
         javax.swing.JPanel pBoxObs = new javax.swing.JPanel(new java.awt.BorderLayout(5, 0));
         pBoxObs.setOpaque(false);
+        if (jLabel6 != null) {
+            jLabel6.setForeground(UIUtils.getTextPrimary());
+        }
+        if (txtComentario != null) {
+            txtComentario.setBackground(UIUtils.getInputBg());
+            txtComentario.setForeground(UIUtils.getTextPrimary());
+            txtComentario.setCaretColor(UIUtils.getTextPrimary());
+        }
+        if (jScrollPane12 != null) {
+            jScrollPane12.getViewport().setBackground(UIUtils.getInputBg());
+            jScrollPane12.setBackground(UIUtils.getInputBg());
+            jScrollPane12.setBorder(javax.swing.BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1));
+        }
         pBoxObs.add(jLabel6, java.awt.BorderLayout.WEST);
         pBoxObs.add(jScrollPane12, java.awt.BorderLayout.CENTER);
 
@@ -6043,6 +6284,12 @@ public final class Sistema extends javax.swing.JFrame {
 
         javax.swing.JPanel pTotal = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 15, 5));
         pTotal.setOpaque(false);
+        if (jLabel11 != null) {
+            jLabel11.setForeground(UIUtils.getTextPrimary());
+        }
+        if (totalMenu != null) {
+            totalMenu.setForeground(UIUtils.IS_DARK ? new java.awt.Color(52, 211, 153) : new java.awt.Color(5, 150, 105));
+        }
         pTotal.add(jLabel11);
         pTotal.add(totalMenu);
 
@@ -6055,6 +6302,21 @@ public final class Sistema extends javax.swing.JFrame {
         pPieComanda.add(pTotal, java.awt.BorderLayout.SOUTH);
         pIzquierda.add(pPieComanda, java.awt.BorderLayout.SOUTH);
 
+        if (jPanel24 != null) {
+            jPanel24.setBackground(UIUtils.getBgColor());
+        }
+        if (gridPanelPlatos != null) {
+            gridPanelPlatos.setBackground(UIUtils.getBgColor());
+        }
+        if (panelCardPlatos != null) {
+            panelCardPlatos.setBackground(UIUtils.getBgColor());
+        }
+        if (jScrollPane10 != null) {
+            jScrollPane10.getViewport().setBackground(UIUtils.getBgColor());
+            jScrollPane10.setBackground(UIUtils.getBgColor());
+            jScrollPane10.setBorder(javax.swing.BorderFactory.createLineBorder(UIUtils.getBorderColor(), 1));
+        }
+
         panelCentro.add(pIzquierda);
         panelCentro.add(jPanel24); // Catálogo a la derecha
 
@@ -6066,8 +6328,8 @@ public final class Sistema extends javax.swing.JFrame {
 
     private void inicializarFooterEstado() {
         javax.swing.JPanel footer = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 20, 4));
-        footer.setBackground(new java.awt.Color(15, 23, 42));
-        footer.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(51, 65, 85)));
+        footer.setBackground(new java.awt.Color(8, 9, 12));
+        footer.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(36, 38, 48)));
         footer.setPreferredSize(new java.awt.Dimension(getWidth(), 32));
 
         java.awt.Font fntFooter = new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 12);
@@ -6096,19 +6358,19 @@ public final class Sistema extends javax.swing.JFrame {
         footer.add(lblFooterVentas);
         footer.add(new javax.swing.JLabel(" | ") {
             {
-                setForeground(new java.awt.Color(51, 65, 85));
+                setForeground(new java.awt.Color(36, 38, 48));
             }
         });
         footer.add(lblFooterMesas);
         footer.add(new javax.swing.JLabel(" | ") {
             {
-                setForeground(new java.awt.Color(51, 65, 85));
+                setForeground(new java.awt.Color(36, 38, 48));
             }
         });
         footer.add(lblFooterStock);
         footer.add(new javax.swing.JLabel(" | ") {
             {
-                setForeground(new java.awt.Color(51, 65, 85));
+                setForeground(new java.awt.Color(36, 38, 48));
             }
         });
         footer.add(lblFooterUser);

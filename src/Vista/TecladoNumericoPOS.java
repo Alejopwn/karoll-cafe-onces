@@ -33,14 +33,14 @@ public class TecladoNumericoPOS extends JDialog {
         display.setFont(new Font("Segoe UI", Font.BOLD, 28));
         display.setHorizontalAlignment(JTextField.RIGHT);
         display.setEditable(false);
-        display.setBackground(new Color(15, 23, 42));
+        display.setBackground(new Color(8, 9, 12));
         display.setForeground(Color.WHITE);
         display.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
         add(display, BorderLayout.NORTH);
 
         // Panel de botones (Grid 4x3)
         JPanel panelGrid = new JPanel(new GridLayout(4, 3, 8, 8));
-        panelGrid.setBackground(new Color(30, 41, 59));
+        panelGrid.setBackground(new Color(18, 20, 26));
         panelGrid.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         String[] botones = {
@@ -63,7 +63,7 @@ public class TecladoNumericoPOS extends JDialog {
                 btn.setBackground(new Color(71, 85, 105));
                 btn.setForeground(Color.WHITE);
             } else {
-                btn.setBackground(new Color(51, 65, 85));
+                btn.setBackground(new Color(36, 38, 48));
                 btn.setForeground(Color.WHITE);
             }
 

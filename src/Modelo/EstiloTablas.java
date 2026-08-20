@@ -16,22 +16,21 @@ import javax.swing.table.DefaultTableCellRenderer;
  */
 public class EstiloTablas extends DefaultTableCellRenderer {
 
-    private static final Color BG_EVEN = new Color(24, 32, 47);
-    private static final Color BG_ODD = new Color(15, 23, 42);
-    private static final Color BG_HOVER = new Color(51, 65, 85);
-    private static final Color BG_SELECTED = new Color(37, 99, 235);
-    private static final Color TEXT_MAIN = new Color(241, 245, 249);
-    private static final Color TEXT_MUTED = new Color(148, 163, 184);
+    private Color getBgEven() { return Vista.UIUtils.IS_DARK ? new Color(18, 20, 26) : new Color(255, 255, 255); }
+    private Color getBgOdd() { return Vista.UIUtils.IS_DARK ? new Color(10, 11, 14) : new Color(248, 250, 252); }
+    private Color getBgHover() { return Vista.UIUtils.IS_DARK ? new Color(28, 30, 38) : new Color(241, 245, 249); }
+    private Color getBgSelected() { return Vista.UIUtils.IS_DARK ? new Color(38, 42, 54) : new Color(226, 232, 240); }
+    private Color getTextMain() { return Vista.UIUtils.IS_DARK ? new Color(255, 255, 255) : new Color(15, 23, 42); }
 
     // Colores de badges de estado
-    private static final Color BADGE_FINALIZADO_BG = new Color(20, 83, 45); // Verde oscuro
-    private static final Color BADGE_FINALIZADO_FG = new Color(74, 222, 128); // Verde brillante
-    private static final Color BADGE_PREPARADO_BG = new Color(120, 53, 15); // Ámbar oscuro
-    private static final Color BADGE_PREPARADO_FG = new Color(252, 211, 77); // Ámbar brillante
-    private static final Color BADGE_PENDIENTE_BG = new Color(127, 29, 29); // Rojo oscuro
-    private static final Color BADGE_PENDIENTE_FG = new Color(248, 113, 113); // Rojo claro
-    private static final Color BADGE_ANULADO_BG = new Color(51, 65, 85); // Gris
-    private static final Color BADGE_ANULADO_FG = new Color(148, 163, 184);
+    private static final Color BADGE_FINALIZADO_BG = new Color(16, 185, 129, 35);
+    private static final Color BADGE_FINALIZADO_FG = new Color(16, 185, 129);
+    private static final Color BADGE_PREPARADO_BG = new Color(245, 158, 11, 35);
+    private static final Color BADGE_PREPARADO_FG = new Color(245, 158, 11);
+    private static final Color BADGE_PENDIENTE_BG = new Color(244, 63, 94, 35);
+    private static final Color BADGE_PENDIENTE_FG = new Color(244, 63, 94);
+    private static final Color BADGE_ANULADO_BG = new Color(100, 116, 139, 35);
+    private static final Color BADGE_ANULADO_FG = new Color(100, 116, 139);
 
     @Override
     public Component getTableCellRendererComponent(JTable jtable, Object o, boolean isSelected, boolean hasFocus, int row, int col) {
@@ -65,8 +64,8 @@ public class EstiloTablas extends DefaultTableCellRenderer {
         // Si es la columna de Estado, aplicamos estilo Badge tipo Chip
         if (col == 6) {
             if (isSelected) {
-                label.setBackground(BG_SELECTED);
-                label.setForeground(Color.WHITE);
+                label.setBackground(getBgSelected());
+                label.setForeground(getTextMain());
             } else if (estado.contains("FINALIZADO")) {
                 label.setBackground(BADGE_FINALIZADO_BG);
                 label.setForeground(BADGE_FINALIZADO_FG);
@@ -74,35 +73,35 @@ public class EstiloTablas extends DefaultTableCellRenderer {
             } else if (estado.contains("PREPARADO")) {
                 label.setBackground(BADGE_PREPARADO_BG);
                 label.setForeground(BADGE_PREPARADO_FG);
-                label.setText("🟡 " + estado);
+                label.setText("● " + estado);
             } else if (estado.contains("PENDIENTE")) {
                 label.setBackground(BADGE_PENDIENTE_BG);
                 label.setForeground(BADGE_PENDIENTE_FG);
-                label.setText("⏱ " + estado);
+                label.setText("● " + estado);
             } else if (estado.contains("ANULADO")) {
                 label.setBackground(BADGE_ANULADO_BG);
                 label.setForeground(BADGE_ANULADO_FG);
                 label.setText("✕ " + estado);
             } else {
-                label.setBackground(row % 2 == 0 ? BG_EVEN : BG_ODD);
-                label.setForeground(TEXT_MAIN);
+                label.setBackground(row % 2 == 0 ? getBgEven() : getBgOdd());
+                label.setForeground(getTextMain());
             }
             return label;
         }
 
         // Para el resto de columnas: Fondo Cebra Limpio o Selección
         if (isSelected) {
-            label.setBackground(BG_SELECTED);
-            label.setForeground(Color.WHITE);
+            label.setBackground(getBgSelected());
+            label.setForeground(getTextMain());
         } else {
             java.awt.Point p = jtable.getMousePosition();
             int hoverRow = p != null ? jtable.rowAtPoint(p) : -1;
             if (row == hoverRow) {
-                label.setBackground(BG_HOVER);
+                label.setBackground(getBgHover());
             } else {
-                label.setBackground(row % 2 == 0 ? BG_EVEN : BG_ODD);
+                label.setBackground(row % 2 == 0 ? getBgEven() : getBgOdd());
             }
-            label.setForeground(col == 5 ? new Color(56, 189, 248) : TEXT_MAIN); // Total en color cian claro
+            label.setForeground(col == 5 ? (Vista.UIUtils.IS_DARK ? new Color(56, 189, 248) : new Color(37, 99, 235)) : getTextMain());
         }
 
         return label;

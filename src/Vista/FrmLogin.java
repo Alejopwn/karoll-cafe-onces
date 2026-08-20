@@ -45,7 +45,7 @@ public class FrmLogin extends javax.swing.JFrame {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                GradientPaint gp = new GradientPaint(0, 0, new Color(15, 23, 42), getWidth(), getHeight(), new Color(30, 64, 175));
+                GradientPaint gp = new GradientPaint(0, 0, new Color(5, 5, 8), getWidth(), getHeight(), new Color(20, 22, 28));
                 g2.setPaint(gp);
                 g2.fillRect(0, 0, getWidth(), getHeight());
                 g2.dispose();
@@ -60,7 +60,7 @@ public class FrmLogin extends javax.swing.JFrame {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(new Color(255, 255, 255, 18));
+                g2.setColor(new Color(255, 255, 255, 10));
                 g2.fillOval(0, 0, 200, 200);
                 g2.dispose();
             }
@@ -73,7 +73,7 @@ public class FrmLogin extends javax.swing.JFrame {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(new Color(255, 255, 255, 12));
+                g2.setColor(new Color(255, 255, 255, 6));
                 g2.fillOval(0, 0, 180, 180);
                 g2.dispose();
             }
@@ -85,59 +85,59 @@ public class FrmLogin extends javax.swing.JFrame {
         JLabel lblLogoImg = new JLabel();
         try {
             java.awt.Image imgLogo = new javax.swing.ImageIcon(
-                getClass().getResource("/Img/pizzeria.png")
-            ).getImage().getScaledInstance(110, 110, java.awt.Image.SCALE_SMOOTH);
+                getClass().getResource("/Img/as_symbol_clean.png")
+            ).getImage().getScaledInstance(95, 95, java.awt.Image.SCALE_SMOOTH);
             lblLogoImg.setIcon(new javax.swing.ImageIcon(imgLogo));
         } catch (Exception ex) {
             lblLogoImg.setText("");
             lblLogoImg.setFont(Sistema.getFontRegular(60f));
         }
         lblLogoImg.setHorizontalAlignment(SwingConstants.CENTER);
-        lblLogoImg.setBounds(0, 60, 290, 120);
+        lblLogoImg.setBounds(0, 65, 290, 105);
         panelLeft.add(lblLogoImg);
 
-        lblLogo = new JLabel("COMUNEROS");
-        lblLogo.setFont(Sistema.getFontBold(28f));
+        lblLogo = new JLabel("AS BUSINESS");
+        lblLogo.setFont(Sistema.getFontBold(24f));
         lblLogo.setForeground(Color.WHITE);
         lblLogo.setHorizontalAlignment(SwingConstants.CENTER);
-        lblLogo.setBounds(0, 185, 290, 40);
+        lblLogo.setBounds(0, 185, 290, 36);
         panelLeft.add(lblLogo);
 
-        lblSubtitle = new JLabel("Puente Nacional");
-        lblSubtitle.setFont(Sistema.getFontRegular(15f));
-        lblSubtitle.setForeground(new Color(147, 197, 253));
+        lblSubtitle = new JLabel("BUSINESS SOFTWARE SOLUTIONS");
+        lblSubtitle.setFont(Sistema.getFontRegular(11f));
+        lblSubtitle.setForeground(new Color(161, 161, 170));
         lblSubtitle.setHorizontalAlignment(SwingConstants.CENTER);
-        lblSubtitle.setBounds(0, 225, 290, 25);
+        lblSubtitle.setBounds(0, 220, 290, 22);
         panelLeft.add(lblSubtitle);
 
-        JLabel lblCopyright = new JLabel("© 2025 alejopwn. Todos los derechos reservados.");
-        lblCopyright.setFont(Sistema.getFontRegular(11f));
-        lblCopyright.setForeground(new Color(80, 120, 180));
+        JLabel lblCopyright = new JLabel("© 2026 AS Business Systems");
+        lblCopyright.setFont(Sistema.getFontRegular(10f));
+        lblCopyright.setForeground(new Color(113, 113, 122));
         lblCopyright.setHorizontalAlignment(SwingConstants.CENTER);
         lblCopyright.setBounds(0, 395, 290, 20);
         panelLeft.add(lblCopyright);
 
         JLabel lblVersion = new JLabel("Versión " + Modelo.AutoUpdater.CURRENT_VERSION);
-        lblVersion.setFont(Sistema.getFontRegular(11f));
-        lblVersion.setForeground(new Color(100, 140, 200));
+        lblVersion.setFont(Sistema.getFontRegular(10f));
+        lblVersion.setForeground(new Color(113, 113, 122));
         lblVersion.setHorizontalAlignment(SwingConstants.CENTER);
         lblVersion.setBounds(0, 415, 290, 20);
         panelLeft.add(lblVersion);
 
         // Panel derecho del formulario
         panelRight = new JPanel(null);
-        panelRight.setBackground(new Color(15, 23, 42)); // Slate 900
+        panelRight.setBackground(new Color(10, 11, 14)); // Deep Titanium Black
 
-        JLabel lblBienvenido = new JLabel("Bienvenido de vuelta");
+        JLabel lblBienvenido = new JLabel("Bienvenido");
         lblBienvenido.setFont(Sistema.getFontBold(22f));
-        lblBienvenido.setForeground(new Color(241, 245, 249)); // Slate 100
+        lblBienvenido.setForeground(new Color(255, 255, 255));
         lblBienvenido.setHorizontalAlignment(SwingConstants.CENTER);
         lblBienvenido.setBounds(0, 50, 410, 30);
         panelRight.add(lblBienvenido);
 
-        JLabel lblHint = new JLabel("Ingrese sus credenciales para continuar");
+        JLabel lblHint = new JLabel("Ingrese sus credenciales de acceso");
         lblHint.setFont(Sistema.getFontRegular(12f));
-        lblHint.setForeground(new Color(148, 163, 184)); // Slate 400
+        lblHint.setForeground(new Color(161, 161, 170));
         lblHint.setHorizontalAlignment(SwingConstants.CENTER);
         lblHint.setBounds(0, 82, 410, 20);
         panelRight.add(lblHint);
@@ -145,7 +145,7 @@ public class FrmLogin extends javax.swing.JFrame {
         // Label Correo
         JLabel lblEmailLbl = new JLabel("Correo electrónico");
         lblEmailLbl.setFont(Sistema.getFontBold(12f));
-        lblEmailLbl.setForeground(new Color(203, 213, 225)); // Slate 300
+        lblEmailLbl.setForeground(new Color(228, 228, 231)); // Titanium 200
         lblEmailLbl.setBounds(40, 130, 200, 20);
         panelRight.add(lblEmailLbl);
 
@@ -155,7 +155,7 @@ public class FrmLogin extends javax.swing.JFrame {
             protected void paintBorder(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(isFocusOwner() ? new Color(96, 165, 250) : new Color(51, 65, 85)); // Slate 700 / Azul brillante
+                g2.setColor(isFocusOwner() ? Color.WHITE : new Color(38, 40, 50));
                 g2.setStroke(new BasicStroke(isFocusOwner() ? 2f : 1.5f));
                 g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 10, 10);
                 g2.dispose();
@@ -165,14 +165,14 @@ public class FrmLogin extends javax.swing.JFrame {
         txtCorreo.setForeground(Color.WHITE);
         txtCorreo.setBorder(BorderFactory.createEmptyBorder(8, 14, 8, 14));
         txtCorreo.setOpaque(true);
-        txtCorreo.setBackground(new Color(30, 41, 59)); // Slate 800
-        txtCorreo.setCaretColor(new Color(96, 165, 250));
+        txtCorreo.setBackground(new Color(20, 22, 28)); // Deep Titanium
+        txtCorreo.setCaretColor(Color.WHITE);
         txtCorreo.setBounds(40, 155, 330, 45);
         panelRight.add(txtCorreo);
 
         // Placeholder
         txtCorreo.setText("usuario@restaurante.com");
-        txtCorreo.setForeground(new Color(100, 116, 139)); // Slate 500
+        txtCorreo.setForeground(new Color(113, 113, 122));
         txtCorreo.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent e) {
                 if (txtCorreo.getText().equals("usuario@restaurante.com")) {
@@ -184,7 +184,7 @@ public class FrmLogin extends javax.swing.JFrame {
             public void focusLost(java.awt.event.FocusEvent e) {
                 if (txtCorreo.getText().isEmpty()) {
                     txtCorreo.setText("usuario@restaurante.com");
-                    txtCorreo.setForeground(new Color(100, 116, 139));
+                    txtCorreo.setForeground(new Color(113, 113, 122));
                 }
                 txtCorreo.repaint();
             }
@@ -193,7 +193,7 @@ public class FrmLogin extends javax.swing.JFrame {
         // Label Pass
         JLabel lblPassLbl = new JLabel("Contraseña");
         lblPassLbl.setFont(Sistema.getFontBold(12f));
-        lblPassLbl.setForeground(new Color(203, 213, 225));
+        lblPassLbl.setForeground(new Color(228, 228, 231));
         lblPassLbl.setBounds(40, 215, 200, 20);
         panelRight.add(lblPassLbl);
 
@@ -203,17 +203,17 @@ public class FrmLogin extends javax.swing.JFrame {
             protected void paintBorder(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(isFocusOwner() ? new Color(96, 165, 250) : new Color(51, 65, 85));
+                g2.setColor(isFocusOwner() ? Color.WHITE : new Color(38, 40, 50));
                 g2.setStroke(new BasicStroke(isFocusOwner() ? 2f : 1.5f));
                 g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 10, 10);
                 g2.dispose();
             }
         };
         txtPass.setFont(Sistema.getFontRegular(14f));
-        txtPass.setForeground(new Color(100, 116, 139));
+        txtPass.setForeground(new Color(113, 113, 122));
         txtPass.setBorder(BorderFactory.createEmptyBorder(8, 14, 8, 14));
-        txtPass.setBackground(new Color(30, 41, 59));
-        txtPass.setCaretColor(new Color(96, 165, 250));
+        txtPass.setBackground(new Color(20, 22, 28));
+        txtPass.setCaretColor(Color.WHITE);
         txtPass.setEchoChar((char) 0);
         txtPass.setText("••••••••");
         txtPass.setBounds(40, 240, 330, 45);
@@ -231,7 +231,7 @@ public class FrmLogin extends javax.swing.JFrame {
                 if (String.valueOf(txtPass.getPassword()).isEmpty()) {
                     txtPass.setEchoChar((char) 0);
                     txtPass.setText("••••••••");
-                    txtPass.setForeground(new Color(100, 116, 139));
+                    txtPass.setForeground(new Color(113, 113, 122));
                 }
                 txtPass.repaint();
             }
@@ -246,8 +246,8 @@ public class FrmLogin extends javax.swing.JFrame {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                Color base = getModel().isPressed() ? new Color(29, 78, 216) :
-                             getModel().isRollover() ? new Color(96, 165, 250) : new Color(59, 130, 246);
+                Color base = getModel().isPressed() ? new Color(212, 212, 216) :
+                             getModel().isRollover() ? new Color(244, 244, 245) : Color.WHITE;
                 g2.setColor(base);
                 g2.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 12, 12));
                 g2.dispose();
@@ -255,7 +255,7 @@ public class FrmLogin extends javax.swing.JFrame {
             }
         };
         btnIniciar.setFont(Sistema.getFontBold(15f));
-        btnIniciar.setForeground(Color.WHITE);
+        btnIniciar.setForeground(Color.BLACK);
         btnIniciar.setContentAreaFilled(false);
         btnIniciar.setBorderPainted(false);
         btnIniciar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -266,7 +266,7 @@ public class FrmLogin extends javax.swing.JFrame {
         // Botón Salir (link-style)
         jButton1 = new JButton("Salir del sistema");
         jButton1.setFont(Sistema.getFontRegular(12f));
-        jButton1.setForeground(new Color(148, 163, 184));
+        jButton1.setForeground(new Color(113, 113, 122));
         jButton1.setBorderPainted(false);
         jButton1.setContentAreaFilled(false);
         jButton1.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));

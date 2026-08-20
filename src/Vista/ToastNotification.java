@@ -62,11 +62,11 @@ public class ToastNotification extends JWindow {
                 int h = getHeight();
 
                 // 1. Fondo Dark Slate (#0f172a / #111827)
-                g2.setColor(new Color(15, 23, 42));
+                g2.setColor(new Color(8, 9, 12));
                 g2.fill(new RoundRectangle2D.Float(0, 0, w, h, 14, 14));
 
                 // 2. Borde sutil
-                g2.setColor(new Color(30, 41, 59));
+                g2.setColor(new Color(18, 20, 26));
                 g2.setStroke(new BasicStroke(1.2f));
                 g2.draw(new RoundRectangle2D.Float(1, 1, w - 2, h - 2, 13, 13));
 

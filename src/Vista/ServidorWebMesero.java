@@ -11,12 +11,11 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * Servidor Web embebido ultraligero y de alto rendimiento para el POS Karoll Café y Onces.
- * - Diseño móvil gastronómico artesanal único (Mobile First / PWA feel)
- * - Sincronización en tiempo real de estados de mesas (Libre, Ocupada, Preparada)
- * - Identificación precisa de Salones, Mesas y Domicilios
- * - Desglose de Rondas independientes y multi-comanda
- * - KDS de Cocina en vivo (/cocina) y Menú Digital QR (/menu)
+ * Servidor Web embebido ultraligero y de alto rendimiento para el POS.
+ * Identidad Visual Oficial: AS BUSINESS SYSTEMS (Business Software Solutions)
+ * - Estética Monocromática de Lujo / High-Tech Minimalista (Obsidiana, Titanio, Blanco Puro)
+ * - Sincronización en tiempo real de mesas y comandas
+ * - Arquitectura móvil táctil ultra fluida
  */
 public class ServidorWebMesero {
 
@@ -552,107 +551,107 @@ public class ServidorWebMesero {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // FRONTEND: Panel Móvil Meseros (Diseño Gastronómico Exclusivo)
+    // FRONTEND: Panel Móvil Meseros (AS Business Systems — Minimalist Luxury)
     // ─────────────────────────────────────────────────────────────────────────
     private static String buildHtmlMeseros() {
         return "<!DOCTYPE html><html lang='es'><head>" +
             "<meta charset='UTF-8'>" +
             "<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>" +
-            "<meta name='theme-color' content='#0f1015'>" +
+            "<meta name='theme-color' content='#000000'>" +
             "<meta name='apple-mobile-web-app-capable' content='yes'>" +
-            "<title>Karoll Café — Panel Mesero</title>" +
+            "<title>AS Business Systems — POS Móvil</title>" +
             "<link rel='preconnect' href='https://fonts.googleapis.com'>" +
             "<link href='https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap' rel='stylesheet'>" +
             "<style>" +
             "*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}" +
             ":root{" +
-            "  --bg:#0f1015;--surface:#181920;--surface-card:#20222a;--border:#2d313b;--border-light:#3b404d;" +
-            "  --amber:#f59e0b;--amber-dark:#d97706;--amber-glow:rgba(245,158,11,0.18);" +
-            "  --emerald:#10b981;--emerald-dark:#059669;--emerald-glow:rgba(16,185,129,0.15);" +
-            "  --rose:#f43f5e;--rose-dark:#e11d48;--rose-glow:rgba(244,63,94,0.15);" +
-            "  --sky:#38bdf8;--sky-glow:rgba(56,189,248,0.15);" +
-            "  --text:#f8fafc;--text-muted:#94a3b8;--text-dim:#64748b;" +
+            "  --bg:#000000;--surface:#0e0f12;--surface-card:#14161b;--surface-elevated:#1c1e26;" +
+            "  --border:#242630;--border-light:#383b49;--border-active:#ffffff;" +
+            "  --white:#ffffff;--titanium:#e4e4e7;--text-muted:#a1a1aa;--text-dim:#71717a;" +
+            "  --emerald:#10b981;--emerald-glow:rgba(16,185,129,0.14);" +
+            "  --rose:#f43f5e;--rose-glow:rgba(244,63,94,0.16);" +
+            "  --sky:#38bdf8;--sky-glow:rgba(56,189,248,0.16);" +
             "}" +
-            "body{font-family:'Plus Jakarta Sans',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;padding-bottom:80px;user-select:none}" +
+            "body{font-family:'Plus Jakarta Sans',-apple-system,sans-serif;background:var(--bg);color:var(--white);min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;padding-bottom:84px;user-select:none}" +
             
             // Header Top Bar
-            ".top-bar{background:rgba(15,16,21,0.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}" +
-            ".brand-box{display:flex;align-items:center;gap:10px}" +
-            ".brand-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--amber),#b45309);display:flex;align-items:center;justify-content:center;color:#0f1015;font-weight:800;font-size:18px;box-shadow:0 4px 12px var(--amber-glow)}" +
-            ".brand-text h1{font-size:15px;font-weight:800;color:var(--text);line-height:1.1}" +
-            ".brand-text span{font-size:11px;font-weight:600;color:var(--amber)}" +
+            ".top-bar{background:rgba(0,0,0,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}" +
+            ".brand-box{display:flex;align-items:center;gap:12px}" +
+            ".as-logo{width:38px;height:38px;border-radius:10px;background:#0e0f12;border:1px solid var(--border-light);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(255,255,255,0.04)}" +
+            ".as-logo svg{width:22px;height:22px;fill:none;stroke:#ffffff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}" +
+            ".brand-text h1{font-size:14px;font-weight:800;letter-spacing:0.5px;color:var(--white);line-height:1.2}" +
+            ".brand-text span{font-size:11px;font-weight:600;color:var(--text-muted);letter-spacing:0.3px}" +
             ".top-actions{display:flex;align-items:center;gap:8px}" +
-            ".caja-badge{padding:4px 9px;border-radius:20px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:5px}" +
+            ".caja-badge{padding:5px 10px;border-radius:20px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:6px}" +
             ".caja-badge.abierta{background:var(--emerald-glow);color:var(--emerald);border:1px solid rgba(16,185,129,0.3)}" +
             ".caja-badge.cerrada{background:var(--rose-glow);color:var(--rose);border:1px solid rgba(244,63,94,0.3)}" +
-            ".user-pill{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px}" +
-            ".user-pill:active{border-color:var(--amber)}" +
+            ".user-pill{background:var(--surface);border:1px solid var(--border);color:var(--white);padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px}" +
+            ".user-pill:active{border-color:var(--white)}" +
 
             // Main Content Area
-            ".main-content{padding:14px 16px;max-width:540px;margin:0 auto;width:100%}" +
+            ".main-content{padding:16px;max-width:540px;margin:0 auto;width:100%}" +
             ".section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}" +
-            ".section-title{font-size:12px;font-weight:800;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase}" +
+            ".section-title{font-size:11px;font-weight:800;color:var(--text-dim);letter-spacing:1.2px;text-transform:uppercase}" +
 
             // Salones Pills
             ".salones-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:14px;-webkit-overflow-scrolling:touch}" +
             ".salones-scroll::-webkit-scrollbar{display:none}" +
-            ".salon-tab{background:var(--surface);border:1.5px solid var(--border);color:var(--text-muted);padding:8px 16px;border-radius:12px;font-size:13px;font-weight:700;white-space:nowrap;cursor:pointer;transition:all .15s}" +
-            ".salon-tab.active{background:var(--amber);border-color:var(--amber);color:#0f1015;box-shadow:0 4px 14px var(--amber-glow)}" +
+            ".salon-tab{background:var(--surface);border:1px solid var(--border);color:var(--text-muted);padding:8px 16px;border-radius:12px;font-size:13px;font-weight:700;white-space:nowrap;cursor:pointer;transition:all .15s}" +
+            ".salon-tab.active{background:var(--white);border-color:var(--white);color:#000000;box-shadow:0 4px 16px rgba(255,255,255,0.15)}" +
 
             // Mesas Grid
             ".mesas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}" +
-            ".mesa-card{background:var(--surface-card);border:1.5px solid var(--border);border-radius:16px;padding:14px 10px;text-align:center;cursor:pointer;position:relative;overflow:hidden;transition:all .15s}" +
+            ".mesa-card{background:var(--surface-card);border:1.5px solid var(--border);border-radius:16px;padding:16px 10px;text-align:center;cursor:pointer;position:relative;overflow:hidden;transition:all .15s}" +
             ".mesa-card:active{transform:scale(0.96)}" +
-            ".mesa-card.libre{border-color:rgba(16,185,129,0.4);background:linear-gradient(180deg,rgba(16,185,129,0.08),transparent)}" +
-            ".mesa-card.ocupada{border-color:rgba(244,63,94,0.5);background:linear-gradient(180deg,rgba(244,63,94,0.12),transparent)}" +
-            ".mesa-card.preparada{border-color:rgba(56,189,248,0.5);background:linear-gradient(180deg,rgba(56,189,248,0.12),transparent)}" +
-            ".mesa-num{font-size:18px;font-weight:800;margin-bottom:2px}" +
-            ".mesa-status{font-size:11px;font-weight:700;border-radius:6px;padding:2px 6px;display:inline-block;margin-top:2px}" +
+            ".mesa-card.libre{border-color:rgba(16,185,129,0.35);background:linear-gradient(180deg,rgba(16,185,129,0.06),transparent)}" +
+            ".mesa-card.ocupada{border-color:rgba(244,63,94,0.45);background:linear-gradient(180deg,rgba(244,63,94,0.10),transparent)}" +
+            ".mesa-card.preparada{border-color:rgba(56,189,248,0.45);background:linear-gradient(180deg,rgba(56,189,248,0.10),transparent)}" +
+            ".mesa-num{font-size:17px;font-weight:800;margin-bottom:3px;letter-spacing:-0.3px}" +
+            ".mesa-status{font-size:11px;font-weight:700;border-radius:6px;padding:2px 7px;display:inline-block;margin-top:2px}" +
             ".mesa-card.libre .mesa-status{color:var(--emerald);background:var(--emerald-glow)}" +
             ".mesa-card.ocupada .mesa-status{color:var(--rose);background:var(--rose-glow)}" +
             ".mesa-card.preparada .mesa-status{color:var(--sky);background:var(--sky-glow)}" +
-            ".mesa-total{font-size:12px;font-weight:800;color:var(--emerald);margin-top:4px}" +
-            ".mesa-timer{font-size:10px;font-weight:600;color:var(--amber);margin-top:2px}" +
+            ".mesa-total{font-size:12px;font-weight:800;color:var(--white);margin-top:5px}" +
 
             // Search & Category Filters
             ".search-container{position:relative;margin-bottom:12px}" +
-            ".search-container input{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:12px 14px 12px 40px;color:#fff;font-size:14px;font-weight:600;outline:none;font-family:inherit}" +
-            ".search-container input:focus{border-color:var(--amber)}" +
-            ".search-container .search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-dim)}" +
+            ".search-container input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 14px 12px 42px;color:#fff;font-size:14px;font-weight:600;outline:none;font-family:inherit;transition:border-color .15s}" +
+            ".search-container input:focus{border-color:var(--white)}" +
+            ".search-container .search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:15px}" +
 
             // Category Bar
             ".cats-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:14px;-webkit-overflow-scrolling:touch}" +
             ".cats-scroll::-webkit-scrollbar{display:none}" +
-            ".cat-pill{background:var(--surface);border:1px solid var(--border);color:var(--text-muted);padding:8px 14px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer}" +
-            ".cat-pill.active{background:var(--surface-card);border-color:var(--amber);color:var(--amber)}" +
+            ".cat-pill{background:var(--surface);border:1px solid var(--border);color:var(--text-muted);padding:8px 14px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer;transition:all .15s}" +
+            ".cat-pill.active{background:var(--surface-elevated);border-color:var(--white);color:var(--white)}" +
 
             // Dish Items List
-            ".dish-card{background:var(--surface-card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;cursor:pointer;transition:background .15s}" +
-            ".dish-card:active{background:var(--surface);border-color:var(--border-light)}" +
-            ".dish-info .nom{font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px}" +
+            ".dish-card{background:var(--surface-card);border:1px solid var(--border);border-radius:14px;padding:14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;cursor:pointer;transition:all .15s}" +
+            ".dish-card:active{background:var(--surface-elevated);border-color:var(--border-light)}" +
+            ".dish-info .nom{font-size:14px;font-weight:700;color:var(--white);margin-bottom:4px}" +
             ".dish-info .prc{font-size:14px;font-weight:800;color:var(--emerald)}" +
-            ".btn-add-circle{width:36px;height:36px;border-radius:10px;background:var(--amber);color:#0f1015;border:none;font-size:18px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 10px var(--amber-glow)}" +
+            ".btn-add-circle{width:36px;height:36px;border-radius:10px;background:var(--white);color:#000000;border:none;font-size:18px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 10px rgba(255,255,255,0.12)}" +
             ".btn-add-circle:active{transform:scale(0.92)}" +
 
             // Floating Cart Bar
-            ".cart-floating-bar{position:fixed;bottom:70px;left:16px;right:16px;max-width:508px;margin:0 auto;background:rgba(24,25,32,0.96);backdrop-filter:blur(16px);border:1.5px solid var(--amber);border-radius:16px;padding:12px 16px;display:none;align-items:center;justify-content:space-between;z-index:90;box-shadow:0 10px 25px rgba(0,0,0,0.6)}" +
+            ".cart-floating-bar{position:fixed;bottom:72px;left:16px;right:16px;max-width:508px;margin:0 auto;background:rgba(14,15,18,0.96);backdrop-filter:blur(18px);border:1.5px solid var(--white);border-radius:16px;padding:12px 16px;display:none;align-items:center;justify-content:space-between;z-index:90;box-shadow:0 12px 30px rgba(0,0,0,0.8)}" +
             ".cart-floating-bar.show{display:flex}" +
             ".cart-info-text .title{font-size:13px;font-weight:800;color:#fff}" +
-            ".cart-info-text .sub{font-size:11px;font-weight:600;color:var(--amber)}" +
-            ".btn-view-cart{background:linear-gradient(135deg,var(--amber),var(--amber-dark));border:none;border-radius:12px;color:#0f1015;padding:10px 18px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 4px 14px var(--amber-glow)}" +
+            ".cart-info-text .sub{font-size:12px;font-weight:700;color:var(--emerald);margin-top:1px}" +
+            ".btn-view-cart{background:var(--white);border:none;border-radius:12px;color:#000000;padding:10px 18px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 4px 14px rgba(255,255,255,0.15)}" +
 
             // Bottom Navigation Dock
-            ".bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(15,16,21,0.98);backdrop-filter:blur(16px);border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(4,1fr);height:64px;z-index:100}" +
+            ".bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,0.98);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(4,1fr);height:66px;z-index:100}" +
             ".nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text-dim);font-size:11px;font-weight:700;gap:4px;cursor:pointer;border:none;background:none;font-family:inherit;position:relative}" +
-            ".nav-item.active{color:var(--amber)}" +
-            ".nav-item svg{width:20px;height:20px;stroke-width:2.2}" +
+            ".nav-item.active{color:var(--white)}" +
+            ".nav-item svg{width:20px;height:20px;stroke-width:2}" +
             ".nav-badge{position:absolute;top:6px;right:22%;background:var(--rose);color:#fff;font-size:10px;font-weight:800;padding:1px 5px;border-radius:10px}" +
 
             // Modal Bottom Sheet
-            ".modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);z-index:200;align-items:flex-end;justify-content:center}" +
+            ".modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.82);backdrop-filter:blur(8px);z-index:200;align-items:flex-end;justify-content:center}" +
             ".modal-overlay.open{display:flex}" +
-            ".sheet-box{background:var(--surface);border:1px solid var(--border);border-top-left-radius:24px;border-top-right-radius:24px;padding:22px 20px 30px 20px;width:100%;max-width:540px;max-height:85vh;overflow-y:auto;box-shadow:0 -10px 30px rgba(0,0,0,0.8)}" +
-            ".sheet-handle{width:40px;height:4px;background:var(--border-light);border-radius:4px;margin:0 auto 16px auto}" +
+            ".sheet-box{background:var(--surface);border:1px solid var(--border-light);border-top-left-radius:24px;border-top-right-radius:24px;padding:22px 20px 32px 20px;width:100%;max-width:540px;max-height:85vh;overflow-y:auto;box-shadow:0 -12px 35px rgba(0,0,0,0.9)}" +
+            ".sheet-handle{width:36px;height:4px;background:var(--border-light);border-radius:4px;margin:0 auto 16px auto}" +
             ".sheet-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}" +
             ".sheet-title{font-size:17px;font-weight:800;color:#fff}" +
             ".btn-close-sheet{background:none;border:none;color:var(--text-muted);font-size:20px;cursor:pointer;padding:4px}" +
@@ -660,22 +659,22 @@ public class ServidorWebMesero {
             // Stepper & Inputs
             ".stepper{display:flex;align-items:center;gap:14px;background:var(--surface-card);border:1px solid var(--border);border-radius:12px;padding:6px 12px;width:fit-content}" +
             ".btn-step{width:32px;height:32px;border-radius:8px;background:var(--surface);border:1px solid var(--border);color:#fff;font-size:16px;font-weight:800;cursor:pointer}" +
-            ".step-val{font-size:16px;font-weight:800;color:var(--amber)}" +
-            ".sheet-input{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:12px;color:#fff;font-size:14px;font-family:inherit;outline:none;margin-top:8px}" +
-            ".sheet-input:focus{border-color:var(--amber)}" +
+            ".step-val{font-size:16px;font-weight:800;color:var(--white)}" +
+            ".sheet-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:12px;color:#fff;font-size:14px;font-family:inherit;outline:none;margin-top:8px}" +
+            ".sheet-input:focus{border-color:var(--white)}" +
 
             // Chips
             ".chips-row{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 16px 0}" +
             ".chip-tag{background:var(--surface-card);border:1px solid var(--border);color:var(--text-muted);padding:6px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer}" +
-            ".chip-tag:active{background:var(--amber);color:#0f1015}" +
+            ".chip-tag:active{background:var(--white);color:#000000}" +
 
             // Main Action Buttons
-            ".btn-primary-action{width:100%;padding:14px;background:linear-gradient(135deg,var(--emerald),var(--emerald-dark));border:none;border-radius:14px;color:#fff;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 4px 14px var(--emerald-glow)}" +
+            ".btn-primary-action{width:100%;padding:14px;background:var(--white);border:none;border-radius:14px;color:#000000;font-size:14px;font-weight:800;letter-spacing:0.3px;cursor:pointer;font-family:inherit;box-shadow:0 4px 18px rgba(255,255,255,0.18)}" +
             ".btn-primary-action:active{transform:scale(0.98)}" +
-            ".btn-secondary-action{width:100%;padding:12px;background:var(--surface-card);border:1px solid var(--border);border-radius:12px;color:var(--text-muted);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px}" +
+            ".btn-secondary-action{width:100%;padding:12px;background:var(--surface-card);border:1px solid var(--border);border-radius:12px;color:var(--text-muted);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px}" +
 
             // Toast
-            ".toast-msg{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#181920;border:1.5px solid var(--emerald);color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:700;opacity:0;transition:opacity .2s;pointer-events:none;z-index:999;box-shadow:0 6px 20px rgba(0,0,0,0.6)}" +
+            ".toast-msg{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#14161b;border:1px solid var(--white);color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:700;opacity:0;transition:opacity .2s;pointer-events:none;z-index:999;box-shadow:0 8px 25px rgba(0,0,0,0.8)}" +
             ".toast-msg.show{opacity:1}" +
 
             ".tab-view{display:none}" +
@@ -686,10 +685,12 @@ public class ServidorWebMesero {
             // TOP BAR
             "<div class='top-bar'>" +
             "  <div class='brand-box'>" +
-            "    <div class='brand-icon'>☕</div>" +
+            "    <div class='as-logo'>" +
+            "      <svg viewBox='0 0 24 24'><polygon points='12 3 3 20 21 20'></polygon><path d='M9 13h6'></path></svg>" +
+            "    </div>" +
             "    <div class='brand-text'>" +
-            "      <h1 id='lbl-empresa-name'>Karoll Café</h1>" +
-            "      <span id='lbl-app-subtitle'>Sistema Mesero Móvil</span>" +
+            "      <h1>AS BUSINESS SYSTEMS</h1>" +
+            "      <span id='lbl-empresa-name'>Karoll Café y Onces • POS</span>" +
             "    </div>" +
             "  </div>" +
             "  <div class='top-actions'>" +
@@ -705,12 +706,12 @@ public class ServidorWebMesero {
             "  <div class='main-content'>" +
             "    <div class='section-header'>" +
             "      <span class='section-title'>Salones y Áreas</span>" +
-            "      <span style='font-size:11px;font-weight:700;color:var(--amber)' onclick='renderMesasActuales()'>🔄 Actualizar</span>" +
+            "      <span style='font-size:11px;font-weight:700;color:var(--text-muted);cursor:pointer' onclick='renderMesasActuales()'>🔄 Actualizar</span>" +
             "    </div>" +
             "    <div class='salones-scroll' id='bar-salones'><div class='empty-state'>Cargando salones...</div></div>" +
             "    <div class='section-header'>" +
             "      <span class='section-title' id='lbl-area-name'>Distribución de Mesas</span>" +
-            "      <span id='lbl-mesas-conteo' style='font-size:11px;font-weight:700;color:var(--text-muted)'>0 mesas</span>" +
+            "      <span id='lbl-mesas-conteo' style='font-size:11px;font-weight:700;color:var(--text-dim)'>0 mesas</span>" +
             "    </div>" +
             "    <div class='mesas-grid' id='grid-mesas'></div>" +
             "  </div>" +
@@ -719,13 +720,13 @@ public class ServidorWebMesero {
             // TAB 2: CARTA Y PEDIDO
             "<div id='tab-carta' class='tab-view'>" +
             "  <div class='main-content'>" +
-            "    <div style='display:flex;justify-content:space-between;align-items:center;background:var(--surface);padding:10px 14px;border-radius:12px;margin-bottom:12px;border:1px solid var(--border)'>" +
-            "      <div><span style='font-size:11px;font-weight:700;color:var(--text-dim)'>MESA ACTIVA</span><div id='lbl-mesa-activa-tag' style='font-size:14px;font-weight:800;color:var(--amber)'>Sin Mesa Seleccionada</div></div>" +
+            "    <div style='display:flex;justify-content:space-between;align-items:center;background:var(--surface);padding:12px 14px;border-radius:14px;margin-bottom:12px;border:1px solid var(--border)'>" +
+            "      <div><span style='font-size:11px;font-weight:700;color:var(--text-dim);letter-spacing:0.5px'>MESA SELECCIONADA</span><div id='lbl-mesa-activa-tag' style='font-size:14px;font-weight:800;color:var(--white)'>Sin Mesa Seleccionada</div></div>" +
             "      <button style='background:var(--surface-card);border:1px solid var(--border);color:var(--text-muted);padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer' onclick='switchTab(\"mesas\")'>Cambiar</button>" +
             "    </div>" +
             "    <div class='search-container'>" +
             "      <span class='search-icon'>🔍</span>" +
-            "      <input type='text' id='txt-search-menu' placeholder='Buscar café, onces, platos...' oninput='filtrarMenu()'>" +
+            "      <input type='text' id='txt-search-menu' placeholder='Buscar producto o bebida...' oninput='filtrarMenu()'>" +
             "    </div>" +
             "    <div class='cats-scroll' id='bar-categorias'>" +
             "      <div class='cat-pill active' onclick='filtrarCat(\"TODOS\", this)'>Todos</div>" +
@@ -734,7 +735,7 @@ public class ServidorWebMesero {
             "      <div class='cat-pill' onclick='filtrarCat(\"BEBIDAS\", this)'>Bebidas & Jugos</div>" +
             "      <div class='cat-pill' onclick='filtrarCat(\"POSTRES\", this)'>Postres & Dulces</div>" +
             "    </div>" +
-            "    <div id='lista-platos'><div class='empty-state'>Cargando carta...</div></div>" +
+            "    <div id='lista-platos'><div class='empty-state'>Cargando catálogo...</div></div>" +
             "  </div>" +
             "</div>" +
 
@@ -743,7 +744,7 @@ public class ServidorWebMesero {
             "  <div class='main-content'>" +
             "    <div class='section-header'>" +
             "      <span class='section-title'>Comandas del Turno</span>" +
-            "      <span style='font-size:11px;font-weight:700;color:var(--amber);cursor:pointer' onclick='cargarHistorial()'>🔄 Refrescar</span>" +
+            "      <span style='font-size:11px;font-weight:700;color:var(--text-muted);cursor:pointer' onclick='cargarHistorial()'>🔄 Refrescar</span>" +
             "    </div>" +
             "    <div id='lista-historial'><div class='empty-state'>Cargando historial...</div></div>" +
             "  </div>" +
@@ -754,15 +755,15 @@ public class ServidorWebMesero {
             "  <div class='main-content'>" +
             "    <div class='section-header'><span class='section-title'>Balance Operativo</span></div>" +
             "    <div style='background:var(--surface-card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px'>" +
-            "      <span style='font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase'>Ventas del Turno</span>" +
-            "      <div style='font-size:26px;font-weight:800;color:var(--emerald);margin-top:4px' id='kpi-turno-total'>$ 0 COP</div>" +
+            "      <span style='font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase'>Ventas Facturadas</span>" +
+            "      <div style='font-size:26px;font-weight:800;color:var(--white);margin-top:4px' id='kpi-turno-total'>$ 0 COP</div>" +
             "    </div>" +
             "    <div style='display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px'>" +
-            "      <div style='background:var(--surface-card);border:1px solid var(--border);border-radius:14px;padding:14px'><span style='font-size:11px;font-weight:700;color:var(--text-dim)'>MESAS ACTIVAS</span><div style='font-size:20px;font-weight:800;color:var(--amber);margin-top:2px' id='kpi-turno-activas'>0</div></div>" +
+            "      <div style='background:var(--surface-card);border:1px solid var(--border);border-radius:14px;padding:14px'><span style='font-size:11px;font-weight:700;color:var(--text-dim)'>MESAS ACTIVAS</span><div style='font-size:20px;font-weight:800;color:var(--rose);margin-top:2px' id='kpi-turno-activas'>0</div></div>" +
             "      <div style='background:var(--surface-card);border:1px solid var(--border);border-radius:14px;padding:14px'><span style='font-size:11px;font-weight:700;color:var(--text-dim)'>COBRADAS</span><div style='font-size:20px;font-weight:800;color:var(--emerald);margin-top:2px' id='kpi-turno-finalizadas'>0</div></div>" +
             "    </div>" +
-            "    <button class='btn-secondary-action' style='color:var(--sky)' onclick='location.href=\"/cocina\"'>🍳 Abrir Pantalla Cocina / KDS</button>" +
-            "    <button class='btn-secondary-action' style='color:var(--amber)' onclick='location.href=\"/menu\"'>📲 Ver Menú Digital QR</button>" +
+            "    <button class='btn-secondary-action' style='color:var(--sky)' onclick='location.href=\"/cocina\"'>🍳 Pantalla de Cocina / KDS</button>" +
+            "    <button class='btn-secondary-action' style='color:var(--titanium)' onclick='location.href=\"/menu\"'>📲 Menú Digital QR</button>" +
             "  </div>" +
             "</div>" +
 
@@ -801,7 +802,7 @@ public class ServidorWebMesero {
             "  <div class='sheet-box'>" +
             "    <div class='sheet-handle'></div>" +
             "    <div class='sheet-header'>" +
-            "      <div><span style='font-size:11px;font-weight:700;color:var(--amber)'>ESTADO DE MESA</span><h3 class='sheet-title' id='lbl-modal-mesa-title'>Mesa 1</h3></div>" +
+            "      <div><span style='font-size:11px;font-weight:700;color:var(--text-dim)'>ESTADO DE MESA</span><h3 class='sheet-title' id='lbl-modal-mesa-title'>Mesa 1</h3></div>" +
             "      <button class='btn-close-sheet' onclick='cerrarModalMesa()'>✕</button>" +
             "    </div>" +
             "    <div id='modal-mesa-body'></div>" +
@@ -850,7 +851,7 @@ public class ServidorWebMesero {
             "  <div class='sheet-box'>" +
             "    <div class='sheet-handle'></div>" +
             "    <div class='sheet-header'>" +
-            "      <div><span style='font-size:11px;font-weight:700;color:var(--amber)' id='lbl-title-comanda-envio'>ENVIAR COMANDA</span><h3 class='sheet-title'>Revisión de Pedido</h3></div>" +
+            "      <div><span style='font-size:11px;font-weight:700;color:var(--text-dim)' id='lbl-title-comanda-envio'>ENVIAR COMANDA</span><h3 class='sheet-title'>Revisión de Pedido</h3></div>" +
             "      <button class='btn-close-sheet' onclick='cerrarModalComanda()'>✕</button>" +
             "    </div>" +
             "    <div id='comanda-preview-list' style='max-height:220px;overflow-y:auto;margin-bottom:12px'></div>" +
@@ -883,7 +884,7 @@ public class ServidorWebMesero {
             "async function init(){" +
             "  try{" +
             "    const rInf = await fetch('/api/info'); const dInf = await rInf.json();" +
-            "    if(dInf.nombre) document.getElementById('lbl-empresa-name').textContent = dInf.nombre;" +
+            "    if(dInf.nombre) document.getElementById('lbl-empresa-name').textContent = dInf.nombre + ' • POS';" +
             "    const badgeCaja = document.getElementById('badge-caja');" +
             "    if(dInf.caja_abierta){ badgeCaja.className='caja-badge abierta'; badgeCaja.textContent='● Caja Abierta'; }" +
             "    else { badgeCaja.className='caja-badge cerrada'; badgeCaja.textContent='● Caja Cerrada'; }" +
@@ -992,15 +993,15 @@ public class ServidorWebMesero {
             "    let html = '<div style=\"display:flex;justify-content:space-between;align-items:center;background:var(--surface-card);padding:12px 14px;border-radius:14px;margin-bottom:12px;border:1px solid var(--border)\"><span style=\"font-size:13px;color:var(--text-muted);font-weight:700\">Total Mesa (' + ultimasRondasMesa.length + ' ' + (ultimasRondasMesa.length===1?'Ronda':'Rondas') + '):</span><span style=\"font-size:18px;font-weight:800;color:var(--emerald)\">' + formatCop(data.total) + '</span></div>';" +
             "    html += '<div style=\"max-height:220px;overflow-y:auto\">';" +
             "    ultimasRondasMesa.forEach(rnd => {" +
-            "      const stColor = rnd.estado === 'PREPARADO' ? 'var(--sky)' : 'var(--amber)';" +
+            "      const stColor = rnd.estado === 'PREPARADO' ? 'var(--sky)' : 'var(--rose)';" +
             "      html += '<div style=\"background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:8px\">';" +
-            "      html += '<div style=\"display:flex;justify-content:space-between;align-items:center;margin-bottom:6px\"><span style=\"font-size:13px;font-weight:800;color:var(--sky)\">🏷️ Ronda ' + rnd.rondaNum + ' (' + rnd.usuario + ')</span><span style=\"font-size:11px;font-weight:800;padding:2px 8px;border-radius:8px;background:rgba(56,189,248,0.15);color:' + stColor + '\">' + rnd.estado + '</span></div>';" +
+            "      html += '<div style=\"display:flex;justify-content:space-between;align-items:center;margin-bottom:6px\"><span style=\"font-size:13px;font-weight:800;color:var(--white)\">Ronda ' + rnd.rondaNum + ' (' + rnd.usuario + ')</span><span style=\"font-size:11px;font-weight:800;padding:2px 8px;border-radius:8px;background:rgba(255,255,255,0.06);color:' + stColor + '\">' + rnd.estado + '</span></div>';" +
             "      rnd.items.forEach(it => {" +
-            "        html += '<div style=\"display:flex;justify-content:space-between;font-size:13px;padding:3px 0\"><span>' + it.cantidad + 'x ' + it.nombre + (it.comentario ? ' <small style=\"color:var(--amber)\">(' + it.comentario + ')</small>' : '') + '</span><span style=\"font-weight:700\">' + formatCop(it.precio * it.cantidad) + '</span></div>';" +
+            "        html += '<div style=\"display:flex;justify-content:space-between;font-size:13px;padding:3px 0\"><span>' + it.cantidad + 'x ' + it.nombre + (it.comentario ? ' <small style=\"color:var(--text-muted)\">(' + it.comentario + ')</small>' : '') + '</span><span style=\"font-weight:700\">' + formatCop(it.precio * it.cantidad) + '</span></div>';" +
             "      });" +
             "      html += '<div style=\"display:flex;justify-content:space-between;align-items:center;margin-top:6px;padding-top:4px;border-top:1px solid var(--border)\"><span style=\"font-size:11px;color:var(--text-dim)\">Subtotal:</span><span style=\"font-weight:800;color:var(--emerald)\">' + formatCop(rnd.total) + '</span></div>';" +
             "      if(rnd.estado !== 'PREPARADO'){" +
-            "        html += '<button style=\"width:100%;margin-top:6px;padding:6px;background:var(--emerald-dark);color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:800;cursor:pointer\" onclick=\"marcarPreparadoDesdeModal(' + rnd.id + ')\">Marcar Ronda ' + rnd.rondaNum + ' Lista</button>';" +
+            "        html += '<button style=\"width:100%;margin-top:6px;padding:8px;background:var(--surface-elevated);border:1px solid var(--border-light);color:#fff;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer\" onclick=\"marcarPreparadoDesdeModal(' + rnd.id + ')\">Marcar Ronda ' + rnd.rondaNum + ' Lista</button>';" +
             "      }" +
             "      html += '</div>';" +
             "    });" +
@@ -1154,7 +1155,7 @@ public class ServidorWebMesero {
             "    const sub = i.precio * i.cantidad; tot += sub;" +
             "    const r = document.createElement('div');" +
             "    r.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px';" +
-            "    r.innerHTML = '<div><div style=\"font-weight:700;color:#fff\">' + i.cantidad + 'x ' + i.nombre + '</div>' + (i.comentario ? '<div style=\"font-size:11px;color:var(--amber)\">' + i.comentario + '</div>' : '') + '</div><div style=\"display:flex;align-items:center;gap:10px\"><span style=\"font-weight:800;color:var(--emerald)\">' + formatCop(sub) + '</span><button style=\"background:none;border:none;color:var(--rose);font-size:16px;cursor:pointer\" onclick=\"quitarDelCarrito(' + idx + ')\">✕</button></div>';" +
+            "    r.innerHTML = '<div><div style=\"font-weight:700;color:#fff\">' + i.cantidad + 'x ' + i.nombre + '</div>' + (i.comentario ? '<div style=\"font-size:11px;color:var(--text-muted)\">' + i.comentario + '</div>' : '') + '</div><div style=\"display:flex;align-items:center;gap:10px\"><span style=\"font-weight:800;color:var(--emerald)\">' + formatCop(sub) + '</span><button style=\"background:none;border:none;color:var(--rose);font-size:16px;cursor:pointer\" onclick=\"quitarDelCarrito(' + idx + ')\">✕</button></div>';" +
             "    cont.appendChild(r);" +
             "  });" +
             "  document.getElementById('lbl-modal-comanda-total').textContent = formatCop(tot);" +
@@ -1215,8 +1216,8 @@ public class ServidorWebMesero {
             "    pedidos.forEach(p => {" +
             "      const card = document.createElement('div');" +
             "      card.style.cssText = 'background:var(--surface-card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:8px';" +
-            "      const colorSt = p.estado === 'FINALIZADO' ? 'var(--emerald)' : (p.estado === 'PREPARADO' ? 'var(--sky)' : 'var(--amber)');" +
-            "      card.innerHTML = '<div style=\"display:flex;justify-content:space-between;align-items:center;margin-bottom:4px\"><span style=\"font-size:14px;font-weight:800;color:#fff\">Pedido #' + p.id + ' • ' + p.sala + ' M' + p.mesa + '</span><span style=\"font-size:11px;font-weight:800;padding:2px 8px;border-radius:8px;background:rgba(245,158,11,0.15);color:' + colorSt + '\">' + p.estado + '</span></div><div style=\"display:flex;justify-content:space-between;font-size:12px;color:var(--text-dim)\"><span>' + p.usuario + ' • ' + (p.fecha ? p.fecha.substring(11,16) : '') + '</span><span style=\"font-weight:800;color:var(--emerald);font-size:14px\">' + formatCop(p.total) + '</span></div>';" +
+            "      const colorSt = p.estado === 'FINALIZADO' ? 'var(--emerald)' : (p.estado === 'PREPARADO' ? 'var(--sky)' : 'var(--rose)');" +
+            "      card.innerHTML = '<div style=\"display:flex;justify-content:space-between;align-items:center;margin-bottom:4px\"><span style=\"font-size:14px;font-weight:800;color:#fff\">Pedido #' + p.id + ' • ' + p.sala + ' M' + p.mesa + '</span><span style=\"font-size:11px;font-weight:800;padding:2px 8px;border-radius:8px;background:rgba(255,255,255,0.06);color:' + colorSt + '\">' + p.estado + '</span></div><div style=\"display:flex;justify-content:space-between;font-size:12px;color:var(--text-dim)\"><span>' + p.usuario + ' • ' + (p.fecha ? p.fecha.substring(11,16) : '') + '</span><span style=\"font-weight:800;color:var(--emerald);font-size:14px\">' + formatCop(p.total) + '</span></div>';" +
             "      cont.appendChild(card);" +
             "    });" +
             "  }catch(e){ cont.innerHTML = \"<div class='empty-state'>Error al cargar historial</div>\"; }" +
@@ -1267,34 +1268,34 @@ public class ServidorWebMesero {
         return "<!DOCTYPE html><html lang='es'><head>" +
             "<meta charset='UTF-8'>" +
             "<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'>" +
-            "<meta name='theme-color' content='#0f1015'>" +
-            "<title>KDS Cocina & Barismo — Karoll Café</title>" +
+            "<meta name='theme-color' content='#000000'>" +
+            "<title>AS Business Systems — KDS Cocina</title>" +
             "<link href='https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap' rel='stylesheet'>" +
             "<style>" +
             "*{margin:0;padding:0;box-sizing:border-box}" +
-            "body{font-family:'Plus Jakarta Sans',sans-serif;background:#0f1015;color:#f8fafc;min-height:100vh;padding:16px}" +
-            ".kds-header{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px solid #2d313b;margin-bottom:16px}" +
-            ".kds-header h1{font-size:18px;font-weight:800;color:#f59e0b}" +
+            "body{font-family:'Plus Jakarta Sans',sans-serif;background:#000000;color:#f8fafc;min-height:100vh;padding:16px}" +
+            ".kds-header{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px solid #242630;margin-bottom:16px}" +
+            ".kds-header h1{font-size:18px;font-weight:800;color:#ffffff;letter-spacing:0.5px}" +
             ".kds-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}" +
-            ".kds-card{background:#181920;border:2px solid #2d313b;border-radius:16px;overflow:hidden;display:flex;flex-direction:column}" +
+            ".kds-card{background:#0e0f12;border:1.5px solid #242630;border-radius:16px;overflow:hidden;display:flex;flex-direction:column}" +
             ".kds-card.urgente{border-color:#f43f5e}" +
-            ".kds-card.medio{border-color:#f59e0b}" +
+            ".kds-card.medio{border-color:#e4e4e7}" +
             ".kds-card.verde{border-color:#10b981}" +
-            ".kds-top{padding:12px 14px;background:#20222a;display:flex;justify-content:space-between;align-items:center}" +
-            ".kds-table{font-size:15px;font-weight:800;color:#fff}" +
-            ".kds-timer{font-size:11px;font-weight:800;padding:3px 8px;border-radius:8px;background:#0f1015}" +
+            ".kds-top{padding:12px 14px;background:#14161b;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #242630}" +
+            ".kds-table{font-size:14px;font-weight:800;color:#fff}" +
+            ".kds-timer{font-size:11px;font-weight:800;padding:3px 8px;border-radius:8px;background:#000000;color:#a1a1aa}" +
             ".kds-body{padding:14px;flex:1}" +
-            ".kds-item{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #2d313b;font-size:14px}" +
-            ".kds-item .qty{font-weight:800;color:#f59e0b;margin-right:6px}" +
-            ".kds-item .nota{font-size:12px;color:#f43f5e;font-weight:700;display:block;margin-top:2px}" +
-            ".btn-listo{width:100%;padding:14px;background:#10b981;border:none;color:#fff;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer}" +
+            ".kds-item{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #1c1e26;font-size:14px}" +
+            ".kds-item .qty{font-weight:800;color:#ffffff;margin-right:6px}" +
+            ".kds-item .nota{font-size:12px;color:#a1a1aa;font-weight:700;display:block;margin-top:2px}" +
+            ".btn-listo{width:100%;padding:14px;background:#ffffff;border:none;color:#000000;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;letter-spacing:0.3px}" +
             ".btn-listo:active{opacity:.85}" +
-            ".empty{grid-column:1/-1;text-align:center;padding:60px 20px;color:#64748b;font-size:15px}" +
+            ".empty{grid-column:1/-1;text-align:center;padding:60px 20px;color:#71717a;font-size:15px}" +
             "</style></head><body>" +
 
             "<div class='kds-header'>" +
-            "  <div><h1>KDS Cocina & Barismo</h1><span style='font-size:12px;color:#94a3b8'>Comandas en tiempo real</span></div>" +
-            "  <button style='background:#181920;border:1px solid #2d313b;color:#fff;padding:8px 14px;border-radius:10px;font-weight:700;cursor:pointer' onclick='location.href=\"/\"'>← Salón</button>" +
+            "  <div><h1>KDS Cocina & Barismo</h1><span style='font-size:11px;color:#71717a;font-weight:600'>AS Business Systems • Tiempo Real</span></div>" +
+            "  <button style='background:#14161b;border:1px solid #242630;color:#fff;padding:8px 14px;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer' onclick='location.href=\"/\"'>← Salón</button>" +
             "</div>" +
 
             "<div class='kds-grid' id='kds-grid'><div class='empty'>Cargando comandas de cocina...</div></div>" +
@@ -1313,7 +1314,7 @@ public class ServidorWebMesero {
             "      card.className = 'kds-card ' + nivel;" +
             "      let itemsHtml = '';" +
             "      c.items.forEach(it => {" +
-            "        itemsHtml += '<div class=\"kds-item\"><div><span class=\"qty\">' + it.cantidad + 'x</span><span style=\"font-weight:700\">' + it.nombre + '</span>' + (it.comentario ? '<span class=\"nota\">⚠️ ' + it.comentario + '</span>' : '') + '</div></div>';" +
+            "        itemsHtml += '<div class=\"kds-item\"><div><span class=\"qty\">' + it.cantidad + 'x</span><span style=\"font-weight:700\">' + it.nombre + '</span>' + (it.comentario ? '<span class=\"nota\">• ' + it.comentario + '</span>' : '') + '</div></div>';" +
             "      });" +
             "      card.innerHTML = '<div class=\"kds-top\"><div class=\"kds-table\">' + c.sala + ' • Mesa ' + c.mesa + ' (' + c.usuario + ')</div><div class=\"kds-timer\">⏱ ' + (isNaN(mins) ? '1' : mins) + ' min</div></div><div class=\"kds-body\">' + itemsHtml + '</div><button class=\"btn-listo\" onclick=\"marcarListoCocina(' + c.id + ')\">MARCAR COMO LISTO</button>';" +
             "      grid.appendChild(card);" +
@@ -1337,21 +1338,21 @@ public class ServidorWebMesero {
         return "<!DOCTYPE html><html lang='es'><head>" +
             "<meta charset='UTF-8'>" +
             "<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'>" +
-            "<meta name='theme-color' content='#0f1015'>" +
-            "<title>Menú Digital — Karoll Café</title>" +
+            "<meta name='theme-color' content='#000000'>" +
+            "<title>Carta Digital — AS Business Systems</title>" +
             "<link href='https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap' rel='stylesheet'>" +
             "<style>" +
             "*{margin:0;padding:0;box-sizing:border-box}" +
-            "body{font-family:'Plus Jakarta Sans',sans-serif;background:#0f1015;color:#f8fafc;min-height:100vh;padding:16px;max-width:500px;margin:0 auto}" +
-            ".menu-header{text-align:center;padding:18px 0;border-bottom:1px solid #2d313b;margin-bottom:16px}" +
-            ".menu-header h1{font-size:22px;font-weight:800;color:#f59e0b}" +
-            ".menu-header p{font-size:13px;color:#94a3b8;margin-top:4px}" +
+            "body{font-family:'Plus Jakarta Sans',sans-serif;background:#000000;color:#f8fafc;min-height:100vh;padding:16px;max-width:500px;margin:0 auto}" +
+            ".menu-header{text-align:center;padding:20px 0;border-bottom:1px solid #242630;margin-bottom:16px}" +
+            ".menu-header h1{font-size:20px;font-weight:800;color:#ffffff;letter-spacing:0.3px}" +
+            ".menu-header p{font-size:12px;color:#71717a;margin-top:4px;font-weight:600}" +
             ".search-box{position:relative;margin-bottom:14px}" +
-            ".search-box input{width:100%;background:#181920;border:1.5px solid #2d313b;border-radius:12px;padding:12px 14px 12px 38px;color:#fff;font-size:14px;outline:none;font-family:inherit}" +
-            ".search-box .icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#64748b;font-size:16px}" +
-            ".menu-item{background:#181920;border:1px solid #2d313b;border-radius:14px;padding:14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}" +
-            ".menu-item .nom{font-size:15px;font-weight:700;color:#f8fafc}" +
-            ".menu-item .prc{font-size:15px;font-weight:800;color:#10b981}" +
+            ".search-box input{width:100%;background:#0e0f12;border:1px solid #242630;border-radius:12px;padding:12px 14px 12px 38px;color:#fff;font-size:14px;outline:none;font-family:inherit}" +
+            ".search-box .icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#71717a;font-size:15px}" +
+            ".menu-item{background:#0e0f12;border:1px solid #242630;border-radius:14px;padding:14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}" +
+            ".menu-item .nom{font-size:14px;font-weight:700;color:#f8fafc}" +
+            ".menu-item .prc{font-size:14px;font-weight:800;color:#10b981}" +
             "</style></head><body>" +
 
             "<div class='menu-header'>" +

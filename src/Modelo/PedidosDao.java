@@ -331,6 +331,57 @@ public class PedidosDao {
         return new int[]{preparadas, total};
     }
 
+    public static class InfoMesaActiva {
+        public int idPedidoPrincipal = 0;
+        public String ultimoEstado = "";
+        public int totalRondas = 0;
+        public int preparadas = 0;
+        public String fechaApertura = null;
+        public boolean todasListas = false;
+    }
+
+    /**
+     * Obtiene en 1 sola consulta SQL rápida el estado consolidado de todas las mesas activas de una sala.
+     */
+    public Map<Integer, InfoMesaActiva> obtenerEstadoMesasSala(int idSala) {
+        Map<Integer, InfoMesaActiva> mapa = new java.util.HashMap<>();
+        String sql = "SELECT num_mesa, id, estado, fecha FROM pedidos "
+                + "WHERE id_sala = ? AND UPPER(TRIM(estado)) IN ('PENDIENTE', 'PREPARADO') "
+                + "ORDER BY num_mesa ASC, id ASC";
+        try (Connection con = cn.getConnection();
+             PreparedStatement ps = con != null ? con.prepareStatement(sql) : null) {
+            if (ps == null) return mapa;
+            ps.setInt(1, idSala);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    int numMesa = rs.getInt("num_mesa");
+                    int idPedido = rs.getInt("id");
+                    String estado = rs.getString("estado");
+                    String fecha = rs.getString("fecha");
+
+                    InfoMesaActiva info = mapa.get(numMesa);
+                    if (info == null) {
+                        info = new InfoMesaActiva();
+                        info.idPedidoPrincipal = idPedido;
+                        info.fechaApertura = fecha;
+                        mapa.put(numMesa, info);
+                    }
+                    info.ultimoEstado = estado;
+                    info.totalRondas++;
+                    if ("PREPARADO".equalsIgnoreCase(estado)) {
+                        info.preparadas++;
+                    }
+                }
+            }
+            for (InfoMesaActiva info : mapa.values()) {
+                info.todasListas = (info.totalRondas > 0 && info.preparadas == info.totalRondas);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al consultar estados agrupados de mesas: " + e.getMessage());
+        }
+        return mapa;
+    }
+
     public boolean marcarTodasPreparadasMesa(int numMesa, int idSala) {
         String sql = "UPDATE pedidos SET estado = 'PREPARADO' WHERE num_mesa = ? AND id_sala = ? AND estado = 'PENDIENTE'";
         try (Connection con = cn.getConnection();

@@ -241,7 +241,7 @@ public class SonidoPOS {
         dialog.setLocationRelativeTo(parent);
 
         JPanel root = new JPanel(new BorderLayout(15, 15));
-        root.setBackground(new Color(15, 23, 42));
+        root.setBackground(new Color(8, 9, 12));
         root.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         JLabel lblHeader = new JLabel("Panel de Sonidos y Audio POS");
